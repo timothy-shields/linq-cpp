@@ -99,7 +99,7 @@ public:
 		if (!ordered)
 			return Nodes(root);
 
-		auto _this = std::make_shared<PairingHeap<T>>(*this); //We don't want to capture "this"!
+		auto _this = std::make_shared<PairingHeap<T>>(*this);
 		return Enumerable<std::shared_ptr<Node>>(
 			[=]()->std::shared_ptr<Enumerator<std::shared_ptr<Node>>>{
 				auto clone = std::make_shared<PairingHeap<T>>(_this->Clone());

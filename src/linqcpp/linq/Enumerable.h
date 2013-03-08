@@ -9,54 +9,9 @@
 #include <map>
 #include <string>
 
+#include "Comparer.h"
+#include "Functional.h"
 #include "PairingHeap.h"
-
-template<typename T>
-class Comparer {
-public:
-	static std::function<int (T, T)> Default()
-	{
-		return [](T a, T b) -> int
-		{
-			if (a < b)
-				return -1;
-			else if (b < a)
-				return 1;
-			else
-				return 0;
-		};
-	}
-
-	template<typename TKey>
-	static std::function<int (T, T)> Default(std::function<TKey (T)> keySelector)
-	{
-		return [=](T a, T b) -> int
-		{
-			auto aKey = keySelector(a);
-			auto bKey = keySelector(b);
-			if (aKey < bKey)
-				return -1;
-			else if (bKey < aKey)
-				return 1;
-			else
-				return 0;
-		};
-	}
-
-	static std::function<int (T, T)> Dictionary(std::vector<std::function<int (T, T)>> comparers)
-	{
-		return [=](T a, T b) -> int
-		{
-			for (auto iter = comparers.begin(); iter != comparers.end(); ++iter)
-			{
-				auto c = (*iter)(a, b);
-				if (c != 0)
-					return c;
-			}
-			return 0;
-		};
-	}
-};
 
 template<typename T>
 class PairingHeap;
@@ -80,11 +35,6 @@ public:
 	{
 	}
 
-	static std::shared_ptr<Enumerator<T>> Empty()
-	{
-		return std::shared_ptr<Enumerator<T>>(new Enumerator<T>([](){ return false; }));
-	}
-
 	bool MoveNext()
 	{
 		return moveNext();
@@ -93,6 +43,11 @@ public:
 	T Current()
 	{
 		return current();
+	}
+
+	static std::shared_ptr<Enumerator<T>> Empty()
+	{
+		return std::shared_ptr<Enumerator<T>>(new Enumerator<T>([](){ return false; }));
 	}
 };
 
@@ -130,14 +85,14 @@ public:
 
 		return Enumerable<T>
 		(
-			[=]() -> std::shared_ptr<Enumerator<T>>
+			[=]()
 			{
 				auto state = std::make_shared<State>();
 				state->first = true;
 
 				return std::make_shared<Enumerator<T>>
 				(
-					[=]() -> bool
+					[=]()
 					{
 						if (state->first)
 						{
@@ -150,7 +105,7 @@ public:
 						}
 						return condition(state->value);
 					},
-					[=]() -> T
+					[=]()
 					{
 						return state->value;
 					}
@@ -171,18 +126,18 @@ public:
 			SelectManyState() { }
 		};
 
-		//We don't want to capture "this"!
 		auto _getEnumerator(getEnumerator);
+
 		return Enumerable<TResult>
 		(
-			[=]() -> std::shared_ptr<Enumerator<TResult>>
+			[=]()
 			{
 				auto state = std::make_shared<SelectManyState>();
 				state->outerEnumerator = (*_getEnumerator)();
 
 				return std::make_shared<Enumerator<TResult>>
 				(
-					[=]() -> bool
+					[=]()
 					{
 						while (true)
 						{
@@ -201,7 +156,7 @@ public:
 							}
 						}
 					},
-					[=]() -> TResult
+					[=]()
 					{
 						return state->value;
 					});
@@ -228,19 +183,25 @@ public:
 
 	static Enumerable<T> Return(T item)
 	{
+		struct State
+		{
+			bool first;
+		};
+
 		return Enumerable<T>
 		(
-			[=]() -> std::shared_ptr<Enumerator<T>>
+			[=]()
 			{
-				auto first = std::make_shared<bool>(true);
+				auto state = std::make_shared<State>();
+				state->first = true;
 
 				return std::make_shared<Enumerator<T>>
 				(
-					[=]() -> bool
+					[=]()
 					{
-						if (*first)
+						if (state->first)
 						{
-							*first = false;
+							state->first = false;
 							return true;
 						}
 						else
@@ -248,7 +209,7 @@ public:
 							return false;
 						}
 					},
-					[=]() -> T
+					[=]()
 					{
 						return item;
 					}
@@ -259,12 +220,12 @@ public:
 
 	static Enumerable<T> Generate(T start, std::function<T (T)> next)
 	{
-		return Generate(start, [](T value){ return true; }, next);
+		return Generate(start, [](T _){ return true; }, next);
 	}
 
 	static Enumerable<T> Range(T start, T count)
 	{
-		return Generate(start, [=](T n){ return n + 1; }).Take(count);
+		return Generate(start, [](T value){ return value + 1; }).Take(count);
 	}
 
 	static Enumerable<T> From(T start) {
@@ -279,20 +240,20 @@ public:
 		return TakeWhile([=](T item){ return item < end; });
 	}
 
-	template<typename TOut>
-	Enumerable<TOut> Select(std::function<TOut(T)> selector) {
+	template<typename TResult>
+	Enumerable<TResult> Select(std::function<TResult(T)> selector) {
 
 		struct State {
 			std::shared_ptr<Enumerator<T>> enumerator;
-			TOut value;
+			TResult value;
 		};
 
-		auto _getEnumerator(getEnumerator); //We don't want to capture "this"!
-		return Enumerable<TOut>(
-			[=]()->std::shared_ptr<Enumerator<TOut>>{
+		auto _getEnumerator(getEnumerator);
+		return Enumerable<TResult>(
+			[=]()->std::shared_ptr<Enumerator<TResult>>{
 				auto state = std::make_shared<State>();
 				state->enumerator = (*_getEnumerator)();
-				return std::make_shared<Enumerator<TOut>>(
+				return std::make_shared<Enumerator<TResult>>(
 					[=]()->bool{
 						if (state->enumerator->MoveNext()) {
 							state->value = selector(state->enumerator->Current());
@@ -301,28 +262,28 @@ public:
 							return false;
 						}
 					},
-					[=]()->TOut{
+					[=]()->TResult{
 						return state->value;
 					});
 			});
 	}
 
-	template<typename TOut>
-	Enumerable<TOut> SelectIndexed(std::function<TOut(T, int)> selector) {
+	template<typename TResult>
+	Enumerable<TResult> SelectIndexed(std::function<TResult(T, int)> selector) {
 
 		struct State {
 			std::shared_ptr<Enumerator<T>> enumerator;
-			TOut value;
+			TResult value;
 			int i;
 		};
 
-		auto _getEnumerator(getEnumerator); //We don't want to capture "this"!
-		return Enumerable<TOut>(
-			[=]()->std::shared_ptr<Enumerator<TOut>>{
+		auto _getEnumerator(getEnumerator);
+		return Enumerable<TResult>(
+			[=]()->std::shared_ptr<Enumerator<TResult>>{
 				auto state = std::make_shared<State>();
 				state->enumerator = (*_getEnumerator)();
 				state->i = 0;
-				return std::make_shared<Enumerator<TOut>>(
+				return std::make_shared<Enumerator<TResult>>(
 					[=]()->bool{
 						if (state->enumerator->MoveNext()) {
 							state->value = selector(state->enumerator->Current(), state->i);
@@ -332,7 +293,7 @@ public:
 							return false;
 						}
 					},
-					[=]()->TOut{
+					[=]()->TResult{
 						return state->value;
 					});
 			});
@@ -344,7 +305,7 @@ public:
 			std::shared_ptr<Enumerator<T>> enumerator;
 		};
 
-		auto _getEnumerator(getEnumerator); //We don't want to capture "this"!
+		auto _getEnumerator(getEnumerator);
 		return Enumerable<T>(
 			[=]()->std::shared_ptr<Enumerator<T>>{
 				auto state = std::make_shared<State>();
@@ -371,7 +332,7 @@ public:
 			int i;
 		};
 
-		auto _getEnumerator(getEnumerator); //We don't want to capture "this"!
+		auto _getEnumerator(getEnumerator);
 		return Enumerable<T>(
 			[=]()->std::shared_ptr<Enumerator<T>>{
 				auto state = std::make_shared<State>();
@@ -395,7 +356,7 @@ public:
 	}
 
 	Enumerable<T> Skip(int count) {
-		auto _getEnumerator(getEnumerator); //We don't want to capture "this"!
+		auto _getEnumerator(getEnumerator);
 		return Enumerable<T>(
 			[=]()->std::shared_ptr<Enumerator<T>>{
 				auto enumerator = (*_getEnumerator)();
@@ -416,7 +377,7 @@ public:
 	}
 
 	Enumerable<T> SkipWhile(std::function<bool(T)> predicate) {
-		auto _getEnumerator(getEnumerator); //We don't want to capture "this"!
+		auto _getEnumerator(getEnumerator);
 		return Enumerable<T>(
 			[=]()->std::shared_ptr<Enumerator<T>>{
 				auto enumerator = (*_getEnumerator)();
@@ -444,16 +405,16 @@ public:
 
 	Enumerable<T> Take(int count)
 	{
-		auto _getEnumerator(getEnumerator); //We don't want to capture "this"!
+		auto _getEnumerator(getEnumerator);
 		return Enumerable<T>
 		(
-			[=]() -> std::shared_ptr<Enumerator<T>>
+			[=]()
 			{
 				auto enumerator = (*_getEnumerator)();
 				auto n = std::make_shared<int>(0);
 				return std::make_shared<Enumerator<T>>
 				(
-					[=]() -> bool
+					[=]()
 					{
 						if (*n < count)
 						{
@@ -462,7 +423,7 @@ public:
 						}
 						return false;
 					},
-					[=]() -> T
+					[=]()
 					{
 						return enumerator->Current();
 					}
@@ -472,7 +433,7 @@ public:
 	}
 
 	Enumerable<T> TakeWhile(std::function<bool(T)> predicate) {
-		auto _getEnumerator(getEnumerator); //We don't want to capture "this"!
+		auto _getEnumerator(getEnumerator);
 		return Enumerable<T>(
 			[=]()->std::shared_ptr<Enumerator<T>>{
 				auto enumerator = (*_getEnumerator)();
@@ -513,8 +474,9 @@ public:
 			});
 	}
 
-	Enumerable<T> Order() {
-		return Order(DefaultComparer<T>);
+	Enumerable<T> Order()
+	{
+		return Order(Comparer::Default<T>());
 	}
 
 	template<typename TKey>
@@ -563,17 +525,17 @@ public:
 			});
 	}
 
-	template<typename TOut>
-	Enumerable<TOut> StaticCast() {
-		return Select<TOut>([](T item){
-			return static_cast<TOut>(item);
+	template<typename TResult>
+	Enumerable<TResult> StaticCast() {
+		return Select<TResult>([](T item){
+			return static_cast<TResult>(item);
 		});
 	}
 
-	template<typename TOut>
-	Enumerable<TOut> DynamicCast() {
-		return Select<TOut>([](T item){
-			return dynamic_cast<TOut>(item);
+	template<typename TResult>
+	Enumerable<TResult> DynamicCast() {
+		return Select<TResult>([](T item){
+			return dynamic_cast<TResult>(item);
 		});
 	}
 

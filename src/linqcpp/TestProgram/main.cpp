@@ -56,6 +56,12 @@ void run(int argc, char* argv[])
 		cout << "Test case 2:" << endl;
 
 		auto testing = Enumerable<int>::Generate(12, [](int x){ return x >= -3; }, [](int x){ return x - 1; })
+			.SelectMany<double>([](int x)
+			{
+				return Enumerable<double>::Generate(0, [](double y){ return y + 0.1; })
+					.Take(11)
+					.Select<double>([=](double y) { return y + x; });
+			})
 			.ToVector();
 
 		testing = testing;
