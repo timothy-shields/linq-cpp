@@ -16,7 +16,7 @@
 namespace linq {
 
 template<typename T>
-class Enumerable;
+class TEnumerable;
 
 template<typename T>
 class PairingHeap
@@ -126,7 +126,7 @@ public:
 		return node;
 	}
 
-	Enumerable<std::shared_ptr<Node>> Nodes(bool ordered = false)
+	TEnumerable<std::shared_ptr<Node>> Nodes(bool ordered = false)
 	{
 		if (!ordered)
 		{
@@ -142,14 +142,14 @@ public:
 
 		auto _this = std::make_shared<PairingHeap<T>>(*this);
 
-		return Enumerable<std::shared_ptr<Node>>
+		return TEnumerable<std::shared_ptr<Node>>
 		(
 			[=]()
 			{
 				auto state = std::make_shared<State>();
 				state->clone = std::make_shared<PairingHeap<T>>(_this->Clone());
 
-				return std::make_shared<Enumerator<std::shared_ptr<Node>>>
+				return std::make_shared<TEnumerator<std::shared_ptr<Node>>>
 				(
 					[=]()
 					{
@@ -276,13 +276,13 @@ private:
 	}
 
 	//Enumerable over the nodes in the given subtree
-	static Enumerable<std::shared_ptr<Node>> Nodes(std::shared_ptr<Node> subtreeRoot)
+	static TEnumerable<std::shared_ptr<Node>> Nodes(std::shared_ptr<Node> subtreeRoot)
 	{
-		return Enumerable<std::shared_ptr<Node>>::Concat
+		return TEnumerable<std::shared_ptr<Node>>::Concat
 		(
-			Enumerable<std::shared_ptr<Node>>::Return(subtreeRoot),
+			TEnumerable<std::shared_ptr<Node>>::Return(subtreeRoot),
 
-			Enumerable<std::shared_ptr<Node>>::Generate
+			TEnumerable<std::shared_ptr<Node>>::Generate
 			(
 				subtreeRoot->firstChild,
 				[](std::shared_ptr<Node> child){ return child != nullptr; },

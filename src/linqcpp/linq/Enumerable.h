@@ -8,6 +8,7 @@
 #include <set>
 #include <map>
 #include <string>
+#include <tuple>
 
 #include "Comparer.h"
 #include "Functional.h"
@@ -19,14 +20,14 @@ template<typename T>
 class PairingHeap;
 
 template<typename T>
-class Enumerator
+class TEnumerator
 {
 private:
 	const std::function<bool()> moveNext;
 	const std::function<T()> current;
 
 public:
-	Enumerator(std::function<bool()> moveNext, std::function<T()> current)
+	TEnumerator(std::function<bool()> moveNext, std::function<T()> current)
 		: moveNext(moveNext)
 		, current(current)
 	{
@@ -47,89 +48,47 @@ public:
 };
 
 template<typename T>
-class Enumerable
+class TEnumerable
 {
 private:
-	std::shared_ptr<const std::function<std::shared_ptr<Enumerator<T>>()>> getEnumerator;
+	std::shared_ptr<const std::function<std::shared_ptr<TEnumerator<T>>()>> getEnumerator;
 
 public:
-	std::shared_ptr<Enumerator<T>> GetEnumerator()
+	std::shared_ptr<TEnumerator<T>> GetEnumerator()
 	{
 		return (*getEnumerator)();
 	}
 
-	Enumerable()
+	TEnumerable()
 	{
 	}
 
-	Enumerable(std::function<std::shared_ptr<Enumerator<T>>()> getEnumerator)
-		: getEnumerator(std::make_shared<const std::function<std::shared_ptr<Enumerator<T>>()>>(getEnumerator))
+	TEnumerable(std::function<std::shared_ptr<TEnumerator<T>>()> getEnumerator)
+		: getEnumerator(std::make_shared<const std::function<std::shared_ptr<TEnumerator<T>>()>>(getEnumerator))
 	{
 	}
-	
-	//Anamorphism
-	static Enumerable<T> Generate(T start, std::function<bool (T)> condition, std::function<T (T)> next)
-	{
-		struct State
-		{
-			State() { }
-			bool first;
-			T value;
-		};
 
-		return Enumerable<T>
-		(
-			[=]()
-			{
-				auto state = std::make_shared<State>();
-				state->first = true;
-
-				return std::make_shared<Enumerator<T>>
-				(
-					[=]()
-					{
-						if (state->first)
-						{
-							state->first = false;
-							state->value = start;
-						}
-						else
-						{
-							state->value = next(state->value);
-						}
-						return condition(state->value);
-					},
-					[=]()
-					{
-						return state->value;
-					}
-				);
-			}
-		);
-	}
-
-	//Bind
 	template<typename TResult>
-	Enumerable<TResult> SelectMany(std::function<Enumerable<TResult> (T)> selector)
+	TEnumerable<TResult> SelectMany(std::function<TEnumerable<TResult> (T)> selector)
 	{
 		struct SelectManyState
 		{
-			std::shared_ptr<Enumerator<T>> outerEnumerator;
-			std::shared_ptr<Enumerator<TResult>> innerEnumerator;
+			std::shared_ptr<TEnumerator<T>> outerEnumerator;
+			std::shared_ptr<TEnumerator<TResult>> innerEnumerator;
 			TResult value;
 			SelectManyState() { }
 		};
 
 		auto _getEnumerator(getEnumerator);
 
-		return Enumerable<TResult>
+		return TEnumerable<TResult>
 		(
 			[=]()
 			{
 				auto state = std::make_shared<SelectManyState>();
 				state->outerEnumerator = (*_getEnumerator)();
 
-				return std::make_shared<Enumerator<TResult>>
+				return std::make_shared<TEnumerator<TResult>>
 				(
 					[=]()
 					{
@@ -157,7 +116,6 @@ public:
 			});
 	}
 
-	//Catamorphism
 	template<typename TAccumulate>
 	TAccumulate Aggregate(TAccumulate seed, std::function<TAccumulate (TAccumulate, T)> accumulator)
 	{
@@ -170,107 +128,34 @@ public:
 		return agg;
 	}
 
-	static Enumerable<T> Empty()
-	{
-		return Enumerable<T>
-		(
-			[]()
-			{
-				return std::make_shared<Enumerator<T>>
-				(
-					[]()
-					{
-						return false;
-					},
-					[]()
-					{
-						throw std::runtime_error("Current should never be called on Enumerable<T>::Empty.");
-					}
-				);
-			}
-		);
-	}
-
-	static Enumerable<T> Return(T item)
-	{
-		struct State
-		{
-			State() { }
-			bool first;
-		};
-
-		return Enumerable<T>
-		(
-			[=]()
-			{
-				auto state = std::make_shared<State>();
-				state->first = true;
-
-				return std::make_shared<Enumerator<T>>
-				(
-					[=]()
-					{
-						if (state->first)
-						{
-							state->first = false;
-							return true;
-						}
-						else
-						{
-							return false;
-						}
-					},
-					[=]()
-					{
-						return item;
-					}
-				);
-			}
-		);
-	}
-
-	static Enumerable<T> Generate(T start, std::function<T (T)> next)
-	{
-		return Generate(start, [](T _){ return true; }, next);
-	}
-
-	static Enumerable<T> Range(T start, T count)
-	{
-		return Generate(start, [](T value){ return value + 1; }).Take(count);
-	}
-
-	static Enumerable<T> From(T start) {
-		return Generate(start, [](T value){ return value + 1; });
-	}
-
-	Enumerable<T> ToInclusive(T end) {
+	TEnumerable<T> ToInclusive(T end) {
 		return TakeWhile([=](T item){ return item <= end; });
 	}
 
-	Enumerable<T> ToExclusive(T end) {
+	TEnumerable<T> ToExclusive(T end) {
 		return TakeWhile([=](T item){ return item < end; });
 	}
 
 	template<typename TResult>
-	Enumerable<TResult> Select(std::function<TResult(T)> selector)
+	TEnumerable<TResult> Select(std::function<TResult (T)> selector)
 	{
 		struct State
 		{
 			State() { }
-			std::shared_ptr<Enumerator<T>> enumerator;
+			std::shared_ptr<TEnumerator<T>> enumerator;
 			TResult value;
 		};
 
 		auto _getEnumerator(getEnumerator);
 
-		return Enumerable<TResult>
+		return TEnumerable<TResult>
 		(
 			[=]()
 			{
 				auto state = std::make_shared<State>();
 				state->enumerator = (*_getEnumerator)();
 
-				return std::make_shared<Enumerator<TResult>>
+				return std::make_shared<TEnumerator<TResult>>
 				(
 					[=]()
 					{
@@ -293,25 +178,68 @@ public:
 		);
 	}
 
-	template<typename TResult>
-	Enumerable<TResult> SelectIndexed(std::function<TResult(T, int)> selector)
-	{
+	//TEnumerable<std::tuple<T, int>> Index()
+	//{
+	//	struct State
+	//	{
+	//		State() { }
+	//		std::shared_ptr<TEnumerator<T>> enumerator;
+	//		std::tuple<T, int> value;
+	//		int i;
+	//	};
 
+	//	auto _getEnumerator(getEnumerator);
+
+	//	return TEnumerable<TResult>
+	//	(
+	//		[=]()
+	//		{
+	//			auto state = std::make_shared<State>();
+	//			state->enumerator = (*_getEnumerator)();
+	//			state->i = 0;
+
+	//			return std::make_shared<TEnumerator<TResult>>
+	//			(
+	//				[=]()
+	//				{
+	//					if (state->enumerator->MoveNext())
+	//					{
+	//						state->value = selector(state->enumerator->Current(), state->i);
+	//						++(state->i);
+	//						return true;
+	//					}
+	//					else
+	//					{
+	//						return false;
+	//					}
+	//				},
+	//				[=]()
+	//				{
+	//					return state->value;
+	//				}
+	//			);
+	//		}
+	//	);
+	//}
+
+	template<typename TResult>
+	TEnumerable<TResult> SelectIndexed(std::function<TResult (T, int)> selector)
+	{
 		struct State
 		{
 			State() { }
-			std::shared_ptr<Enumerator<T>> enumerator;
+			std::shared_ptr<TEnumerator<T>> enumerator;
 			TResult value;
 			int i;
 		};
 
 		auto _getEnumerator(getEnumerator);
-		return Enumerable<TResult>(
-			[=]()->std::shared_ptr<Enumerator<TResult>>{
+		return TEnumerable<TResult>(
+			[=]()->std::shared_ptr<TEnumerator<TResult>>{
 				auto state = std::make_shared<State>();
 				state->enumerator = (*_getEnumerator)();
 				state->i = 0;
-				return std::make_shared<Enumerator<TResult>>(
+				return std::make_shared<TEnumerator<TResult>>(
 					[=]()->bool{
 						if (state->enumerator->MoveNext()) {
 							state->value = selector(state->enumerator->Current(), state->i);
@@ -327,24 +255,42 @@ public:
 			});
 	}
 
-	Enumerable<T> Where(std::function<bool(T)> predicate)
+	template<typename TResult>
+	TEnumerable<TResult> StaticCast()
+	{
+		return Select<TResult>([](T item)
+		{
+			return static_cast<TResult>(item);
+		});
+	}
+
+	template<typename TResult>
+	TEnumerable<TResult> DynamicCast()
+	{
+		return Select<TResult>([](T item)
+		{
+			return dynamic_cast<TResult>(item);
+		});
+	}
+
+	TEnumerable<T> Where(std::function<bool (T)> predicate)
 	{
 		struct State
 		{
 			State() { }
-			std::shared_ptr<Enumerator<T>> enumerator;
+			std::shared_ptr<TEnumerator<T>> enumerator;
 		};
 
 		auto _getEnumerator(getEnumerator);
 
-		return Enumerable<T>
+		return TEnumerable<T>
 		(
 			[=]()
 			{
 				auto state = std::make_shared<State>();
 				state->enumerator = (*_getEnumerator)();
 
-				return std::make_shared<Enumerator<T>>
+				return std::make_shared<TEnumerator<T>>
 				(
 					[=]()
 					{
@@ -365,22 +311,22 @@ public:
 		);
 	}
 
-	Enumerable<T> WhereIndexed(std::function<bool(T, int)> predicate) {
+	TEnumerable<T> WhereIndexed(std::function<bool(T, int)> predicate) {
 
 		struct State
 		{
 			State() { }
-			std::shared_ptr<Enumerator<T>> enumerator;
+			std::shared_ptr<TEnumerator<T>> enumerator;
 			int i;
 		};
 
 		auto _getEnumerator(getEnumerator);
-		return Enumerable<T>(
-			[=]()->std::shared_ptr<Enumerator<T>>{
+		return TEnumerable<T>(
+			[=]()->std::shared_ptr<TEnumerator<T>>{
 				auto state = std::make_shared<State>();
 				state->enumerator = (*_getEnumerator)();
 				state->i = 0;
-				return std::make_shared<Enumerator<T>>(
+				return std::make_shared<TEnumerator<T>>(
 					[=]()->bool{
 						while (true) {
 							if (!state->enumerator->MoveNext())
@@ -397,18 +343,18 @@ public:
 			});
 	}
 
-	Enumerable<T> Skip(int count)
+	TEnumerable<T> Skip(int count)
 	{
 		struct State
 		{
 			State() { }
-			std::shared_ptr<Enumerator<T>> enumerator;
+			std::shared_ptr<TEnumerator<T>> enumerator;
 			int n;
 		};
 
 		auto _getEnumerator(getEnumerator);
 
-		return Enumerable<T>
+		return TEnumerable<T>
 		(
 			[=]()
 			{
@@ -416,7 +362,7 @@ public:
 				state->enumerator = (*_getEnumerator)();
 				state->n = 0;
 
-				return std::make_shared<Enumerator<T>>
+				return std::make_shared<TEnumerator<T>>
 				(
 					[=]()
 					{
@@ -439,18 +385,18 @@ public:
 		);
 	}
 
-	Enumerable<T> SkipWhile(std::function<bool(T)> predicate)
+	TEnumerable<T> SkipWhile(std::function<bool(T)> predicate)
 	{
 		struct State
 		{
 			State() { }
-			std::shared_ptr<Enumerator<T>> enumerator;
+			std::shared_ptr<TEnumerator<T>> enumerator;
 			bool skipping;
 		};
 
 		auto _getEnumerator(getEnumerator);
 
-		return Enumerable<T>
+		return TEnumerable<T>
 		(
 			[=]()
 			{
@@ -458,7 +404,7 @@ public:
 				state->enumerator = (*_getEnumerator)();
 				state->skipping = true;
 
-				return std::make_shared<Enumerator<T>>
+				return std::make_shared<TEnumerator<T>>
 				(
 					[=]()
 					{
@@ -491,18 +437,18 @@ public:
 		);
 	}
 
-	Enumerable<T> Take(int count)
+	TEnumerable<T> Take(int count)
 	{
 		struct State
 		{
 			State() { }
-			std::shared_ptr<Enumerator<T>> enumerator;
+			std::shared_ptr<TEnumerator<T>> enumerator;
 			int n;
 		};
 
 		auto _getEnumerator(getEnumerator);
 
-		return Enumerable<T>
+		return TEnumerable<T>
 		(
 			[=]()
 			{
@@ -510,7 +456,7 @@ public:
 				state->enumerator = (*_getEnumerator)();
 				state->n = 0;
 
-				return std::make_shared<Enumerator<T>>
+				return std::make_shared<TEnumerator<T>>
 				(
 					[=]()
 					{
@@ -530,12 +476,12 @@ public:
 		);
 	}
 
-	Enumerable<T> TakeWhile(std::function<bool(T)> predicate) {
+	TEnumerable<T> TakeWhile(std::function<bool(T)> predicate) {
 		auto _getEnumerator(getEnumerator);
-		return Enumerable<T>(
-			[=]()->std::shared_ptr<Enumerator<T>>{
+		return TEnumerable<T>(
+			[=]()->std::shared_ptr<TEnumerator<T>>{
 				auto enumerator = (*_getEnumerator)();
-				return std::make_shared<Enumerator<T>>(
+				return std::make_shared<TEnumerator<T>>(
 					[=]()->bool{
 						return enumerator->MoveNext() && predicate(enumerator->Current());
 					},
@@ -545,7 +491,7 @@ public:
 			});
 	}
 
-	Enumerable<T> Order(std::function<int (T, T)> comparer) {
+	TEnumerable<T> Order(std::function<int (T, T)> comparer) {
 
 		struct State
 		{
@@ -555,13 +501,13 @@ public:
 		};
 
 		auto _getEnumerator(getEnumerator);
-		return Enumerable<T>(
-			[=]()->std::shared_ptr<Enumerator<T>>{
+		return TEnumerable<T>(
+			[=]()->std::shared_ptr<TEnumerator<T>>{
 				auto enumerator = (*_getEnumerator)();
 				auto state = std::make_shared<State>();
 				while (enumerator->MoveNext())
 					state->heap.Insert(enumerator->Current());
-				return std::make_shared<Enumerator<T>>(
+				return std::make_shared<TEnumerator<T>>(
 					[=]()->bool{
 						if (state->heap.IsEmpty())
 							return false;
@@ -574,13 +520,13 @@ public:
 			});
 	}
 
-	Enumerable<T> Order()
+	TEnumerable<T> Order()
 	{
 		return Order(Comparer::Default<T>());
 	}
 
 	template<typename TKey>
-	Enumerable<T> OrderByKey(std::function<TKey (T)> keySelector) {
+	TEnumerable<T> OrderByKey(std::function<TKey (T)> keySelector) {
 		return
 			Select<std::pair<TKey, T>>([=](T item){
 				return std::make_pair(keySelector(item), item);
@@ -594,52 +540,12 @@ public:
 			});
 	}
 
-	Enumerable<T> Concat(Enumerable<T> other) {
+	TEnumerable<T> Concat(TEnumerable<T> other) {
 		return Concat(*this, other);
 	}
 
-	static Enumerable<T> Concat(Enumerable<T> first, Enumerable<T> second) {
-		auto _getFirstEnumerator(first.getEnumerator); //We don't want to capture "first"!
-		auto _getSecondEnumerator(second.getEnumerator); //We don't want to capture "second"!
-		return Enumerable<T>(
-			[=]()->std::shared_ptr<Enumerator<T>>{
-				auto firstEnumerator = (*_getFirstEnumerator)();
-				auto secondEnumerator = (*_getSecondEnumerator)();
-				auto first = std::make_shared<bool>(true);
-				return std::make_shared<Enumerator<T>>(
-					[=]()->bool{
-						if (*first) {
-							if (firstEnumerator->MoveNext())
-								return true;
-							else
-								*first = false;
-						}
-						return secondEnumerator->MoveNext();
-					},
-					[=]()->T{
-						if (*first)
-							return firstEnumerator->Current();
-						else
-							return secondEnumerator->Current();
-					});
-			});
-	}
-
-	template<typename TResult>
-	Enumerable<TResult> StaticCast() {
-		return Select<TResult>([](T item){
-			return static_cast<TResult>(item);
-		});
-	}
-
-	template<typename TResult>
-	Enumerable<TResult> DynamicCast() {
-		return Select<TResult>([](T item){
-			return dynamic_cast<TResult>(item);
-		});
-	}
-
-	bool Any() {
+	bool Any()
+	{
 		auto enumerator = GetEnumerator();
 		return enumerator->MoveNext();
 	}
@@ -665,7 +571,7 @@ public:
 		if (enumerator->MoveNext())
 			return enumerator->Current();
 		else
-			throw runtime_error("Enumerable<T>::First failed because the enumerable is empty.");
+			throw runtime_error("TEnumerable<T>::First failed because the enumerable is empty.");
 	}
 
 	T First(std::function<bool(T)> predicate) {
@@ -682,7 +588,7 @@ public:
 			return item;
 		}
 		else
-			throw runtime_error("Enumerable<T>::First failed because the enumerable is empty.");
+			throw runtime_error("TEnumerable<T>::First failed because the enumerable is empty.");
 	}
 
 	T Last(std::function<bool(T)> predicate) {
@@ -694,11 +600,11 @@ public:
 		if (enumerator->MoveNext()) {
 			T item = enumerator->Current();
 			if (enumerator->MoveNext())
-				throw runtime_error("Enumerable<T>::Single failed because the enumerable contains more than one item.");
+				throw runtime_error("TEnumerable<T>::Single failed because the enumerable contains more than one item.");
 			return item;
 		}
 		else {
-			throw runtime_error("Enumerable<T>::Single failed because the enumerable is empty.");
+			throw runtime_error("TEnumerable<T>::Single failed because the enumerable is empty.");
 		}
 	}
 
@@ -721,7 +627,7 @@ public:
 	T Aggregate(std::function<T (T, T)> accumulator) {
 		auto enumerator = GetEnumerator();
 		if (!enumerator->MoveNext())
-			throw runtime_error("Enumerable<T>::Aggregate failed because the enumerable is empty.");
+			throw runtime_error("TEnumerable<T>::Aggregate failed because the enumerable is empty.");
 		T agg = enumerator->Current();
 		while (enumerator->MoveNext())
 			agg = accumulator(agg, enumerator->Current());
@@ -748,7 +654,7 @@ public:
 				return a + b;
 			});
 		if (count == 0)
-			throw runtime_error("Enumerable<T>::Average failed because the enumerable is empty.");
+			throw runtime_error("TEnumerable<T>::Average failed because the enumerable is empty.");
 		return sum / count;
 	}
 
@@ -756,7 +662,7 @@ public:
 	T MinBy(std::function<TScore(T)> score) {
 		auto enumerator = GetEnumerator();
 		if (!enumerator->MoveNext())
-			throw runtime_error("Enumerable<T>::MinBy failed because the enumerable is empty.");
+			throw runtime_error("TEnumerable<T>::MinBy failed because the enumerable is empty.");
 		auto bestValue = enumerator->Current();
 		auto bestScore = score(enumerator->Current());
 		while (enumerator->MoveNext()) {
@@ -774,7 +680,7 @@ public:
 	T MaxBy(std::function<TScore(T)> score) {
 		auto enumerator = GetEnumerator();
 		if (!enumerator->MoveNext())
-			throw runtime_error("Enumerable<T>::MaxBy failed because the enumerable is empty.");
+			throw runtime_error("TEnumerable<T>::MaxBy failed because the enumerable is empty.");
 		auto bestValue = enumerator->Current();
 		auto bestScore = score(enumerator->Current());
 		while (enumerator->MoveNext()) {
@@ -796,7 +702,7 @@ public:
 	T Indexmin(std::function<TScore(T)> score) {
 		auto enumerator = GetEnumerator();
 		if (!enumerator->MoveNext())
-			throw runtime_error("Enumerable<T>::Indexmin failed because the enumerable is empty.");
+			throw runtime_error("TEnumerable<T>::Indexmin failed because the enumerable is empty.");
 		auto bestIndex = 0;
 		auto bestScore = score(enumerator->Current());
 		auto currentIndex = 0;
@@ -819,7 +725,7 @@ public:
 	T Indexmax(std::function<TScore(T)> score) {
 		auto enumerator = GetEnumerator();
 		if (!enumerator->MoveNext())
-			throw runtime_error("Enumerable<T>::Indexmax failed because the enumerable is empty.");
+			throw runtime_error("TEnumerable<T>::Indexmax failed because the enumerable is empty.");
 		auto bestIndex = 0;
 		auto bestScore = score(enumerator->Current());
 		auto currentIndex = 0;
@@ -847,30 +753,6 @@ public:
 			action(enumerator->Current(), i);
 			++i;
 		}
-	}
-
-	template<typename TRange>
-	static Enumerable<T> FromRange(TRange& range) {
-		return FromRange(range.begin(), range.end());
-	}
-
-	template<typename TIter>
-	static Enumerable<T> FromRange(TIter begin, TIter end) {
-		return Enumerable<T>(
-			[=]()->std::shared_ptr<Enumerator<T>>{
-				auto iter = std::make_shared<TIter>(begin);
-				auto first = std::make_shared<bool>(true);
-				return std::make_shared<Enumerator<T>>(
-					[=]()->bool{
-						if (!(*first))
-							++*iter;
-						*first = false;
-						return (*iter != end);
-					},
-					[=]()->T{
-						return **iter;
-					});
-			});
 	}
 
 	std::vector<T> ToVector() {
@@ -938,6 +820,211 @@ public:
 			write(item, stream);
 		});
 		return stream.str();
+	}
+};
+
+class Enumerable
+{
+private:
+	Enumerable() { }
+
+public:	
+	template<typename T>
+	static TEnumerable<T> Empty()
+	{
+		return TEnumerable<T>
+		(
+			[]()
+			{
+				return std::make_shared<TEnumerator<T>>
+				(
+					[]()
+					{
+						return false;
+					},
+					[]()
+					{
+						throw std::runtime_error("Current should never be called on TEnumerable<T>::Empty.");
+					}
+				);
+			}
+		);
+	}
+
+	template<typename T>
+	static TEnumerable<T> Return(T item)
+	{
+		struct State
+		{
+			State() { }
+			bool first;
+		};
+
+		return TEnumerable<T>
+		(
+			[=]()
+			{
+				auto state = std::make_shared<State>();
+				state->first = true;
+
+				return std::make_shared<TEnumerator<T>>
+				(
+					[=]()
+					{
+						if (state->first)
+						{
+							state->first = false;
+							return true;
+						}
+						else
+						{
+							return false;
+						}
+					},
+					[=]()
+					{
+						return item;
+					}
+				);
+			}
+		);
+	}
+
+	template<typename T, typename TPredicate, typename TNext>
+	static TEnumerable<T> Generate(T start, TPredicate predicate, TNext next)
+	{
+		struct State
+		{
+			State() { }
+			bool first;
+			T value;
+		};
+
+		return TEnumerable<T>
+		(
+			[=]()
+			{
+				auto state = std::make_shared<State>();
+				state->first = true;
+
+				return std::make_shared<TEnumerator<T>>
+				(
+					[=]()
+					{
+						if (state->first)
+						{
+							state->first = false;
+							state->value = start;
+						}
+						else
+						{
+							state->value = next(state->value);
+						}
+						return predicate(state->value);
+					},
+					[=]()
+					{
+						return state->value;
+					}
+				);
+			}
+		);
+	}
+
+	template<typename T>
+	static TEnumerable<T> Generate(T start, std::function<T (T)> next)
+	{
+		return Generate<T>(start, [](T _){ return true; }, next);
+	}
+
+	template<typename T>
+	static TEnumerable<T> Range(T start, T count)
+	{
+		return Generate<T>(start, [](T value){ return value + 1; }).Take(count);
+	}
+
+	template<typename T>
+	static TEnumerable<T> From(T start)
+	{
+		return Generate<T>(start, [](T value){ return value + 1; });
+	}
+
+	template<typename T>
+	static TEnumerable<T> Concat(TEnumerable<T> first, TEnumerable<T> second)
+	{
+		struct State
+		{
+			State() { }
+			std::shared_ptr<TEnumerator<T>> firstEnumerator;
+			std::shared_ptr<TEnumerator<T>> secondEnumerator;
+			bool first;
+		};
+
+		auto _getFirstEnumerator(first.getEnumerator);
+		auto _getSecondEnumerator(second.getEnumerator);
+
+		return TEnumerable<T>
+		(
+			[=]()
+			{
+				auto state = std::make_shared<State>();
+				state->firstEnumerator = (*_getFirstEnumerator)();
+				state->secondEnumerator = (*_getSecondEnumerator)();
+				state->first = true;
+
+				return std::make_shared<TEnumerator<T>>
+				(
+					[=]()
+					{
+						if (state->first)
+						{
+							if (state->firstEnumerator->MoveNext())
+							{
+								return true;
+							}
+							else
+							{
+								state->first = false;
+							}
+						}
+						return state->secondEnumerator->MoveNext();
+					},
+					[=]()
+					{
+						if (state->first)
+						{
+							return state->firstEnumerator->Current();
+						}
+						else
+						{
+							return state->secondEnumerator->Current();
+						}
+					});
+			});
+	}
+
+	template<typename TRange, typename T>
+	static TEnumerable<T> FromRange(TRange& range) {
+		return FromRange(range.begin(), range.end());
+	}
+
+	template<typename TIter, typename T>
+	static TEnumerable<T> FromRange(TIter begin, TIter end) {
+		return TEnumerable<T>(
+			[=]()->std::shared_ptr<TEnumerator<T>>{
+				auto iter = std::make_shared<TIter>(begin);
+				auto first = std::make_shared<bool>(true);
+				return std::make_shared<TEnumerator<T>>(
+					[=]()->bool{
+						if (!(*first))
+							++*iter;
+						*first = false;
+						return (*iter != end);
+					},
+					[=]()->T{
+						return **iter;
+					});
+			});
 	}
 };
 
