@@ -14,23 +14,23 @@ void run(int argc, char* argv[])
 	//	Enumerable<char>::Range('A', 26)
 	//		.Concat(Enumerable<char>::Range('a', 26))
 	//		.Concat(Enumerable<char>::Range('0', 10))
-	//		.Foreach([&](char c){ heap.Insert(c); });
+	//		.ForEach([&](char c){ heap.Insert(c); });
 	//	heap.Nodes()
 	//		.Select<char>([](shared_ptr<PairingHeap<char>::Node> node){ return node->value; })
-	//		.Foreach([](char c){ cout << c; });
+	//		.ForEach([](char c){ cout << c; });
 	//	cout << endl;
 
 	//	auto eee = heap.Nodes(true);
 	//	eee.Select<char>([](shared_ptr<PairingHeap<char>::Node> node){ return node->value; })
-	//		.Foreach([](char c){ cout << c; });
+	//		.ForEach([](char c){ cout << c; });
 	//	cout << endl;
 
 	//	//eee.Select<char>([](shared_ptr<PairingHeap<char>::Node> node){ return node->value; })
-	//	//	.Foreach([](char c){ cout << c; });
+	//	//	.ForEach([](char c){ cout << c; });
 	//	//cout << endl;
 
 	//	//eee.Select<char>([](shared_ptr<PairingHeap<char>::Node> node){ return node->value; })
-	//	//	.Foreach([](char c){ cout << c; });
+	//	//	.ForEach([](char c){ cout << c; });
 	//	//cout << endl;
 
 	//	cout << "Test case 1:" << endl;
@@ -47,7 +47,7 @@ void run(int argc, char* argv[])
 	//	auto myVec = enumerable.OrderByKey<int>([](pair<int, int> p){ return p.second; }).ToVector();
 
 	//	Enumerable<pair<int, int>>::FromRange(myVec)
-	//		.ForeachIndexed([](pair<int, int> p, int i){
+	//		.ForEachIndexed([](pair<int, int> p, int i){
 	//			cout << i << ": " << p.first << ", " << p.second << endl;
 	//		});
 	//}
@@ -75,9 +75,9 @@ void run(int argc, char* argv[])
 			.Where([](pair<int, Enumerable<int>> p){
 				return p.second.Any([](int x){ return x % 2 != 0; });
 			})
-			.Foreach([](pair<int, Enumerable<int>> group){
+			.ForEach([](pair<int, Enumerable<int>> group){
 				cout << group.first << ":" << endl;
-				group.second.Foreach([](int item){
+				group.second.ForEach([](int item){
 					cout << "\t" << item << endl;
 				});
 			});

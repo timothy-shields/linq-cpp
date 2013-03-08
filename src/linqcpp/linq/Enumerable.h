@@ -14,8 +14,10 @@
 template<typename T>
 class Comparer {
 public:
-	static std::function<int (T, T)> Default() {
-		return [](T a, T b)->int{
+	static std::function<int (T, T)> Default()
+	{
+		return [](T a, T b) -> int
+		{
 			if (a < b)
 				return -1;
 			else if (b < a)
@@ -26,8 +28,10 @@ public:
 	}
 
 	template<typename TKey>
-	static std::function<int (T, T)> Default(std::function<TKey (T)> keySelector) {
-		return [=](T a, T b)->int{
+	static std::function<int (T, T)> Default(std::function<TKey (T)> keySelector)
+	{
+		return [=](T a, T b) -> int
+		{
 			auto aKey = keySelector(a);
 			auto bKey = keySelector(b);
 			if (aKey < bKey)
@@ -39,9 +43,12 @@ public:
 		};
 	}
 
-	static std::function<int (T, T)> Dictionary(std::vector<std::function<int (T, T)>> comparers) {
-		return [=](T a, T b)->int{
-			for (auto iter = comparers.begin(); iter != comparers.end(); ++iter) {
+	static std::function<int (T, T)> Dictionary(std::vector<std::function<int (T, T)>> comparers)
+	{
+		return [=](T a, T b) -> int
+		{
+			for (auto iter = comparers.begin(); iter != comparers.end(); ++iter)
+			{
 				auto c = (*iter)(a, b);
 				if (c != 0)
 					return c;
@@ -55,67 +62,60 @@ template<typename T>
 class PairingHeap;
 
 template<typename T>
-class IEnumerator {
-private:
-	virtual ~IEnumerator()
-	{
-		Dispose();
-	}
-	virtual bool MoveNext() = 0;
-	virtual T Current() = 0;
-	virtual void Dispose() = 0;
-};
-
-template<typename T>
-class Enumerator {
+class Enumerator
+{
 private:
 	const std::function<bool()> moveNext;
 	const std::function<T()> current;
 
 	Enumerator(std::function<bool()> moveNext)
-		: moveNext(moveNext) {
+		: moveNext(moveNext)
+	{
 	}
+
 public:
 	Enumerator(std::function<bool()> moveNext, std::function<T()> current)
 		: moveNext(moveNext)
-		, current(current) {
-	}
-
-	Enumerator(std::function<bool()> moveNext, std::function<T()> current, std::function<void()> dispose)
-		: moveNext(moveNext)
 		, current(current)
-		, dispose(dispose) {
+	{
 	}
 
-	static std::shared_ptr<Enumerator<T>> Empty() {
+	static std::shared_ptr<Enumerator<T>> Empty()
+	{
 		return std::shared_ptr<Enumerator<T>>(new Enumerator<T>([](){ return false; }));
 	}
 
-	bool MoveNext() {
+	bool MoveNext()
+	{
 		return moveNext();
 	}
 
-	T Current() {
+	T Current()
+	{
 		return current();
 	}
 };
 
 template<typename T>
-class Enumerable {
+class Enumerable
+{
 private:
 	std::shared_ptr<const std::function<std::shared_ptr<Enumerator<T>>()>> getEnumerator;
 
 public:
-	std::shared_ptr<Enumerator<T>> GetEnumerator() {
+	std::shared_ptr<Enumerator<T>> GetEnumerator()
+	{
 		return (*getEnumerator)();
 	}
 
-	Enumerable() {
+	Enumerable()
+	{
 		getEnumerator = std::make_shared<const std::function<std::shared_ptr<Enumerator<T>>()>>([](){ return Enumerator<T>::Empty(); });
 	}
 
 	Enumerable(std::function<std::shared_ptr<Enumerator<T>>()> getEnumerator)
-		: getEnumerator(std::make_shared<const std::function<std::shared_ptr<Enumerator<T>>()>>(getEnumerator)) {
+		: getEnumerator(std::make_shared<const std::function<std::shared_ptr<Enumerator<T>>()>>(getEnumerator))
+	{
 	}
 	
 	//Anamorphism
@@ -171,7 +171,8 @@ public:
 			SelectManyState() { }
 		};
 
-		auto _getEnumerator(getEnumerator); //We don't want to capture "this"!
+		//We don't want to capture "this"!
+		auto _getEnumerator(getEnumerator);
 		return Enumerable<TResult>
 		(
 			[=]() -> std::shared_ptr<Enumerator<TResult>>
@@ -261,7 +262,8 @@ public:
 		return Generate(start, [](T value){ return true; }, next);
 	}
 
-	static Enumerable<T> Range(T start, T count) {
+	static Enumerable<T> Range(T start, T count)
+	{
 		return Generate(start, [=](T n){ return n + 1; }).Take(count);
 	}
 
@@ -440,24 +442,33 @@ public:
 			});
 	}
 
-	Enumerable<T> Take(int count) {
+	Enumerable<T> Take(int count)
+	{
 		auto _getEnumerator(getEnumerator); //We don't want to capture "this"!
-		return Enumerable<T>(
-			[=]()->std::shared_ptr<Enumerator<T>>{
+		return Enumerable<T>
+		(
+			[=]() -> std::shared_ptr<Enumerator<T>>
+			{
 				auto enumerator = (*_getEnumerator)();
 				auto n = std::make_shared<int>(0);
-				return std::make_shared<Enumerator<T>>(
-					[=]()->bool{
-						if (*n < count) {
+				return std::make_shared<Enumerator<T>>
+				(
+					[=]() -> bool
+					{
+						if (*n < count)
+						{
 							++*n;
 							return enumerator->MoveNext();
 						}
 						return false;
 					},
-					[=]()->T{
+					[=]() -> T
+					{
 						return enumerator->Current();
-					});
-			});
+					}
+				);
+			}
+		);
 	}
 
 	Enumerable<T> TakeWhile(std::function<bool(T)> predicate) {
@@ -680,10 +691,10 @@ public:
 	}
 
 	template<typename TScore>
-	T Argmin(std::function<TScore(T)> score) {
+	T MinBy(std::function<TScore(T)> score) {
 		auto enumerator = GetEnumerator();
 		if (!enumerator->MoveNext())
-			throw runtime_error("Enumerable<T>::Argmin failed because the enumerable is empty.");
+			throw runtime_error("Enumerable<T>::MinBy failed because the enumerable is empty.");
 		auto bestValue = enumerator->Current();
 		auto bestScore = score(enumerator->Current());
 		while (enumerator->MoveNext()) {
@@ -698,10 +709,10 @@ public:
 	}
 
 	template<typename TScore>
-	T Argmax(std::function<TScore(T)> score) {
+	T MaxBy(std::function<TScore(T)> score) {
 		auto enumerator = GetEnumerator();
 		if (!enumerator->MoveNext())
-			throw runtime_error("Enumerable<T>::Argmax failed because the enumerable is empty.");
+			throw runtime_error("Enumerable<T>::MaxBy failed because the enumerable is empty.");
 		auto bestValue = enumerator->Current();
 		auto bestScore = score(enumerator->Current());
 		while (enumerator->MoveNext()) {
@@ -761,13 +772,13 @@ public:
 		return bestIndex;
 	}
 
-	void Foreach(std::function<void(T)> action) {
+	void ForEach(std::function<void(T)> action) {
 		auto enumerator = GetEnumerator();
 		while (enumerator->MoveNext())
 			action(enumerator->Current());
 	}
 
-	void ForeachIndexed(std::function<void(T, int)> action) {
+	void ForEachIndexed(std::function<void(T, int)> action) {
 		auto enumerator = GetEnumerator();
 		int i = 0;
 		while (enumerator->MoveNext()) {
@@ -802,7 +813,7 @@ public:
 
 	std::vector<T> ToVector() {
 		std::vector<T> _vector;
-		Foreach([&](T item){
+		ForEach([&](T item){
 			_vector.push_back(item);
 		});
 		return _vector;
@@ -810,7 +821,7 @@ public:
 
 	std::set<T> ToSet() {
 		std::set<T> _set;
-		Foreach([&](T item){
+		ForEach([&](T item){
 			_set.insert(item);
 		});
 		return _set;
@@ -819,7 +830,7 @@ public:
 	template<typename TKey, typename TValue>
 	std::map<TKey, TValue> ToMap() {
 		std::map<TKey, TValue> _map;
-		Foreach([&](pair<TKey, TValue> item){
+		ForEach([&](pair<TKey, TValue> item){
 			_map.insert(item);
 		});
 		return _map;
@@ -828,7 +839,7 @@ public:
 	template<typename TKey>
 	std::map<TKey, T> ToMap(std::function<TKey(T)> keySelector) {
 		std::map<TKey, T> _map;
-		Foreach([&](T item){
+		ForEach([&](T item){
 			_map.insert(make_pair(keySelector(item), item));
 		});
 		return _map;
@@ -837,7 +848,7 @@ public:
 	template<typename TKey, typename TValue>
 	std::map<TKey, TValue> ToMap(std::function<TKey(T)> keySelector, std::function<TValue(T)> valueSelector) {
 		std::map<TKey, T> _map;
-		Foreach([&](T item){
+		ForEach([&](T item){
 			_map.insert(make_pair(keySelector(item), valueSelector(item)));
 		});
 		return _map;
@@ -857,7 +868,7 @@ public:
 	std::string ToString(std::string separator, std::function<void (T, std::stringstream&)> write) {
 		std::stringstream stream;
 		bool first = true;
-		Foreach([&](T item){
+		ForEach([&](T item){
 			if (first)
 				first = false;
 			else
