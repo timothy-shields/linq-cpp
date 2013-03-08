@@ -3,6 +3,9 @@
 #include "dllapi.h"
 
 #include <functional>
+#include <vector>
+
+namespace linq {
 
 class Comparer
 {
@@ -15,11 +18,17 @@ public:
 		return [](T a, T b)
 		{
 			if (a < b)
+			{
 				return -1;
+			}
 			else if (b < a)
+			{
 				return 1;
+			}
 			else
+			{
 				return 0;
+			}
 		};
 	}
 
@@ -30,12 +39,19 @@ public:
 		{
 			auto aKey = keySelector(a);
 			auto bKey = keySelector(b);
+
 			if (aKey < bKey)
+			{
 				return -1;
+			}
 			else if (bKey < aKey)
+			{
 				return 1;
+			}
 			else
+			{
 				return 0;
+			}
 		};
 	}
 
@@ -48,9 +64,13 @@ public:
 			{
 				auto c = (*iter)(a, b);
 				if (c != 0)
+				{
 					return c;
+				}
 			}
 			return 0;
 		};
 	}
 };
+
+}

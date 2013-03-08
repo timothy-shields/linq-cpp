@@ -6,6 +6,7 @@
 #include <vector>
 
 using namespace std;
+using namespace linq;
 
 void run(int argc, char* argv[])
 {

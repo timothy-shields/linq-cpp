@@ -9,6 +9,8 @@
 #include <map>
 #include <string>
 
+namespace linq {
+
 class Functional
 {
 public:
@@ -24,3 +26,5 @@ public:
 		return [](T x){ return x + 1; };
 	}
 };
+
+}

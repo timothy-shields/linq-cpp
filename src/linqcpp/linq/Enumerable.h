@@ -13,6 +13,8 @@
 #include "Functional.h"
 #include "PairingHeap.h"
 
+namespace linq {
+
 template<typename T>
 class PairingHeap;
 
@@ -23,11 +25,6 @@ private:
 	const std::function<bool()> moveNext;
 	const std::function<T()> current;
 
-	Enumerator(std::function<bool()> moveNext)
-		: moveNext(moveNext)
-	{
-	}
-
 public:
 	Enumerator(std::function<bool()> moveNext, std::function<T()> current)
 		: moveNext(moveNext)
@@ -35,19 +32,17 @@ public:
 	{
 	}
 
+	//First call to MoveNext moves from one before the first item onto it
+	//Last call to MoveNext moves from the last item to one past it
 	bool MoveNext()
 	{
 		return moveNext();
 	}
 
+	//Should be able to call Current as many times as wanted per single call to MoveNext
 	T Current()
 	{
 		return current();
-	}
-
-	static std::shared_ptr<Enumerator<T>> Empty()
-	{
-		return std::shared_ptr<Enumerator<T>>(new Enumerator<T>([](){ return false; }));
 	}
 };
 
@@ -65,7 +60,6 @@ public:
 
 	Enumerable()
 	{
-		getEnumerator = std::make_shared<const std::function<std::shared_ptr<Enumerator<T>>()>>([](){ return Enumerator<T>::Empty(); });
 	}
 
 	Enumerable(std::function<std::shared_ptr<Enumerator<T>>()> getEnumerator)
@@ -78,9 +72,9 @@ public:
 	{
 		struct State
 		{
+			State() { }
 			bool first;
 			T value;
-			State() { }
 		};
 
 		return Enumerable<T>
@@ -168,7 +162,7 @@ public:
 	TAccumulate Aggregate(TAccumulate seed, std::function<TAccumulate (TAccumulate, T)> accumulator)
 	{
 		auto enumerator = GetEnumerator();
-		TAccumulate agg(seed);
+		TAccumulate agg = seed;
 		while (enumerator->MoveNext())
 		{
 			agg = accumulator(agg, enumerator->Current());
@@ -178,13 +172,30 @@ public:
 
 	static Enumerable<T> Empty()
 	{
-		return Enumerable<T>([](){ return Enumerator<T>::Empty(); });
+		return Enumerable<T>
+		(
+			[]()
+			{
+				return std::make_shared<Enumerator<T>>
+				(
+					[]()
+					{
+						return false;
+					},
+					[]()
+					{
+						throw std::runtime_error("Current should never be called on Enumerable<T>::Empty.");
+					}
+				);
+			}
+		);
 	}
 
 	static Enumerable<T> Return(T item)
 	{
 		struct State
 		{
+			State() { }
 			bool first;
 		};
 
@@ -241,37 +252,54 @@ public:
 	}
 
 	template<typename TResult>
-	Enumerable<TResult> Select(std::function<TResult(T)> selector) {
-
-		struct State {
+	Enumerable<TResult> Select(std::function<TResult(T)> selector)
+	{
+		struct State
+		{
+			State() { }
 			std::shared_ptr<Enumerator<T>> enumerator;
 			TResult value;
 		};
 
 		auto _getEnumerator(getEnumerator);
-		return Enumerable<TResult>(
-			[=]()->std::shared_ptr<Enumerator<TResult>>{
+
+		return Enumerable<TResult>
+		(
+			[=]()
+			{
 				auto state = std::make_shared<State>();
 				state->enumerator = (*_getEnumerator)();
-				return std::make_shared<Enumerator<TResult>>(
-					[=]()->bool{
-						if (state->enumerator->MoveNext()) {
+
+				return std::make_shared<Enumerator<TResult>>
+				(
+					[=]()
+					{
+						if (state->enumerator->MoveNext())
+						{
 							state->value = selector(state->enumerator->Current());
 							return true;
-						} else {
+						}
+						else
+						{
 							return false;
 						}
 					},
-					[=]()->TResult{
+					[=]()
+					{
 						return state->value;
-					});
-			});
+					}
+				);
+			}
+		);
 	}
 
 	template<typename TResult>
-	Enumerable<TResult> SelectIndexed(std::function<TResult(T, int)> selector) {
+	Enumerable<TResult> SelectIndexed(std::function<TResult(T, int)> selector)
+	{
 
-		struct State {
+		struct State
+		{
+			State() { }
 			std::shared_ptr<Enumerator<T>> enumerator;
 			TResult value;
 			int i;
@@ -299,35 +327,49 @@ public:
 			});
 	}
 
-	Enumerable<T> Where(std::function<bool(T)> predicate) {
-
-		struct State {
+	Enumerable<T> Where(std::function<bool(T)> predicate)
+	{
+		struct State
+		{
+			State() { }
 			std::shared_ptr<Enumerator<T>> enumerator;
 		};
 
 		auto _getEnumerator(getEnumerator);
-		return Enumerable<T>(
-			[=]()->std::shared_ptr<Enumerator<T>>{
+
+		return Enumerable<T>
+		(
+			[=]()
+			{
 				auto state = std::make_shared<State>();
 				state->enumerator = (*_getEnumerator)();
-				return std::make_shared<Enumerator<T>>(
-					[=]()->bool{
-						while (true) {
+
+				return std::make_shared<Enumerator<T>>
+				(
+					[=]()
+					{
+						while (true)
+						{
 							if (!state->enumerator->MoveNext())
 								return false;
 							if (predicate(state->enumerator->Current()))
 								return true;
 						}
 					},
-					[=]()->T{
+					[=]()
+					{
 						return state->enumerator->Current();
-					});
-			});
+					}
+				);
+			}
+		);
 	}
 
 	Enumerable<T> WhereIndexed(std::function<bool(T, int)> predicate) {
 
-		struct State {
+		struct State
+		{
+			State() { }
 			std::shared_ptr<Enumerator<T>> enumerator;
 			int i;
 		};
@@ -355,77 +397,133 @@ public:
 			});
 	}
 
-	Enumerable<T> Skip(int count) {
-		auto _getEnumerator(getEnumerator);
-		return Enumerable<T>(
-			[=]()->std::shared_ptr<Enumerator<T>>{
-				auto enumerator = (*_getEnumerator)();
-				auto n = std::make_shared<int>(0);
-				return std::make_shared<Enumerator<T>>(
-					[=]()->bool{
-						while (*n < count) {
-							++*n;
-							if (!enumerator->MoveNext())
-								return false;
-						}
-						return enumerator->MoveNext();
-					},
-					[=]()->T{
-						return enumerator->Current();
-					});
-			});
-	}
-
-	Enumerable<T> SkipWhile(std::function<bool(T)> predicate) {
-		auto _getEnumerator(getEnumerator);
-		return Enumerable<T>(
-			[=]()->std::shared_ptr<Enumerator<T>>{
-				auto enumerator = (*_getEnumerator)();
-				auto skipping = std::make_shared<bool>(true);
-				return std::make_shared<Enumerator<T>>(
-					[=]()->bool{
-						if (*skipping) {
-							while (true) {
-								if (!enumerator->MoveNext())
-									return false;
-								if (!predicate(enumerator->Current())) {
-									*skipping = false;
-									return true;
-								}
-							}
-						} else {
-							return enumerator->MoveNext();
-						}
-					},
-					[=]()->T{
-						return enumerator->Current();
-					});
-			});
-	}
-
-	Enumerable<T> Take(int count)
+	Enumerable<T> Skip(int count)
 	{
+		struct State
+		{
+			State() { }
+			std::shared_ptr<Enumerator<T>> enumerator;
+			int n;
+		};
+
 		auto _getEnumerator(getEnumerator);
+
 		return Enumerable<T>
 		(
 			[=]()
 			{
-				auto enumerator = (*_getEnumerator)();
-				auto n = std::make_shared<int>(0);
+				auto state = std::make_shared<State>();
+				state->enumerator = (*_getEnumerator)();
+				state->n = 0;
+
 				return std::make_shared<Enumerator<T>>
 				(
 					[=]()
 					{
-						if (*n < count)
+						while (state->n < count)
 						{
-							++*n;
-							return enumerator->MoveNext();
+							state->n++;
+							if (!state->enumerator->MoveNext())
+							{
+								return false;
+							}
+						}
+						return state->enumerator->MoveNext();
+					},
+					[=]()
+					{
+						return state->enumerator->Current();
+					}
+				);
+			}
+		);
+	}
+
+	Enumerable<T> SkipWhile(std::function<bool(T)> predicate)
+	{
+		struct State
+		{
+			State() { }
+			std::shared_ptr<Enumerator<T>> enumerator;
+			bool skipping;
+		};
+
+		auto _getEnumerator(getEnumerator);
+
+		return Enumerable<T>
+		(
+			[=]()
+			{
+				auto state = std::make_shared<State>();
+				state->enumerator = (*_getEnumerator)();
+				state->skipping = true;
+
+				return std::make_shared<Enumerator<T>>
+				(
+					[=]()
+					{
+						if (state->skipping)
+						{
+							while (true)
+							{
+								if (!state->enumerator->MoveNext())
+								{
+									return false;
+								}
+								if (!predicate(state->enumerator->Current()))
+								{
+									state->skipping = false;
+									return true;
+								}
+							}
+						}
+						else
+						{
+							return state->enumerator->MoveNext();
+						}
+					},
+					[=]()
+					{
+						return state->enumerator->Current();
+					}
+				);
+			}
+		);
+	}
+
+	Enumerable<T> Take(int count)
+	{
+		struct State
+		{
+			State() { }
+			std::shared_ptr<Enumerator<T>> enumerator;
+			int n;
+		};
+
+		auto _getEnumerator(getEnumerator);
+
+		return Enumerable<T>
+		(
+			[=]()
+			{
+				auto state = std::make_shared<State>();
+				state->enumerator = (*_getEnumerator)();
+				state->n = 0;
+
+				return std::make_shared<Enumerator<T>>
+				(
+					[=]()
+					{
+						if (state->n < count)
+						{
+							state->n++;
+							return state->enumerator->MoveNext();
 						}
 						return false;
 					},
 					[=]()
 					{
-						return enumerator->Current();
+						return state->enumerator->Current();
 					}
 				);
 			}
@@ -449,7 +547,9 @@ public:
 
 	Enumerable<T> Order(std::function<int (T, T)> comparer) {
 
-		struct State {
+		struct State
+		{
+			State() { }
 			PairingHeap<T> heap;
 			T value;
 		};
@@ -840,3 +940,5 @@ public:
 		return stream.str();
 	}
 };
+
+}
