@@ -25,6 +25,12 @@ public:
 	{
 		return [](T x){ return x + 1; };
 	}
+
+	template<typename T>
+	static std::function<T (T)> Identity()
+	{
+		return [](T x){ return x; }
+	}
 };
 
 }

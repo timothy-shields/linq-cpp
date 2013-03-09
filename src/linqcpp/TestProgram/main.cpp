@@ -4,6 +4,8 @@
 
 #include <random>
 #include <vector>
+#include <tuple>
+#include <functional>
 
 using namespace std;
 using namespace linq;
@@ -56,13 +58,14 @@ void run(int argc, char* argv[])
 	{
 		cout << "Test case 2:" << endl;
 
-		auto testing = Enumerable::Generate<int>(12, [](int x){ return x >= -3; }, [](int x){ return x - 1; })
+		auto testing = Enumerable::Generate(12, [](int x){ return x >= -3; }, [](int x){ return x - 1; })
 			.SelectMany<double>([](int x)
 			{
-				return Enumerable::Generate<double>(0, [](double y){ return y + 0.1; })
+				return Enumerable::Generate(0.0, [](double y){ return y + 0.1; })
 					.Take(11)
 					.Select<double>([=](double y) { return y + x; });
 			})
+			.Index()
 			.ToVector();
 
 		testing = testing;
