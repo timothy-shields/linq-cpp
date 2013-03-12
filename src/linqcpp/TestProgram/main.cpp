@@ -70,11 +70,15 @@ void run(int argc, char* argv[])
 
 		testing = testing;
 
+		auto testing2 = Enumerable::Generate(1, [](int x){ return (x + 7) % 5; }).Take(33).StaticCast<double>().ToVector();
+
+		testing2 = testing2;
+
 		auto groups = Enumerable::Range(1, 10)
 			.Select<pair<int, TEnumerable<int>>>([](int x){
 				return make_pair(
 					x,
-					Enumerable::From(6).ToInclusive(x));
+					Enumerable::Generate(6).ToInclusive(x));
 			});
 
 		auto abc = groups.ToVector();

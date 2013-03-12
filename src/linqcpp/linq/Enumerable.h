@@ -71,12 +71,14 @@ public:
 	{
 	}
 
-	TEnumerable<T> ToInclusive(T end) {
-		return TakeWhile([=](T item){ return item <= end; });
+	TEnumerable<T> ToInclusive(T end)
+	{
+		return TakeWhile(std::bind2nd(std::less_equal<T>(), end));
 	}
 
-	TEnumerable<T> ToExclusive(T end) {
-		return TakeWhile([=](T item){ return item < end; });
+	TEnumerable<T> ToExclusive(T end)
+	{
+		return TakeWhile(std::bind2nd(std::less<T>(), end));
 	}
 
 	//TSelector: T -> TResult
@@ -122,41 +124,47 @@ public:
 		);
 	}
 
-	TEnumerable<std::tuple<T, int>> Index()
+	TEnumerable<std::pair<T, int>> Index()
 	{
-		return Enumerable::Zip<std::tuple<T, int>>(*this, Enumerable::From(0), [](T x, int i){ return std::make_tuple(x, i); });
+		return Enumerable::Zip<std::pair<T, int>>(*this, Enumerable::Generate<int>(), std::make_pair<T, int>);
 	}
 
 	//TSelector: T, int -> TResult
 	template<typename TResult, typename TSelector>
 	TEnumerable<TResult> SelectIndexed(TSelector selector)
 	{
-		return Enumerable::Zip(*this, Enumerable::From(0), selector);
+		return Enumerable::Zip(*this, Enumerable::Generate<int>(), selector);
 	}
 
 	template<typename TResult>
 	TEnumerable<TResult> StaticCast()
 	{
-		return Select<TResult>([](T item)
-		{
-			return static_cast<TResult>(item);
-		});
+		return Select<TResult>
+		(
+			[](T x)
+			{
+				return static_cast<TResult>(x);
+			}
+		);
 	}
 
 	template<typename TResult>
 	TEnumerable<TResult> DynamicCast()
 	{
-		return Select<TResult>([](T item)
-		{
-			return dynamic_cast<TResult>(item);
-		});
+		return Select<TResult>
+		(
+			[](T x)
+			{
+				return dynamic_cast<TResult>(x);
+			}
+		);
 	}
 
 	//Assumption: T = TEnumerable<TResult>
 	template<typename TResult>
 	TEnumerable<TResult> SelectMany()
 	{
-		return SelectMany(Functional::Identity<T>());
+		return SelectMany(Functional::Identity<T>);
 	}
 
 	//TSelector: T -> TEnumerable<TResult>
@@ -453,7 +461,9 @@ public:
 			});
 	}
 
-	TEnumerable<T> Order(std::function<int (T, T)> comparer) {
+	//TComparer: T, T -> int
+	template<typename TComparer>
+	TEnumerable<T> Order(TComparer comparer) {
 
 		struct State
 		{
@@ -463,23 +473,37 @@ public:
 		};
 
 		auto _getEnumerator(getEnumerator);
-		return TEnumerable<T>(
-			[=]()->std::shared_ptr<TEnumerator<T>>{
+
+		return TEnumerable<T>
+		(
+			[=]()
+			{
 				auto enumerator = (*_getEnumerator)();
 				auto state = std::make_shared<State>();
+
 				while (enumerator->MoveNext())
+				{
 					state->heap.Insert(enumerator->Current());
-				return std::make_shared<TEnumerator<T>>(
-					[=]()->bool{
+				}
+
+				return std::make_shared<TEnumerator<T>>
+				(
+					[=]()
+					{
 						if (state->heap.IsEmpty())
+						{
 							return false;
+						}
 						state->value = state->heap.ExtractMin()->value;
 						return true;
 					},
-					[=]()->T{
+					[=]()
+					{
 						return state->value;
-					});
-			});
+					}
+				);
+			}
+		);
 	}
 
 	TEnumerable<T> Order()
@@ -488,18 +512,33 @@ public:
 	}
 
 	template<typename TKey>
-	TEnumerable<T> OrderByKey(std::function<TKey (T)> keySelector) {
+	TEnumerable<T> OrderBy(std::function<TKey (T)> keySelector)
+	{
 		return
-			Select<std::pair<TKey, T>>([=](T item){
-				return std::make_pair(keySelector(item), item);
-			})
-			.Order(
-				Comparer<std::pair<TKey, T>>::Default<TKey>([](std::pair<TKey, T> p){
-					return p.first;
-				}))
-			.Select<T>([](std::pair<TKey, T> pair){
-				return pair.second;
-			});
+			Select<std::pair<TKey, T>>
+			(
+				[=](T x)
+				{
+					return std::make_pair(keySelector(x), x);
+				}
+			)
+			.Order
+			(
+				Comparer<std::pair<TKey, T>>::Default<TKey>
+				(
+					[](std::pair<TKey, T> x)
+					{
+						return x.first;
+					}
+				)
+			)
+			.Select<T>
+			(
+				[](std::pair<TKey, T> x)
+				{
+					return x.second;
+				}
+			);
 	}
 
 	bool Any()
@@ -528,53 +567,77 @@ public:
 		return true;
 	}
 
-	T First() {
+	T First()
+	{
 		auto enumerator = GetEnumerator();
 		if (enumerator->MoveNext())
-			return enumerator->Current();
+		{
+			return enumerator->Current();}
 		else
+		{
 			throw runtime_error("TEnumerable<T>::First failed because the enumerable is empty.");
+		}
 	}
 
-	T First(std::function<bool(T)> predicate) {
+	//TPredicate: T -> bool
+	template<typename TPredicate>
+	T First(TPredicate predicate)
+	{
 		return Where(predicate).First();
 	}
 
-	T Last() {
+	T Last()
+	{
 		auto enumerator = GetEnumerator();
-		if (enumerator->MoveNext()) {
+		if (enumerator->MoveNext())
+		{
 			T item = enumerator->Current();
-			while (enumerator->MoveNext()) {
+			while (enumerator->MoveNext())
+			{
 				item = enumerator->Current();
 			}
 			return item;
 		}
 		else
-			throw runtime_error("TEnumerable<T>::First failed because the enumerable is empty.");
+		{
+			throw runtime_error("TEnumerable<T>::Last failed because the enumerable is empty.");
+		}
 	}
 
-	T Last(std::function<bool(T)> predicate) {
+	//TPredicate: T -> bool
+	template<typename TPredicate>
+	T Last(TPredicate predicate)
+	{
 		return Where(predicate).Last();
 	}
 
-	T Single() {
+	T Single()
+	{
 		auto enumerator = GetEnumerator();
-		if (enumerator->MoveNext()) {
+		if (enumerator->MoveNext())
+		{
 			T item = enumerator->Current();
 			if (enumerator->MoveNext())
+			{
 				throw runtime_error("TEnumerable<T>::Single failed because the enumerable contains more than one item.");
+			}
 			return item;
 		}
-		else {
+		else
+		{
 			throw runtime_error("TEnumerable<T>::Single failed because the enumerable is empty.");
 		}
 	}
 
-	T Single(std::function<bool(T)> predicate) {
+	//TPredicate: T -> bool
+	template<typename TPredicate>
+	T Single(TPredicate predicate)
+	{
 		return Where(predicate).Single();
 	}
 
-	int Count() {
+	int Count()
+	{
 		auto enumerator = GetEnumerator();
 		int count = 0;
 		while (enumerator->MoveNext())
@@ -582,12 +645,16 @@ public:
 		return count;
 	}
 
-	int Count(std::function<bool(T)> predicate) {
+	//TPredicate: T -> bool
+	template<typename TPredicate>
+	int Count(TPredicate predicate)
+	{
 		return Where(predicate).Count();
 	}
 
-	template<typename TAccumulate>
-	TAccumulate Aggregate(TAccumulate seed, std::function<TAccumulate (TAccumulate, T)> accumulator)
+	//TAccumulator: TAccumulate, T -> TAccumulate
+	template<typename TAccumulate, typename TAccumulator>
+	TAccumulate Aggregate(TAccumulate seed, TAccumulator accumulator)
 	{
 		auto enumerator = GetEnumerator();
 		TAccumulate agg = seed;
@@ -598,51 +665,79 @@ public:
 		return agg;
 	}
 
-	T Aggregate(std::function<T (T, T)> accumulator) {
+	//TAccumulator: T, T -> T
+	template<typename TAccumulator>
+	T Aggregate(TAccumulator accumulator)
+	{
 		auto enumerator = GetEnumerator();
 		if (!enumerator->MoveNext())
+		{
 			throw runtime_error("TEnumerable<T>::Aggregate failed because the enumerable is empty.");
+		}
 		T agg = enumerator->Current();
 		while (enumerator->MoveNext())
+		{
 			agg = accumulator(agg, enumerator->Current());
+		}
 		return agg;
 	}
 
-	T Sum() {
-		return Aggregate<T>(0, [](T a, T b){ return a + b; });
+	T Sum()
+	{
+		return Aggregate(static_cast<T>(0), std::plus<T>);
 	}
 
-	T Min() {
-		return Aggregate([](T a, T b){ return std::min(a, b); });
+	T Product()
+	{
+		return Aggregate(static_cast<T>(1), std::multiplies<T>);
 	}
 
-	T Max() {
-		return Aggregate([](T a, T b){ return std::max(a, b); });
+	T Min()
+	{
+		return Aggregate(std::min<T>);
 	}
 
-	double Average() {
+	T Max()
+	{
+		return Aggregate(std::max<T>);
+	}
+
+	double Average()
+	{
 		auto count = 0;
-		auto sum = Aggregate<double>(0,
-			[&](double a, T b)->double{
+		auto sum = Aggregate
+		(
+			0.0,
+			[&](double a, T b)
+			{
 				++count;
-				return a + b;
-			});
+				return a + static_cast<double>(b);
+			}
+		);
 		if (count == 0)
+		{
 			throw runtime_error("TEnumerable<T>::Average failed because the enumerable is empty.");
-		return sum / count;
+		}
+		return sum / static_cast<double>(count);
 	}
 
-	template<typename TScore>
-	T MinBy(std::function<TScore(T)> score) {
+	//TKeySelector: T -> TKey
+	template<typename TKeySelector>
+	T MinBy(TKeySelector keySelector)
+	{
 		auto enumerator = GetEnumerator();
 		if (!enumerator->MoveNext())
+		{
 			throw runtime_error("TEnumerable<T>::MinBy failed because the enumerable is empty.");
+		}
 		auto bestValue = enumerator->Current();
-		auto bestScore = score(enumerator->Current());
-		while (enumerator->MoveNext()) {
+		auto bestScore = keySelector(enumerator->Current());
+		while (enumerator->MoveNext())
+		{
 			auto currentValue = enumerator->Current();
-			auto currentScore = score(enumerator->Current());
-			if (currentScore < bestScore) {
+			auto currentScore = keySelector(enumerator->Current());
+			if (std::less(currentScore, bestScore))
+			{
 				bestValue = currentValue;
 				bestScore = currentScore;
 			}
@@ -650,17 +745,23 @@ public:
 		return bestValue;
 	}
 
-	template<typename TScore>
-	T MaxBy(std::function<TScore(T)> score) {
+	//TKeySelector: T -> TKey
+	template<typename TKeySelector>
+	T MaxBy(TKeySelector keySelector)
+	{
 		auto enumerator = GetEnumerator();
 		if (!enumerator->MoveNext())
+		{
 			throw runtime_error("TEnumerable<T>::MaxBy failed because the enumerable is empty.");
+		}
 		auto bestValue = enumerator->Current();
-		auto bestScore = score(enumerator->Current());
-		while (enumerator->MoveNext()) {
+		auto bestScore = keySelector(enumerator->Current());
+		while (enumerator->MoveNext())
+		{
 			auto currentValue = enumerator->Current();
-			auto currentScore = score(enumerator->Current());
-			if (currentScore > bestScore) {
+			auto currentScore = keySelector(enumerator->Current());
+			if (std::less(bestScore, currentScore))
+			{
 				bestValue = currentValue;
 				bestScore = currentScore;
 			}
@@ -668,22 +769,24 @@ public:
 		return bestValue;
 	}
 
-	T Indexmin() {
-		return Indexmin([](T item){ return item; });
-	}
-
-	template<typename TScore>
-	T Indexmin(std::function<TScore(T)> score) {
+	//TKeySelector: T -> TKey
+	template<typename TKeySelector>
+	int MinIndex(TKeySelector keySelector)
+	{
 		auto enumerator = GetEnumerator();
 		if (!enumerator->MoveNext())
-			throw runtime_error("TEnumerable<T>::Indexmin failed because the enumerable is empty.");
+		{
+			throw runtime_error("TEnumerable<T>::MinIndex failed because the enumerable is empty.");
+		}
 		auto bestIndex = 0;
-		auto bestScore = score(enumerator->Current());
+		auto bestScore = keySelector(enumerator->Current());
 		auto currentIndex = 0;
-		while (enumerator->MoveNext()) {
+		while (enumerator->MoveNext())
+		{
 			++currentIndex;
-			auto currentScore = score(enumerator->Current());
-			if (currentScore < bestScore) {
+			auto currentScore = keySelector(enumerator->Current());
+			if (std::less(currentScore, bestScore))
+			{
 				bestIndex = currentIndex;
 				bestScore = currentScore;
 			}
@@ -691,22 +794,29 @@ public:
 		return bestIndex;
 	}
 
-	T Indexmax() {
-		return Indexmax([](T item){ return item; });
+	int MinIndex()
+	{
+		return MinIndex(Functional::Identity<T>);
 	}
 
-	template<typename TScore>
-	T Indexmax(std::function<TScore(T)> score) {
+	//TKeySelector: T -> TKey
+	template<typename TKeySelector>
+	int MaxIndex(TKeySelector keySelector)
+	{
 		auto enumerator = GetEnumerator();
 		if (!enumerator->MoveNext())
-			throw runtime_error("TEnumerable<T>::Indexmax failed because the enumerable is empty.");
+		{
+			throw runtime_error("TEnumerable<T>::MaxIndex failed because the enumerable is empty.");
+		}
 		auto bestIndex = 0;
-		auto bestScore = score(enumerator->Current());
+		auto bestScore = keySelector(enumerator->Current());
 		auto currentIndex = 0;
-		while (enumerator->MoveNext()) {
+		while (enumerator->MoveNext())
+		{
 			++currentIndex;
-			auto currentScore = score(enumerator->Current());
-			if (currentScore > bestScore) {
+			auto currentScore = keySelector(enumerator->Current());
+			if (std::less(bestScore, currentScore))
+			{
 				bestIndex = currentIndex;
 				bestScore = currentScore;
 			}
@@ -714,61 +824,103 @@ public:
 		return bestIndex;
 	}
 
-	void ForEach(std::function<void(T)> action) {
+	int MaxIndex()
+	{
+		return MaxIndex(Functional::Identity<T>);
+	}
+
+	//TAction: T -> void
+	template<typename TAction>
+	void ForEach(TAction action)
+	{
 		auto enumerator = GetEnumerator();
 		while (enumerator->MoveNext())
+		{
 			action(enumerator->Current());
+		}
 	}
 
-	void ForEachIndexed(std::function<void(T, int)> action) {
+	//TAction: T, int -> void
+	template<typename TAction>
+	void ForEachIndexed(TAction action)
+	{
 		auto enumerator = GetEnumerator();
-		int i = 0;
-		while (enumerator->MoveNext()) {
+		auto i = 0;
+		while (enumerator->MoveNext())
+		{
 			action(enumerator->Current(), i);
 			++i;
 		}
 	}
 
-	std::vector<T> ToVector() {
+	std::vector<T> ToVector()
+	{
 		std::vector<T> _vector;
-		ForEach([&](T item){
-			_vector.push_back(item);
-		});
+		ForEach
+		(
+			[&](T x)
+			{
+				_vector.push_back(x);
+			}
+		);
 		return _vector;
 	}
 
-	std::set<T> ToSet() {
+	std::set<T> ToSet()
+	{
 		std::set<T> _set;
-		ForEach([&](T item){
-			_set.insert(item);
-		});
+		ForEach
+		(
+			[&](T x)
+			{
+				_set.insert(x);
+			}
+		);
 		return _set;
 	}
 
-	template<typename TKey, typename TValue>
-	std::map<TKey, TValue> ToMap() {
-		std::map<TKey, TValue> _map;
-		ForEach([&](pair<TKey, TValue> item){
-			_map.insert(item);
-		});
+	//TKeySelector: T -> TKey
+	//TValueSelector: T -> TValue
+	template<typename TKey, typename TValue, typename TKeySelector, typename TValueSelector>
+	std::map<TKey, TValue> ToMap(TKeySelector keySelector, TValueSelector valueSelector)
+	{
+		std::map<TKey, T> _map;
+		ForEach
+		(
+			[&](T x)
+			{
+				_map.insert(make_pair(keySelector(x), valueSelector(x)));
+			}
+		);
 		return _map;
 	}
 
-	template<typename TKey>
-	std::map<TKey, T> ToMap(std::function<TKey(T)> keySelector) {
+	template<typename TKey, typename TKeySelector>
+	std::map<TKey, T> ToMap(TKeySelector keySelector)
+	{
 		std::map<TKey, T> _map;
-		ForEach([&](T item){
-			_map.insert(make_pair(keySelector(item), item));
-		});
+		ForEach
+		(
+			[&](T x)
+			{
+				_map.insert(make_pair(keySelector(x), x));
+			}
+		);
 		return _map;
 	}
 
+	//Assumption: T = std::pair<TKey, TValue>
 	template<typename TKey, typename TValue>
-	std::map<TKey, TValue> ToMap(std::function<TKey(T)> keySelector, std::function<TValue(T)> valueSelector) {
+	std::map<TKey, TValue> ToMap()
+	{
 		std::map<TKey, T> _map;
-		ForEach([&](T item){
-			_map.insert(make_pair(keySelector(item), valueSelector(item)));
-		});
+		ForEach
+		(
+			[&](T x)
+			{
+				_map.insert(x);
+			}
+		);
 		return _map;
 	}
 
@@ -955,15 +1107,21 @@ public:
 	}
 
 	template<typename T>
-	static TEnumerable<T> Range(T start, T count)
+	static TEnumerable<T> Generate(T start)
 	{
-		return Generate<T>(start, [](T value){ return value + 1; }).Take(count);
+		return Generate<T>(start, Functional::Increment<T>);
 	}
 
 	template<typename T>
-	static TEnumerable<T> From(T start)
+	static TEnumerable<T> Generate()
 	{
-		return Generate<T>(start, [](T value){ return value + 1; });
+		return Generate<T>(static_cast<T>(0));
+	}
+
+	template<typename T>
+	static TEnumerable<T> Range(T start, T count)
+	{
+		return Generate(start).Take(count);
 	}
 
 	template<typename T>

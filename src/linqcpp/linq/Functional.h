@@ -15,21 +15,15 @@ class Functional
 {
 public:
 	template<typename T>
-	static std::function<T ()> Return(T x)
+	static T Increment(T x)
 	{
-		return [=](){ return x; };
+		return x + 1;
 	}
 
 	template<typename T>
-	static std::function<T (T)> Increment()
+	static T Identity(T x)
 	{
-		return [](T x){ return x + 1; };
-	}
-
-	template<typename T>
-	static std::function<T (T)> Identity()
-	{
-		return [](T x){ return x; }
+		return x;
 	}
 };
 

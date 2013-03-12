@@ -36,7 +36,7 @@ public:
 
 	private:
 		bool isActive;
-		std::shared_ptr<Node> left;
+		std::weak_ptr<Node> left;
 		std::shared_ptr<Node> right;
 		std::shared_ptr<Node> firstChild;
 		Node(T value)

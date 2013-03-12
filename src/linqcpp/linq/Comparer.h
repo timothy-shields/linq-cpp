@@ -17,11 +17,11 @@ public:
 	{
 		return [](T a, T b)
 		{
-			if (a < b)
+			if (std::less(a, b))
 			{
 				return -1;
 			}
-			else if (b < a)
+			else if (std::less(b, a))
 			{
 				return 1;
 			}
@@ -40,11 +40,11 @@ public:
 			auto aKey = keySelector(a);
 			auto bKey = keySelector(b);
 
-			if (aKey < bKey)
+			if (std::less(aKey, bKey))
 			{
 				return -1;
 			}
-			else if (bKey < aKey)
+			else if (std::less(bKey, aKey))
 			{
 				return 1;
 			}
@@ -69,6 +69,15 @@ public:
 				}
 			}
 			return 0;
+		};
+	}
+
+	template<typename T>
+	static std::function<int (T, T)> Reverse(std::function<int (T, T)> comparer)
+	{
+		return [=](T a, T b)
+		{
+			return comparer(b, a);
 		};
 	}
 };
