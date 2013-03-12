@@ -42,7 +42,7 @@ public:
 		Node(T value)
 			: value(value)
 			, isActive(false)
-			, left(nullptr)
+			, left(std::weak_ptr<Node>())
 			, right(nullptr)
 			, firstChild(nullptr)
 		{
@@ -63,9 +63,9 @@ public:
 	{
 	}
 
-	bool IsEmpty()
+	bool Empty()
 	{
-		return root == nullptr;
+		return !root;
 	}
 
 	int Count()
@@ -82,7 +82,7 @@ public:
 
 	void Insert(std::shared_ptr<Node> node)
 	{
-		if (node == nullptr)
+		if (!node)
 		{
 			return;
 		}
@@ -188,15 +188,15 @@ private:
 
 	std::shared_ptr<Node> Pair(std::shared_ptr<Node> n1, std::shared_ptr<Node> n2)
 	{
-		if (n1 == nullptr)
+		if (!n1)
 		{
 			return n2;
 		}
-		if (n2 == nullptr)
+		if (!n2)
 		{
 			return n1;
 		}
-		if (n1->left != nullptr || n2->left != nullptr)
+		if (!n1->left.expired() || !n2->left.expired())
 		{
 			throw std::runtime_error("Can only pair two root nodes.");
 		}
@@ -207,7 +207,7 @@ private:
 		auto c = n2->firstChild;
 		n1->left = n2;
 		n1->right = c;
-		if (c != nullptr)
+		if (c)
 		{
 			c->left = n1;
 		}
@@ -217,16 +217,17 @@ private:
 
 	static void SpliceOut(std::shared_ptr<Node> n)
 	{
-		if (n->left == nullptr)
+		auto n_left = n->left.lock();
+		if (!n_left)
 		{
 			return;
 		}
-		if (n->left->firstChild == n)
+		if (n_left->firstChild == n)
 		{
-			auto p = n->left;
-			if (n->right == nullptr)
+			auto p = n_left;
+			if (!n->right)
 			{
-				p->firstChild = nullptr;
+				p->firstChild.reset();
 			}
 			else
 			{
@@ -237,30 +238,30 @@ private:
 		}
 		else
 		{
-			auto l = n->left;
+			auto l = n_left;
 			auto r = n->right;
 			l->right = r;
-			if (r != nullptr)
+			if (r)
 			{
 				r->left = l;
 			}
 		}
-		n->left = nullptr;
-		n->right = nullptr;
+		n->left.reset();
+		n->right.reset();
 	}
 
 	std::shared_ptr<Node> RemoveRoot(std::shared_ptr<Node> n)
 	{
-		if (n->left != nullptr)
+		if (!n->left.expired())
 		{
 			throw std::runtime_error("RemoveRoot cannot be applied to non-root nodes.");
 		}
 		auto c1 = n->firstChild;
-		if (c1 == nullptr)
+		if (!c1)
 		{
 			return nullptr;
 		}
-		if (c1->right != nullptr)
+		if (c1->right)
 		{
 			auto c2 = c1->right;
 			SpliceOut(c1);
@@ -269,8 +270,8 @@ private:
 		}
 		else
 		{
-			c1->left = nullptr;
-			n->firstChild = nullptr;
+			c1->left.reset();
+			n->firstChild.reset();
 			return c1;
 		}
 	}
@@ -282,7 +283,7 @@ private:
 		(
 			TEnumerable<std::shared_ptr<Node>>::Return(subtreeRoot),
 
-			TEnumerable<std::shared_ptr<Node>>::Generate
+			TEnumerable<std::shared_ptr<Node>>::Sequence
 			(
 				subtreeRoot->firstChild,
 				[](std::shared_ptr<Node> child){ return child != nullptr; },
@@ -297,7 +298,7 @@ private:
 
 	static std::shared_ptr<Node> Clone(std::shared_ptr<Node> node)
 	{
-		if (node == nullptr)
+		if (!node)
 		{
 			return nullptr;
 		}

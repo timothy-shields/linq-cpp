@@ -9,6 +9,8 @@
 #include <map>
 #include <string>
 #include <tuple>
+#include <iostream>
+#include <sstream>
 
 #include "Comparer.h"
 #include "Functional.h"
@@ -126,14 +128,14 @@ public:
 
 	TEnumerable<std::pair<T, int>> Index()
 	{
-		return Enumerable::Zip<std::pair<T, int>>(*this, Enumerable::Generate<int>(), std::make_pair<T, int>);
+		return Enumerable::Zip<std::pair<T, int>>(*this, Enumerable::Sequence<int>(), std::make_pair<T, int>);
 	}
 
 	//TSelector: T, int -> TResult
 	template<typename TResult, typename TSelector>
 	TEnumerable<TResult> SelectIndexed(TSelector selector)
 	{
-		return Enumerable::Zip(*this, Enumerable::Generate<int>(), selector);
+		return Enumerable::Zip(*this, Enumerable::Sequence<int>(), selector);
 	}
 
 	template<typename TResult>
@@ -463,8 +465,8 @@ public:
 
 	//TComparer: T, T -> int
 	template<typename TComparer>
-	TEnumerable<T> Order(TComparer comparer) {
-
+	TEnumerable<T> Order(TComparer comparer)
+	{
 		struct State
 		{
 			State() { }
@@ -490,7 +492,7 @@ public:
 				(
 					[=]()
 					{
-						if (state->heap.IsEmpty())
+						if (state->heap.Empty())
 						{
 							return false;
 						}
@@ -511,8 +513,8 @@ public:
 		return Order(Comparer::Default<T>());
 	}
 
-	template<typename TKey>
-	TEnumerable<T> OrderBy(std::function<TKey (T)> keySelector)
+	template<typename TKey, typename TKeySelector>
+	TEnumerable<T> OrderBy(TKeySelector keySelector)
 	{
 		return
 			Select<std::pair<TKey, T>>
@@ -524,7 +526,7 @@ public:
 			)
 			.Order
 			(
-				Comparer<std::pair<TKey, T>>::Default<TKey>
+				Comparer::Default<std::pair<TKey, T>, TKey>
 				(
 					[](std::pair<TKey, T> x)
 					{
@@ -736,7 +738,7 @@ public:
 		{
 			auto currentValue = enumerator->Current();
 			auto currentScore = keySelector(enumerator->Current());
-			if (std::less(currentScore, bestScore))
+			if (currentScore < bestScore)
 			{
 				bestValue = currentValue;
 				bestScore = currentScore;
@@ -760,7 +762,7 @@ public:
 		{
 			auto currentValue = enumerator->Current();
 			auto currentScore = keySelector(enumerator->Current());
-			if (std::less(bestScore, currentScore))
+			if (bestScore < currentScore)
 			{
 				bestValue = currentValue;
 				bestScore = currentScore;
@@ -785,7 +787,7 @@ public:
 		{
 			++currentIndex;
 			auto currentScore = keySelector(enumerator->Current());
-			if (std::less(currentScore, bestScore))
+			if (currentScore < bestScore)
 			{
 				bestIndex = currentIndex;
 				bestScore = currentScore;
@@ -815,7 +817,7 @@ public:
 		{
 			++currentIndex;
 			auto currentScore = keySelector(enumerator->Current());
-			if (std::less(bestScore, currentScore))
+			if (bestScore < currentScore)
 			{
 				bestIndex = currentIndex;
 				bestScore = currentScore;
@@ -853,9 +855,8 @@ public:
 		}
 	}
 
-	std::vector<T> ToVector()
+	void IntoVector(std::vector<T>& _vector)
 	{
-		std::vector<T> _vector;
 		ForEach
 		(
 			[&](T x)
@@ -863,12 +864,17 @@ public:
 				_vector.push_back(x);
 			}
 		);
+	}
+
+	std::vector<T> ToVector()
+	{
+		std::vector<T> _vector;
+		IntoVector(_vector);
 		return _vector;
 	}
 
-	std::set<T> ToSet()
+	void IntoSet(std::set<T>& _set)
 	{
-		std::set<T> _set;
 		ForEach
 		(
 			[&](T x)
@@ -876,37 +882,54 @@ public:
 				_set.insert(x);
 			}
 		);
+	}
+
+	std::set<T> ToSet()
+	{
+		std::set<T> _set;
+		IntoSet(_set);
 		return _set;
 	}
 
 	//TKeySelector: T -> TKey
 	//TValueSelector: T -> TValue
 	template<typename TKey, typename TValue, typename TKeySelector, typename TValueSelector>
-	std::map<TKey, TValue> ToMap(TKeySelector keySelector, TValueSelector valueSelector)
+	void IntoMap(std::map<TKey, TValue>& _map, const TKeySelector& keySelector, const TValueSelector& valueSelector)
+	{
+		ForEach([&](T x){ _map.insert(make_pair(keySelector(x), valueSelector(x))); });
+	}
+
+	//TKeySelector: T -> TKey
+	//TValueSelector: T -> TValue
+	template<typename TKey, typename TValue, typename TKeySelector, typename TValueSelector>
+	std::map<TKey, TValue> ToMap(const TKeySelector& keySelector, const TValueSelector& valueSelector)
 	{
 		std::map<TKey, T> _map;
-		ForEach
-		(
-			[&](T x)
-			{
-				_map.insert(make_pair(keySelector(x), valueSelector(x)));
-			}
-		);
+		IntoMap(_map, keySelector, valueSelector);
 		return _map;
 	}
 
+	//TKeySelector: T -> TKey
 	template<typename TKey, typename TKeySelector>
-	std::map<TKey, T> ToMap(TKeySelector keySelector)
+	void IntoMap(std::map<TKey, T> _map, const TKeySelector& keySelector)
+	{
+		ForEach([&](T x){ _map.insert(make_pair(keySelector(x), x)); });
+	}
+
+	//TKeySelector: T -> TKey
+	template<typename TKey, typename TKeySelector>
+	std::map<TKey, T> ToMap(const TKeySelector& keySelector)
 	{
 		std::map<TKey, T> _map;
-		ForEach
-		(
-			[&](T x)
-			{
-				_map.insert(make_pair(keySelector(x), x));
-			}
-		);
+		IntoMap(_map, keySelector);
 		return _map;
+	}
+
+	//Assumption: T = std::pair<TKey, TValue>
+	template<typename TKey, typename TValue>
+	void IntoMap(std::map<TKey, TValue>& _map)
+	{
+		ForEach([&](T x){ _map.insert(x); });
 	}
 
 	//Assumption: T = std::pair<TKey, TValue>
@@ -914,39 +937,41 @@ public:
 	std::map<TKey, TValue> ToMap()
 	{
 		std::map<TKey, T> _map;
-		ForEach
-		(
-			[&](T x)
-			{
-				_map.insert(x);
-			}
-		);
+		IntoMap(_map);
 		return _map;
 	}
 
-	std::string ToString() {
-		return ToString(", ");
-	}
-
-	std::string ToString(std::string separator) {
-		return ToString(separator,
-			[](T item, std::stringstream& stream){
-				stream << item;
-			});
-	}
-
-	std::string ToString(std::string separator, std::function<void (T, std::stringstream&)> write) {
+	std::string ToString(std::string separator, std::function<void (std::stringstream&, T)> write)
+	{
 		std::stringstream stream;
 		bool first = true;
-		ForEach([&](T item){
-			if (first)
-				first = false;
-			else
-				stream << separator;
-			write(item, stream);
-		});
+		ForEach
+		(
+			[&](T item)
+			{
+				if (first)
+				{
+					first = false;
+				}
+				else
+				{
+					stream << separator;
+				}
+				write(stream, item);
+			}
+		);
 		return stream.str();
 	}
+
+	std::string ToString(std::string separator)
+	{
+		return ToString(separator, [](std::stringstream& stream, T item){ stream << item; });
+	}
+
+	std::string ToString()
+	{
+		return ToString(", ");
+	}	
 };
 
 class Enumerable
@@ -958,7 +983,7 @@ public:
 	template<typename T, typename TRange>
 	static TEnumerable<T> FromRange(TRange& range)
 	{
-		return FromRange(range.begin(), range.end());
+		return FromRange<T>(range.begin(), range.end());
 	}
 
 	template<typename T, typename TIter>
@@ -992,6 +1017,42 @@ public:
 					[=]()
 					{
 						return *(state->iter);
+					}
+				);
+			}
+		);
+	}
+
+	//Factory function creates an enumerable that will only ever be enumerated once
+	//TFactory: void -> TEnumerable<T>
+	template<typename T, typename TFactory>
+	static TEnumerable<T> Factory(const TFactory& factory)
+	{
+		return TEnumerable<T>
+		(
+			[=]()
+			{
+				return (*factory().getEnumerator)();
+			}
+		);
+	}
+
+	template<typename T>
+	static TEnumerable<T> Repeat(T x)
+	{
+		return TEnumerable<T>
+		(
+			[]()
+			{
+				return std::make_shared<TEnumerator<T>>
+				(
+					[]()
+					{
+						return true;
+					},
+					[]()
+					{
+						return x;
 					}
 				);
 			}
@@ -1058,9 +1119,43 @@ public:
 			}
 		);
 	}
+	
+	//TFactory: void -> T
+	template<typename T, typename TFactory>
+	static TEnumerable<T> Generate(TFactory factory)
+	{
+		struct State
+		{
+			State() { }
+			T value;
+		};
 
+		return TEnumerable<T>
+		(
+			[=]()
+			{
+				auto state = std::make_shared<State>();
+
+				return std::make_shared<TEnumerator<T>>
+				(
+					[=]()
+					{
+						state->value = factory();
+						return true;
+					},
+					[=]()
+					{
+						return state->value;
+					}
+				);
+			}
+		);
+	}
+
+	//TPredicate: T -> bool
+	//TNext: T -> T
 	template<typename T, typename TPredicate, typename TNext>
-	static TEnumerable<T> Generate(T start, TPredicate predicate, TNext next)
+	static TEnumerable<T> Sequence(T start, TPredicate predicate, TNext next)
 	{
 		struct State
 		{
@@ -1100,28 +1195,29 @@ public:
 		);
 	}
 
+	//TNext: T -> T
 	template<typename T, typename TNext>
-	static TEnumerable<T> Generate(T start, TNext next)
+	static TEnumerable<T> Sequence(T start, TNext next)
 	{
-		return Generate(start, [](T _){ return true; }, next);
+		return Sequence(start, [](T _){ return true; }, next);
 	}
 
 	template<typename T>
-	static TEnumerable<T> Generate(T start)
+	static TEnumerable<T> Sequence(T start)
 	{
-		return Generate<T>(start, Functional::Increment<T>);
+		return Sequence<T>(start, Functional::Increment<T>);
 	}
 
 	template<typename T>
-	static TEnumerable<T> Generate()
+	static TEnumerable<T> Sequence()
 	{
-		return Generate<T>(static_cast<T>(0));
+		return Sequence<T>(static_cast<T>(0));
 	}
 
 	template<typename T>
 	static TEnumerable<T> Range(T start, T count)
 	{
-		return Generate(start).Take(count);
+		return Sequence(start).Take(count);
 	}
 
 	template<typename T>
@@ -1180,6 +1276,7 @@ public:
 		);
 	}
 
+	//TSelector: T1, T2 -> TResult
 	template<typename TResult, typename T1, typename T2, typename TSelector>
 	static TEnumerable<TResult> Zip(TEnumerable<T1> first, TEnumerable<T2> second, TSelector selector)
 	{

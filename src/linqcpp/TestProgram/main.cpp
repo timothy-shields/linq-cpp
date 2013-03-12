@@ -1,17 +1,83 @@
 #include <linqcpp/Utils/ProgramUtils.h>
 #include <linqcpp/linq/Enumerable.h>
-#include <iostream>
 
+#include <string>
 #include <random>
 #include <vector>
 #include <tuple>
 #include <functional>
+#include <time.h>
+#include <algorithm>
+#include <iostream>
+#include <fstream>
 
 using namespace std;
 using namespace linq;
 
+void TimeIt(string text, int repeatCount, std::function<void ()> f)
+{
+	auto start = clock();
+	for (int i = 0; i < repeatCount; i++)
+		f();
+	auto stop = clock();
+	auto ms = 1000.0 * static_cast<double>(stop - start) / static_cast<double>(CLOCKS_PER_SEC * repeatCount);
+	cout << text << " " << ms << endl;
+}
+
+TEnumerable<string> FileLines(string path)
+{
+	return Enumerable::Factory<string>([=]()
+	{
+		auto stream = make_shared<ifstream>(path);
+
+		return Enumerable::Generate<string>([=]()
+			{
+				string line;
+				std::getline(*stream, line);
+				return line;
+			})
+			.TakeWhile([=](string line){ return !stream->eof(); });
+	});
+}
+
 void run(int argc, char* argv[])
 {
+	auto lines = FileLines("C:\\Users\\Timothy\\Documents\\GitHub\\linq-cpp\\src\\CMakeLists.txt");
+
+	lines.OrderBy<int>([](string line){ return -static_cast<int>(line.length()); })
+		.Take(10)
+		.ForEach([](string line){ cout << line << endl; });
+
+	//auto v = Enumerable::Sequence(0).Take(100).ToVector();
+	////cout << Enumerable::FromRange<int>(v).ToString() << endl;
+
+	//cout << "Select, ToVector" << endl;
+	//TimeIt("linq:", 100, [=](){
+	//	vector<int> v2(10);
+	//	Enumerable::FromRange<int>(v)
+	//		.Select<int>([](int x){ return x % 5; })
+	//		.Where([](int x){ return x % 2 != 0; })
+	//		.Order()
+	//		.Take(10)
+	//		.IntoVector(v2);
+	//});
+
+	//TimeIt("std:", 100, [=](){
+	//	vector<int> v2(v.size());
+	//	for (auto it = v.begin(); it != v.end(); ++it)
+	//		if (*it % 2 != 0)
+	//			v2.push_back((*it) % 5);
+	//	sort(v2.begin(), v2.end());
+	//	vector<int> v3(v2.begin(), v2.begin() + 10);
+	//});
+
+	string junk;
+	getline(cin, junk);
+}
+
+void abc(){
+
+
 	//{
 	//	PairingHeap<char> heap;
 	//	TEnumerable<char>::Range('A', 26)
@@ -58,10 +124,10 @@ void run(int argc, char* argv[])
 	{
 		cout << "Test case 2:" << endl;
 
-		auto testing = Enumerable::Generate(12, [](int x){ return x >= -3; }, [](int x){ return x - 1; })
+		auto testing = Enumerable::Sequence(12, [](int x){ return x >= -3; }, [](int x){ return x - 1; })
 			.SelectMany<double>([](int x)
 			{
-				return Enumerable::Generate(0.0, [](double y){ return y + 0.1; })
+				return Enumerable::Sequence(0.0, [](double y){ return y + 0.1; })
 					.Take(11)
 					.Select<double>([=](double y) { return y + x; });
 			})
@@ -70,7 +136,7 @@ void run(int argc, char* argv[])
 
 		testing = testing;
 
-		auto testing2 = Enumerable::Generate(1, [](int x){ return (x + 7) % 5; }).Take(33).StaticCast<double>().ToVector();
+		auto testing2 = Enumerable::Sequence(1, [](int x){ return (x + 7) % 5; }).Take(33).StaticCast<double>().ToVector();
 
 		testing2 = testing2;
 
@@ -78,7 +144,7 @@ void run(int argc, char* argv[])
 			.Select<pair<int, TEnumerable<int>>>([](int x){
 				return make_pair(
 					x,
-					Enumerable::Generate(6).ToInclusive(x));
+					Enumerable::Sequence(6).ToInclusive(x));
 			});
 
 		auto abc = groups.ToVector();

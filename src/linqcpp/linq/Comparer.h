@@ -17,11 +17,11 @@ public:
 	{
 		return [](T a, T b)
 		{
-			if (std::less(a, b))
+			if (a < b)
 			{
 				return -1;
 			}
-			else if (std::less(b, a))
+			else if (b < a)
 			{
 				return 1;
 			}
@@ -40,11 +40,11 @@ public:
 			auto aKey = keySelector(a);
 			auto bKey = keySelector(b);
 
-			if (std::less(aKey, bKey))
+			if (aKey < bKey)
 			{
 				return -1;
 			}
-			else if (std::less(bKey, aKey))
+			else if (bKey < aKey)
 			{
 				return 1;
 			}
