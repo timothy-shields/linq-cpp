@@ -90,23 +90,24 @@ public:
 	template<typename TSelector>
 	auto Select(TSelector selector) -> TEnumerable<decltype(selector(GetType<T>()))>
 	{
+		typedef decltype(selector(GetType<T>())) TResult;
 		struct State
 		{
 			State() { }
 			std::shared_ptr<TEnumerator<T>> enumerator;
-			decltype(selector(GetType<T>())) value;
+			TResult value;
 		};
 
 		auto _getEnumerator(getEnumerator);
 
-		return TEnumerable<decltype(selector(GetType<T>()))>
+		return TEnumerable<TResult>
 		(
 			[=]()
 			{
 				auto state = std::make_shared<State>();
 				state->enumerator = (*_getEnumerator)();
 
-				return std::make_shared<TEnumerator<decltype(selector(GetType<T>()))>>
+				return std::make_shared<TEnumerator<TResult>>
 				(
 					[=]()
 					{
@@ -516,9 +517,10 @@ public:
 		return Order(Comparer::Default<T>());
 	}
 
-	template<typename TKey, typename TKeySelector>
+	template<typename TKeySelector>
 	TEnumerable<T> OrderBy(TKeySelector keySelector)
 	{
+		typedef decltype(keySelector(GetType<T>())) TKey;
 		return
 			Select
 			(
@@ -1124,9 +1126,11 @@ public:
 	}
 	
 	//TFactory: void -> T
-	template<typename T, typename TFactory>
-	static TEnumerable<T> Generate(TFactory factory)
+	template<typename TFactory>
+	static auto Generate(TFactory factory) -> TEnumerable<decltype(factory())>
 	{
+		typedef decltype(factory()) T;
+
 		struct State
 		{
 			State() { }

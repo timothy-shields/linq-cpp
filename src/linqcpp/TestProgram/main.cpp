@@ -30,7 +30,7 @@ TEnumerable<string> FileLines(string path)
 	{
 		auto stream = make_shared<ifstream>(path);
 
-		return Enumerable::Generate<string>([=]()
+		return Enumerable::Generate([=]()
 			{
 				string line;
 				std::getline(*stream, line);
@@ -44,7 +44,7 @@ void run(int argc, char* argv[])
 {
 	auto lines = FileLines("C:\\Users\\Timothy\\Documents\\GitHub\\linq-cpp\\src\\CMakeLists.txt");
 
-	lines.OrderBy<int>([](string line){ return -static_cast<int>(line.length()); })
+	lines.OrderBy([](string line){ return -static_cast<int>(line.length()); })
 		.Take(10)
 		.ForEach([](string line){ cout << line << endl; });
 
