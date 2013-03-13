@@ -132,7 +132,7 @@ public:
 
 	TEnumerable<std::pair<T, int>> Index()
 	{
-		return Enumerable::Zip<std::pair<T, int>>(*this, Enumerable::Sequence<int>(), std::make_pair<T, int>);
+		return Enumerable::Zip(*this, Enumerable::Sequence<int>(), std::make_pair<T, int>);
 	}
 
 	//TSelector: T, int -> TResult
@@ -1284,9 +1284,10 @@ public:
 	}
 
 	//TSelector: T1, T2 -> TResult
-	template<typename TResult, typename T1, typename T2, typename TSelector>
-	static TEnumerable<TResult> Zip(TEnumerable<T1> first, TEnumerable<T2> second, TSelector selector)
+	template<typename T1, typename T2, typename TSelector>
+	static auto Zip(TEnumerable<T1> first, TEnumerable<T2> second, TSelector selector) -> TEnumerable<decltype(selector(GetType<T1>(), GetType<T2>()))>
 	{
+		typedef decltype(selector(GetType<T1>(), GetType<T2>())) TResult;
 		struct State
 		{
 			State() { }
