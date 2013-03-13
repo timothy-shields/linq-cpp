@@ -52,6 +52,9 @@ public:
 class Enumerable;
 
 template<typename T>
+T GetType();
+
+template<typename T>
 class TEnumerable
 {
 	friend Enumerable;
@@ -84,26 +87,26 @@ public:
 	}
 
 	//TSelector: T -> TResult
-	template<typename TResult, typename TSelector>
-	TEnumerable<TResult> Select(TSelector selector)
+	template<typename TSelector>
+	auto Select(TSelector selector) -> TEnumerable<decltype(selector(GetType<T>()))>
 	{
 		struct State
 		{
 			State() { }
 			std::shared_ptr<TEnumerator<T>> enumerator;
-			TResult value;
+			decltype(selector(GetType<T>())) value;
 		};
 
 		auto _getEnumerator(getEnumerator);
 
-		return TEnumerable<TResult>
+		return TEnumerable<decltype(selector(GetType<T>()))>
 		(
 			[=]()
 			{
 				auto state = std::make_shared<State>();
 				state->enumerator = (*_getEnumerator)();
 
-				return std::make_shared<TEnumerator<TResult>>
+				return std::make_shared<TEnumerator<decltype(selector(GetType<T>()))>>
 				(
 					[=]()
 					{
@@ -132,8 +135,8 @@ public:
 	}
 
 	//TSelector: T, int -> TResult
-	template<typename TResult, typename TSelector>
-	TEnumerable<TResult> SelectIndexed(TSelector selector)
+	template<typename TSelector>
+	auto SelectIndexed(TSelector selector) -> TEnumerable<decltype(selector(GetType<T>()))>
 	{
 		return Enumerable::Zip(*this, Enumerable::Sequence<int>(), selector);
 	}
@@ -141,7 +144,7 @@ public:
 	template<typename TResult>
 	TEnumerable<TResult> StaticCast()
 	{
-		return Select<TResult>
+		return Select
 		(
 			[](T x)
 			{
@@ -153,7 +156,7 @@ public:
 	template<typename TResult>
 	TEnumerable<TResult> DynamicCast()
 	{
-		return Select<TResult>
+		return Select
 		(
 			[](T x)
 			{
@@ -517,7 +520,7 @@ public:
 	TEnumerable<T> OrderBy(TKeySelector keySelector)
 	{
 		return
-			Select<std::pair<TKey, T>>
+			Select
 			(
 				[=](T x)
 				{
@@ -534,7 +537,7 @@ public:
 					}
 				)
 			)
-			.Select<T>
+			.Select
 			(
 				[](std::pair<TKey, T> x)
 				{

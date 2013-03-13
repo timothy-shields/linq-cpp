@@ -129,7 +129,7 @@ void abc(){
 			{
 				return Enumerable::Sequence(0.0, [](double y){ return y + 0.1; })
 					.Take(11)
-					.Select<double>([=](double y) { return y + x; });
+					.Select([=](double y) { return y + x; });
 			})
 			.Index()
 			.ToVector();
@@ -141,7 +141,7 @@ void abc(){
 		testing2 = testing2;
 
 		auto groups = Enumerable::Range(1, 10)
-			.Select<pair<int, TEnumerable<int>>>([](int x){
+			.Select([](int x){
 				return make_pair(
 					x,
 					Enumerable::Sequence(6).ToInclusive(x));
@@ -167,7 +167,7 @@ void abc(){
 				return group.second;
 			})
 			.StaticCast<double>()
-			.Select<double>([](double x){ return x + 0.5; });
+			.Select([](double x){ return x + 0.5; });
 
 		//cout << numbers.ToString(",") << endl;
 		cout << "Min: " << numbers.Min() << endl;
