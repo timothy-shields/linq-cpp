@@ -985,15 +985,17 @@ private:
 	Enumerable() { }
 
 public:
-	template<typename T, typename TRange>
-	static TEnumerable<T> FromRange(TRange& range)
+	template<typename TRange>
+	static auto FromRange(TRange& range) -> TEnumerable<typename TRange::value_type>
 	{
-		return FromRange<T>(range.begin(), range.end());
+		return FromRange(range.begin(), range.end());
 	}
 
-	template<typename T, typename TIter>
-	static TEnumerable<T> FromRange(TIter begin, TIter end)
+	template<typename TIter>
+	static auto FromRange(TIter begin, TIter end) -> TEnumerable<typename TIter::value_type>
 	{
+		typedef TIter::value_type T;
+
 		struct State
 		{
 			State() { }

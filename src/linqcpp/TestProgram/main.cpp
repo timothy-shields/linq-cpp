@@ -48,8 +48,8 @@ void run(int argc, char* argv[])
 		.Take(10)
 		.ForEach([](string line){ cout << line << endl; });
 
-	//auto v = Enumerable::Sequence(0).Take(100).ToVector();
-	////cout << Enumerable::FromRange<int>(v).ToString() << endl;
+	auto v = Enumerable::Sequence(0).Take(100).ToVector();
+	cout << Enumerable::FromRange(v).ToString() << endl;
 
 	//cout << "Select, ToVector" << endl;
 	//TimeIt("linq:", 100, [=](){
