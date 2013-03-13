@@ -52,9 +52,6 @@ public:
 class Enumerable;
 
 template<typename T>
-T GetType();
-
-template<typename T>
 class TEnumerable
 {
 	friend Enumerable;
@@ -88,9 +85,9 @@ public:
 
 	//TSelector: T -> TResult
 	template<typename TSelector>
-	auto Select(TSelector selector) -> TEnumerable<decltype(selector(GetType<T>()))>
+	auto Select(TSelector selector) -> TEnumerable<decltype(selector(std::declval<T>()))>
 	{
-		typedef decltype(selector(GetType<T>())) TResult;
+		typedef decltype(selector(std::declval<T>())) TResult;
 		struct State
 		{
 			State() { }
@@ -137,7 +134,7 @@ public:
 
 	//TSelector: T, int -> TResult
 	template<typename TSelector>
-	auto SelectIndexed(TSelector selector) -> TEnumerable<decltype(selector(GetType<T>()))>
+	auto SelectIndexed(TSelector selector) -> TEnumerable<decltype(selector(std::declval<T>()))>
 	{
 		return Enumerable::Zip(*this, Enumerable::Sequence<int>(), selector);
 	}
@@ -520,7 +517,7 @@ public:
 	template<typename TKeySelector>
 	TEnumerable<T> OrderBy(TKeySelector keySelector)
 	{
-		typedef decltype(keySelector(GetType<T>())) TKey;
+		typedef decltype(keySelector(std::declval<T>())) TKey;
 		return
 			Select
 			(
@@ -1287,9 +1284,9 @@ public:
 
 	//TSelector: T1, T2 -> TResult
 	template<typename T1, typename T2, typename TSelector>
-	static auto Zip(TEnumerable<T1> first, TEnumerable<T2> second, TSelector selector) -> TEnumerable<decltype(selector(GetType<T1>(), GetType<T2>()))>
+	static auto Zip(TEnumerable<T1> first, TEnumerable<T2> second, TSelector selector) -> TEnumerable<decltype(selector(std::declval<T1>(), std::declval<T2>()))>
 	{
-		typedef decltype(selector(GetType<T1>(), GetType<T2>())) TResult;
+		typedef decltype(selector(std::declval<T1>(), std::declval<T2>())) TResult;
 		struct State
 		{
 			State() { }
