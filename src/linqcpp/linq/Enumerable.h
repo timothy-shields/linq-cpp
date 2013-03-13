@@ -54,11 +54,13 @@ class Enumerable;
 template<typename T>
 class TEnumerable
 {
-	friend Enumerable;
 private:
+	friend Enumerable;
 	std::shared_ptr<const std::function<std::shared_ptr<TEnumerator<T>>()>> getEnumerator;
 
 public:
+	typedef T value_type;
+
 	std::shared_ptr<TEnumerator<T>> GetEnumerator()
 	{
 		return (*getEnumerator)();
@@ -163,17 +165,19 @@ public:
 		);
 	}
 
-	//Assumption: T = TEnumerable<TResult>
-	template<typename TResult>
-	TEnumerable<TResult> SelectMany()
+	//Assumption: T = TEnumerable<*>
+	T SelectMany()
 	{
 		return SelectMany(Functional::Identity<T>);
 	}
 
 	//TSelector: T -> TEnumerable<TResult>
-	template<typename TResult, typename TSelector>
-	TEnumerable<TResult> SelectMany(TSelector selector)
+	template<typename TSelector>
+	auto SelectMany(TSelector selector) -> decltype(selector(std::declval<T>()))
 	{
+		typedef decltype(selector(std::declval<T>())) TResultEnumerable;
+		typedef typename TResultEnumerable::value_type TResult;
+
 		struct State
 		{
 			std::shared_ptr<TEnumerator<T>> outerEnumerator;

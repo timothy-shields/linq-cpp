@@ -125,7 +125,7 @@ void abc(){
 		cout << "Test case 2:" << endl;
 
 		auto testing = Enumerable::Sequence(12, [](int x){ return x >= -3; }, [](int x){ return x - 1; })
-			.SelectMany<double>([](int x)
+			.SelectMany([](int x)
 			{
 				return Enumerable::Sequence(0.0, [](double y){ return y + 0.1; })
 					.Take(11)
@@ -163,7 +163,7 @@ void abc(){
 			});
 
 		auto numbers = groups
-			.SelectMany<int>([](pair<int, TEnumerable<int>> group){
+			.SelectMany([](pair<int, TEnumerable<int>> group){
 				return group.second;
 			})
 			.StaticCast<double>()
