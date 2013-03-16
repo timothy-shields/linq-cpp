@@ -21,6 +21,8 @@ namespace linq {
 template<typename T>
 class PairingHeap;
 
+class Enumerator;
+
 template<typename T>
 class TEnumerator
 {
@@ -46,6 +48,282 @@ public:
 	T Current()
 	{
 		return current();
+	}
+};
+
+class Enumerator
+{
+private:
+	Enumerator() { }
+
+public:
+	template<typename TRange>
+	static auto FromRange(TRange& range) -> std::shared_ptr<TEnumerator<typename TRange::value_type>>
+	{
+		return FromRange(range.begin(), range.end());
+	}
+
+	template<typename TIter>
+	static auto FromRange(TIter begin, TIter end) -> std::shared_ptr<TEnumerator<typename TIter::value_type>>
+	{
+		typedef TIter::value_type T;
+
+		struct State
+		{
+			State() { }
+			TIter iter;
+			bool first;
+		};
+
+		auto state = std::make_shared<State>();
+		state->iter = begin;
+		state->first = true;
+		return std::make_shared<TEnumerator<T>>
+		(
+			[=]()
+			{
+				if (!(state->first))
+				{
+					state->iter++;
+				}
+				state->first = false;
+				return state->iter != end;
+			},
+			[=]()
+			{
+				return *(state->iter);
+			}
+		);
+	}
+
+	template<typename T>
+	static std::shared_ptr<TEnumerator<T>> Repeat(T x)
+	{
+		return std::make_shared<TEnumerator<T>>
+		(
+			[]()
+			{
+				return true;
+			},
+			[]()
+			{
+				return x;
+			}
+		);
+	}
+
+	template<typename T>
+	static std::shared_ptr<TEnumerator<T>> Empty()
+	{
+		return std::make_shared<TEnumerator<T>>
+		(
+			[]()
+			{
+				return false;
+			},
+			[]()
+			{
+				throw std::runtime_error("Current called after end of TEnumerator<T>.");
+			}
+		);
+	}
+
+	template<typename T>
+	static std::shared_ptr<TEnumerator<T>> Return(T item)
+	{
+		struct State
+		{
+			State() { }
+			bool first;
+		};
+
+		return std::make_shared<TEnumerator<T>>
+		(
+			[=]()
+			{
+				if (state->first)
+				{
+					state->first = false;
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			},
+			[=]()
+			{
+				return item;
+			}
+		);
+	}
+	
+	//TFactory: void -> T
+	template<typename TFactory>
+	static auto Generate(TFactory factory) -> std::shared_ptr<TEnumerator<decltype(factory())>>
+	{
+		typedef decltype(factory()) T;
+
+		struct State
+		{
+			State() { }
+			T value;
+		};
+
+		auto state = std::make_shared<State>();
+
+		return std::make_shared<TEnumerator<T>>
+		(
+			[=]()
+			{
+				state->value = factory();
+				return true;
+			},
+			[=]()
+			{
+				return state->value;
+			}
+		);
+	}
+
+	//TPredicate: T -> bool
+	//TNext: T -> T
+	template<typename T, typename TPredicate, typename TNext>
+	static std::shared_ptr<TEnumerator<T>> Sequence(T start, TPredicate predicate, TNext next)
+	{
+		struct State
+		{
+			State() { }
+			bool first;
+			T value;
+		};
+
+		auto state = std::make_shared<State>();
+		state->first = true;
+
+		return std::make_shared<TEnumerator<T>>
+		(
+			[=]()
+			{
+				if (state->first)
+				{
+					state->first = false;
+					state->value = start;
+				}
+				else
+				{
+					state->value = next(state->value);
+				}
+				return predicate(state->value);
+			},
+			[=]()
+			{
+				return state->value;
+			}
+		);
+	}
+
+	//TNext: T -> T
+	template<typename T, typename TNext>
+	static std::shared_ptr<TEnumerator<T>> Sequence(T start, TNext next)
+	{
+		return Sequence(start, [](T _){ return true; }, next);
+	}
+
+	template<typename T>
+	static std::shared_ptr<TEnumerator<T>> Sequence(T start)
+	{
+		return Sequence<T>(start, Functional::Increment<T>);
+	}
+
+	template<typename T>
+	static std::shared_ptr<TEnumerator<T>> Sequence()
+	{
+		return Sequence<T>(static_cast<T>(0));
+	}
+
+	template<typename T>
+	static std::shared_ptr<TEnumerator<T>> Range(T start, T count)
+	{
+		return Sequence(start).Take(count);
+	}
+
+	template<typename T>
+	static std::shared_ptr<TEnumerator<T>> Concat(std::shared_ptr<TEnumerator<T>> first, std::shared_ptr<TEnumerator<T>> second)
+	{
+		struct State
+		{
+			State() { }
+			bool first;
+		};
+
+		auto state = std::make_shared<State>();
+		state->first = true;
+
+		return std::make_shared<TEnumerator<T>>
+		(
+			[=]()
+			{
+				if (state->first)
+				{
+					if (first->MoveNext())
+					{
+						return true;
+					}
+					else
+					{
+						state->first = false;
+					}
+				}
+				return second->MoveNext();
+			},
+			[=]()
+			{
+				if (state->first)
+				{
+					return first->Current();
+				}
+				else
+				{
+					return second->Current();
+				}
+			}
+		);
+	}
+
+	//TSelector: T1, T2 -> TResult
+	template<typename T1, typename T2, typename TSelector>
+	static auto Zip(std::shared_ptr<TEnumerator<T1>> first, std::shared_ptr<TEnumerator<T2>> second, TSelector selector) -> std::shared_ptr<TEnumerator<decltype(selector(std::declval<T1>(), std::declval<T2>()))>>
+	{
+		typedef decltype(selector(std::declval<T1>(), std::declval<T2>())) TResult;
+		
+		struct State
+		{
+			State() { }
+			T value;
+		};
+
+		auto state = std::make_shared<State>();
+
+		return std::make_shared<TEnumerator<TResult>>
+		(
+			[=]()
+			{
+				if (first->MoveNext() && second->MoveNext())
+				{
+					state->value = selector(first->Current(), second->Current());
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			},
+			[=]()
+			{
+				return state->value;
+			}
+		);
 	}
 };
 
