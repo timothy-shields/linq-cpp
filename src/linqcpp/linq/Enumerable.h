@@ -474,7 +474,10 @@ public:
 	{
 		struct State
 		{
-			State() { }
+			State(const TComparer& comparer)
+				: heap(comparer)
+			{
+			}
 			PairingHeap<T> heap;
 			T value;
 		};
@@ -486,7 +489,7 @@ public:
 			[=]()
 			{
 				auto enumerator = (*_getEnumerator)();
-				auto state = std::make_shared<State>();
+				auto state = std::make_shared<State>(comparer);
 
 				while (enumerator->MoveNext())
 				{
