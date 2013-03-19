@@ -105,9 +105,9 @@ methods
  - Sorts the elements of a sequence in ascending order with respect to selected keys
 - `bool Any()`
  - Determines whether a sequence contains any elements
-- `bool Any(const TPredicate& predicate)
+- `bool Any(const TPredicate& predicate)`
  - Determines whether any element of a sequence satisfies a condition
-- `bool All(const TPredicate& predicate)
+- `bool All(const TPredicate& predicate)`
  - Determines whether all elements of a sequence satisfy a condition
 - `T First()`
 - `T First(const TPredicate& predicate)`
