@@ -1,11 +1,9 @@
 linq-cpp
 ========
-
 LINQ for C++11 done right
 
 introduction
 ------------
-
 The `IEnumerable<T>` interface and associated LINQ extension methods provided by the .NET framework enable .NET programmers to write concise, fluent, and composable query expressions. For anyone familiar with these tools, their incredible utility shouldn't need explaining. linq-cpp brings equivalent functionality to the C++11 environment.
 
 If you are a programmer not familiar with .NET's `IEnumerable<T>` and LINQ, the rest of this section aims to quickly give you a basic understanding of what this library provides. (TODO) 
@@ -21,12 +19,11 @@ classes
 
 methods
 =======
-`static Enumerable class`
+`Enumerable` static methods
 ------------
 - `TEnumerable<T> FromRange(TRange& range)`
- - Same as `FromRange(range.begin(), range.end())`
 - `TEnumerable<T> FromRange(TIter begin, TIter end)`
- - Construct an `Enumerable` from STL iterators
+ - Constructs an enumerable from STL iterators
 - `TEnumerable<T> Factory(const TFactory& factory)`
  - `TFactory = TEnumerable<T>()`
  - Repeated calls to `factory` argument each create an enumerable that can only be enumerated once
@@ -49,7 +46,33 @@ methods
 - `TEnumerable<T> Range(T start, T count)`
  - The sequence `start, start+1, ..., start+count`
 - `TEnumerable<T> Concat(TEnumerable<T> first, TEnumerable<T> second)`
- - The sequence formed by `first` followed by `second`
+ - Concatenates two sequences
 - `TEnumerable<TResult> Zip(TEnumerable<T1> first, TEnumerable<T2> second, const TSelector& selector)`
  - `TSelector = TResult(T1, T2)`
  - Merges two sequences by using the specified `selector` function
+
+`TEnumerable<T>` instance methods
+=================================
+- `TEnumerable<T> ToInclusive(T end)`
+ - Take elements while they are less than or equal to end
+- `TEnumerable<T> ToExclusive(T end)`
+ - Take elements while they are less than end
+- `TEnumerable<TResult> Select(const TSelector& selector)`
+ - `TSelector = TResult(T)`
+ - Projects each element of a sequence into a new form
+- `TEnumerable<TResult> StaticCast()`
+ - Static casts the elements of a sequence to the specified type
+- `TEnumerable<TResult> DynamicCast()`
+ - Dynamic casts the elements of a sequence to the specified type
+- `TEnumerable<TResult> SelectMany(const TSelector& selector)`
+ - `TSelector = TEnumerable<TResult>(T)`
+ - Projects each element of a sequence to a new sequence and flattens the resulting sequences into one sequence
+- `T SelectMany()`
+ - Only available when `T = TEnumerable<S>`
+ - Concatenates a sequence of sequences
+- `TEnumerable<std::pair<T, int>> Index()`
+ - Projects each element `x` of a sequence to the pair `(x, i)` where `i` is the index of `x`
+- `TEnumerable<TResult> SelectIndexed(const TSelector& selector)`
+ - `TSelector = TResult(T, int)`
+ - Projects each element of a sequence into a new form by incorporating the element's index
+- 
