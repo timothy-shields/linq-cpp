@@ -53,10 +53,6 @@ methods
 
 `TEnumerable<T>` instance methods
 =================================
-- `TEnumerable<T> ToInclusive(T end)`
- - Take elements while they are less than or equal to end
-- `TEnumerable<T> ToExclusive(T end)`
- - Take elements while they are less than end
 - `TEnumerable<TResult> Select(const TSelector& selector)`
  - `TSelector = TResult(T)`
  - Projects each element of a sequence into a new form
@@ -70,9 +66,54 @@ methods
 - `T SelectMany()`
  - Only available when `T = TEnumerable<S>`
  - Concatenates a sequence of sequences
+- `TEnumerable<T> Where(const TPredicate& predicate)`
+ - `TPredicate = bool(T)`
+ - Filters a sequence of values based on a predicate
 - `TEnumerable<std::pair<T, int>> Index()`
  - Projects each element `x` of a sequence to the pair `(x, i)` where `i` is the index of `x`
 - `TEnumerable<TResult> SelectIndexed(const TSelector& selector)`
  - `TSelector = TResult(T, int)`
  - Projects each element of a sequence into a new form by incorporating the element's index
-- 
+- `TEnumerable<T> WhereIndexed(const TPredicate& predicate)`
+ - `TPredicate = bool(T, int)`
+ - Filters a sequence of values based on a predicate incorporating the element's index
+- `TEnumerable<T> Skip(int count)`
+ - Bypasses a specified number of elements in a sequence and then returns the remaining elements
+- `TEnumerable<T> SkipWhile(const TPredicate& predicate)`
+ - `TPredicate = bool(T)`
+ - Bypasses elements in a sequence as long as a specified condition is true and then returns the remaining elements
+- `TEnumerable<T> SkipWhileIndexed(const TPredicate& predicate)`
+ - TODO
+- `TEnumerable<T> Take(int count)`
+ - Returns a specified number of contiguous elements from the start of a sequence
+- `TEnumerable<T> TakeWhile(const TPredicate& predicate)`
+ - `TPredicate = bool(T, int)`
+ - Returns elements from a sequence as long as a specified condition is true, and then skips the remaining elements
+- `TEnumerable<T> TakeWhileIndexed(const TPredicate& predicate)`
+ - TODO
+- `TEnumerable<T> ToInclusive(T end)`
+ - Take elements while they are less than or equal to end
+- `TEnumerable<T> ToExclusive(T end)`
+ - Take elements while they are less than end
+- `TEnumerable<T> Order(const TComparer& comparer)`
+ - `TComparer = int(T, T)`
+ - Sorts the elements of a sequence in ascending order using the given comparer
+- `TEnumerable<T> Order()`
+ - Sorts the elements of a sequence in ascending order using the default comparer
+- `TEnumerable<T> OrderBy(const TKeySelector& keySelector)`
+ - `TKeySelector = TKey(T)`
+ - Sorts the elements of a sequence in ascending order with respect to selected keys
+- `bool Any()`
+ - Determines whether a sequence contains any elements
+- `bool Any(const TPredicate& predicate)
+ - Determines whether any element of a sequence satisfies a condition
+- `bool All(const TPredicate& predicate)
+ - Determines whether all elements of a sequence satisfy a condition
+- `T First()`
+- `T First(const TPredicate& predicate)`
+- `T Last()`
+- `T Last(const TPredicate& predicate)`
+- `T Single()`
+- `T Single(const TPredicate& predicate)`
+- `int Count()`
+- `int Count(const TPredicate& predicate)`
