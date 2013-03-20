@@ -24,7 +24,7 @@ methods
 - `TEnumerable<T> FromRange(TRange& range)`
 - `TEnumerable<T> FromRange(TIter begin, TIter end)`
  - Constructs an enumerable from STL iterators
-- `TEnumerable<T> Factory(const TFactory& factory)`
+- `TEnumerable<T> Factory(TFactory factory)`
  - `TFactory = TEnumerable<T>()`
  - Repeated calls to `factory` argument each create an enumerable that can only be enumerated once
  - Result is Enumerable that can be enumerated as many times as desired
@@ -34,10 +34,10 @@ methods
  - Represents an empty sequence
 - `TEnumerable<T> Return(T x)`
  - Represents a sequence that contains a single element `x`
-- `TEnumerable<T> Generate(const TFactory& factory)`
+- `TEnumerable<T> Generate(TFactory factory)`
  - Repeated calls to factory generate elements of sequence
-- `TEnumerable<T> Sequence(T start, const TPredicate& predicate, const TNext& next)`
-- `TEnumerable<T> Sequence(T start, const TNext& next)`
+- `TEnumerable<T> Sequence(T start, TPredicate predicate, TNext next)`
+- `TEnumerable<T> Sequence(T start, TNext next)`
 - `TEnumerable<T> Sequence(T start)`
 - `TEnumerable<T> Sequence()`
  - `TPredicate = bool()`
@@ -47,73 +47,73 @@ methods
  - The sequence `start, start+1, ..., start+count`
 - `TEnumerable<T> Concat(TEnumerable<T> first, TEnumerable<T> second)`
  - Concatenates two sequences
-- `TEnumerable<TResult> Zip(TEnumerable<T1> first, TEnumerable<T2> second, const TSelector& selector)`
+- `TEnumerable<TResult> Zip(TEnumerable<T1> first, TEnumerable<T2> second, TSelector selector)`
  - `TSelector = TResult(T1, T2)`
  - Merges two sequences by using the specified `selector` function
 
 `TEnumerable<T>` instance methods
 =================================
-- `TEnumerable<TResult> Select(const TSelector& selector)`
+- `TEnumerable<TResult> Select(TSelector selector)`
  - `TSelector = TResult(T)`
  - Projects each element of a sequence into a new form
 - `TEnumerable<TResult> StaticCast()`
  - Static casts the elements of a sequence to the specified type
 - `TEnumerable<TResult> DynamicCast()`
  - Dynamic casts the elements of a sequence to the specified type
-- `TEnumerable<TResult> SelectMany(const TSelector& selector)`
+- `TEnumerable<TResult> SelectMany(TSelector selector)`
  - `TSelector = TEnumerable<TResult>(T)`
  - Projects each element of a sequence to a new sequence and flattens the resulting sequences into one sequence
 - `T SelectMany()`
  - Only available when `T = TEnumerable<S>`
  - Concatenates a sequence of sequences
-- `TEnumerable<T> Where(const TPredicate& predicate)`
+- `TEnumerable<T> Where(TPredicate predicate)`
  - `TPredicate = bool(T)`
  - Filters a sequence of values based on a predicate
 - `TEnumerable<std::pair<T, int>> Index()`
  - Projects each element `x` of a sequence to the pair `(x, i)` where `i` is the index of `x`
-- `TEnumerable<TResult> SelectIndexed(const TSelector& selector)`
+- `TEnumerable<TResult> SelectIndexed(TSelector selector)`
  - `TSelector = TResult(T, int)`
  - Projects each element of a sequence into a new form by incorporating the element's index
-- `TEnumerable<T> WhereIndexed(const TPredicate& predicate)`
+- `TEnumerable<T> WhereIndexed(TPredicate predicate)`
  - `TPredicate = bool(T, int)`
  - Filters a sequence of values based on a predicate incorporating the element's index
 - `TEnumerable<T> Skip(int count)`
  - Bypasses a specified number of elements in a sequence and then returns the remaining elements
-- `TEnumerable<T> SkipWhile(const TPredicate& predicate)`
+- `TEnumerable<T> SkipWhile(TPredicate predicate)`
  - `TPredicate = bool(T)`
  - Bypasses elements in a sequence as long as a specified condition is true and then returns the remaining elements
-- `TEnumerable<T> SkipWhileIndexed(const TPredicate& predicate)`
+- `TEnumerable<T> SkipWhileIndexed(TPredicate predicate)`
  - TODO
 - `TEnumerable<T> Take(int count)`
  - Returns a specified number of contiguous elements from the start of a sequence
-- `TEnumerable<T> TakeWhile(const TPredicate& predicate)`
+- `TEnumerable<T> TakeWhile(TPredicate predicate)`
  - `TPredicate = bool(T, int)`
  - Returns elements from a sequence as long as a specified condition is true, and then skips the remaining elements
-- `TEnumerable<T> TakeWhileIndexed(const TPredicate& predicate)`
+- `TEnumerable<T> TakeWhileIndexed(TPredicate predicate)`
  - TODO
 - `TEnumerable<T> ToInclusive(T end)`
  - Take elements while they are less than or equal to end
 - `TEnumerable<T> ToExclusive(T end)`
  - Take elements while they are less than end
-- `TEnumerable<T> Order(const TComparer& comparer)`
+- `TEnumerable<T> Order(TComparer comparer)`
  - `TComparer = int(T, T)`
  - Sorts the elements of a sequence in ascending order using the given comparer
 - `TEnumerable<T> Order()`
  - Sorts the elements of a sequence in ascending order using the default comparer
-- `TEnumerable<T> OrderBy(const TKeySelector& keySelector)`
+- `TEnumerable<T> OrderBy(TKeySelector keySelector)`
  - `TKeySelector = TKey(T)`
  - Sorts the elements of a sequence in ascending order with respect to selected keys
 - `bool Any()`
  - Determines whether a sequence contains any elements
-- `bool Any(const TPredicate& predicate)`
+- `bool Any(TPredicate predicate)`
  - Determines whether any element of a sequence satisfies a condition
-- `bool All(const TPredicate& predicate)`
+- `bool All(TPredicate predicate)`
  - Determines whether all elements of a sequence satisfy a condition
 - `T First()`
-- `T First(const TPredicate& predicate)`
+- `T First(TPredicate predicate)`
 - `T Last()`
-- `T Last(const TPredicate& predicate)`
+- `T Last(TPredicate predicate)`
 - `T Single()`
-- `T Single(const TPredicate& predicate)`
+- `T Single(TPredicate predicate)`
 - `int Count()`
-- `int Count(const TPredicate& predicate)`
+- `int Count(TPredicate predicate)`
