@@ -903,7 +903,7 @@ public:
 	//TKeySelector: T -> TKey
 	//TValueSelector: T -> TValue
 	template<typename TKey, typename TValue, typename TKeySelector, typename TValueSelector>
-	void IntoMap(std::map<TKey, TValue>& _map, const TKeySelector& keySelector, const TValueSelector& valueSelector)
+	void IntoMap(std::map<TKey, TValue>& _map, TKeySelector keySelector, TValueSelector valueSelector)
 	{
 		ForEach([&](T x){ _map.insert(make_pair(keySelector(x), valueSelector(x))); });
 	}
@@ -911,7 +911,7 @@ public:
 	//TKeySelector: T -> TKey
 	//TValueSelector: T -> TValue
 	template<typename TKey, typename TValue, typename TKeySelector, typename TValueSelector>
-	std::map<TKey, TValue> ToMap(const TKeySelector& keySelector, const TValueSelector& valueSelector)
+	std::map<TKey, TValue> ToMap(TKeySelector keySelector, TValueSelector valueSelector)
 	{
 		std::map<TKey, T> _map;
 		IntoMap(_map, keySelector, valueSelector);
@@ -920,14 +920,14 @@ public:
 
 	//TKeySelector: T -> TKey
 	template<typename TKey, typename TKeySelector>
-	void IntoMap(std::map<TKey, T> _map, const TKeySelector& keySelector)
+	void IntoMap(std::map<TKey, T> _map, TKeySelector keySelector)
 	{
 		ForEach([&](T x){ _map.insert(make_pair(keySelector(x), x)); });
 	}
 
 	//TKeySelector: T -> TKey
 	template<typename TKey, typename TKeySelector>
-	std::map<TKey, T> ToMap(const TKeySelector& keySelector)
+	std::map<TKey, T> ToMap(TKeySelector keySelector)
 	{
 		std::map<TKey, T> _map;
 		IntoMap(_map, keySelector);
@@ -1037,7 +1037,7 @@ public:
 	//Factory function creates an enumerable that will only ever be enumerated once
 	//TFactory: void -> TEnumerable<T>
 	template<typename T, typename TFactory>
-	static TEnumerable<T> Factory(const TFactory& factory)
+	static TEnumerable<T> Factory(TFactory factory)
 	{
 		return TEnumerable<T>
 		(
