@@ -117,3 +117,48 @@ methods
 - `T Single(TPredicate predicate)`
 - `int Count()`
 - `int Count(TPredicate predicate)`
+- `TAccumulate Aggregate(TAccumulate seed, TAccumulator accumulator)`
+ - `TAccumulator = TAccumulate(TAccumulate, T)`
+- `T Aggregate(TAccumulator accumulator)`
+ - `TAccumulator = T(T, T)`
+- `T Sum()`
+- `T Product()`
+- `double Average()`
+- `TResult Min(TSelector selector)`
+- `T Min()`
+ - `TSelector = TResult(T)`
+- `TResult Max(TSelector selector)`
+- `T Max()`
+ - `TSelector = TResult(T)`
+- `T MinBy(TKeySelector keySelector)`
+ - `TKeySelector = TKey(T)`
+- `T MaxBy(TKeySelector keySelector)`
+ - `TKeySelector = TKey(T)`
+- `int MinIndex(TKeySelector keySelector)`
+- `int MinIndex()`
+ - `TKeySelector = TKey(T)`
+- `int MaxIndex(TKeySelector keySelector)`
+- `int MaxIndex()`
+ - `TKeySelector = TKey(T)`
+- `void ForEach(TAction action)`
+ - `TAction = void(T)`
+- `void ForEachIndexed(TAction action)`
+ - `TAction = void(T, int)`
+- `void IntoVector(std::vector<T>& _vector)`
+- `std::vector<T> ToVector()`
+- `void IntoSet(std::set<T>& _set)`
+- `std::set<T> ToSet()`
+- `void IntoMap(std::map<TKey, TValue>& _map, TKeySelector keySelector, TValueSelector valueSelector)`
+- `void IntoMap(std::map<TKey, T>& _map, TKeySelector keySelector)`
+- `void IntoMap(std::map<TKey, TValue>& _map)`
+ - `TKeySelector = TKey(T)`
+ - `TValueSelector = TValue(T)`
+- `std::map<TKey, TValue> ToMap(TKeySelector keySelector, TValueSelector valueSelector)`
+- `std::map<TKey, T> ToMap(TKeySelector keySelector)`
+- `std::map<TKey, TValue> ToMap()`
+ - `TKeySelector = TKey(T)`
+ - `TValueSelector = TValue(T)`
+- `std::string ToString(std::string separator, TWriter writer)`
+- `std::string ToString(std::string separator)`
+- `std::string ToString()`
+ - `TWriter = void(std::stringstream&, T)`
