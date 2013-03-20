@@ -703,9 +703,21 @@ public:
 		return Aggregate(static_cast<T>(1), std::multiplies<T>);
 	}
 
+	template<typename TSelector>
+	auto Min(TSelector selector) -> decltype(selector(std::declval<T>()))
+	{
+		return Select(selector).Min();
+	}
+
 	T Min()
 	{
 		return Aggregate(std::min<T>);
+	}
+
+	template<typename TSelector>
+	auto Max(TSelector selector) -> decltype(selector(std::declval<T>()))
+	{
+		return Select(selector).Max();
 	}
 
 	T Max()
@@ -950,7 +962,9 @@ public:
 		return _map;
 	}
 
-	std::string ToString(std::string separator, std::function<void (std::stringstream&, T)> write)
+	//TWriter: std::stringstream&, T -> void
+	template<typename TWriter>
+	std::string ToString(std::string separator, TWriter writer)
 	{
 		std::stringstream stream;
 		bool first = true;
@@ -966,7 +980,7 @@ public:
 				{
 					stream << separator;
 				}
-				write(stream, item);
+				writer(stream, item);
 			}
 		);
 		return stream.str();
