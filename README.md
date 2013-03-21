@@ -103,6 +103,10 @@ methods
 - `TEnumerable<T> OrderBy(TKeySelector keySelector)`
  - `TKeySelector = TKey(T)`
  - Sorts the elements of a sequence in ascending order with respect to selected keys
+- `TEnumerable<std::pair<TKey, TEnumerable<T>> GroupBy(TKeySelector keySelector)`
+ - `TKeySelector = TKey(T)`
+ - Groups the elements of a sequence by selected keys
+ - The groups are returned in ascending order with respect to selected keys
 - `bool Any()`
  - Determines whether a sequence contains any elements
 - `bool Any(TPredicate predicate)`
