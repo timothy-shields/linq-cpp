@@ -26,7 +26,7 @@ void TimeIt(string text, int repeatCount, std::function<void ()> f)
 
 TEnumerable<string> FileLines(string path)
 {
-	return Enumerable::Factory<string>([=]()
+	return Enumerable::Factory([=]()
 	{
 		auto stream = make_shared<ifstream>(path);
 
@@ -48,8 +48,15 @@ void run(int argc, char* argv[])
 		.Take(10)
 		.ForEach([](string line){ cout << line << endl; });
 
-	auto v = Enumerable::Sequence(0).Take(100).ToVector();
-	cout << Enumerable::FromRange(v).ToString() << endl;
+	cout << Enumerable::Sequence(0)
+		.Take(100)
+		.GroupBy([](int x){ return x % 10; })
+		.ToString("\n",
+			[](std::stringstream& stream, std::pair<int, TEnumerable<int>> _pair)
+			{
+				stream << "n % 10 == " << _pair.first << ": " << _pair.second.ToString();
+			})
+		<< endl;
 
 	//cout << "Select, ToVector" << endl;
 	//TimeIt("linq:", 100, [=](){

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "dllapi.h"
-
 #include <memory>
 #include <functional>
 #include <vector>

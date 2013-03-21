@@ -1,7 +1,5 @@
 #pragma once
 
-#include "dllapi.h"
-
 #include <memory>
 #include <functional>
 #include <vector>
@@ -552,6 +550,43 @@ public:
 			);
 	}
 
+	template<typename TKeySelector>
+	auto GroupBy(TKeySelector keySelector) -> TEnumerable<std::pair<decltype(keySelector(std::declval<T>())), TEnumerable<T>>>
+	{
+		typedef decltype(keySelector(std::declval<T>())) TKey;
+
+		auto _map = std::make_shared<std::map<TKey, std::shared_ptr<std::vector<T>>>>();
+
+		ForEach
+		(
+			[=](T x)
+			{
+				TKey key = keySelector(x);
+				auto it = _map->find(key);
+				std::shared_ptr<std::vector<T>> _vector;
+				if (it != _map->end())
+				{
+					_vector = it->second;
+				}
+				else
+				{
+					_vector = std::make_shared<std::vector<T>>();
+					_map->insert(std::make_pair(key, _vector));
+				}
+				_vector->push_back(x);
+			}
+		);
+
+		return Enumerable::FromRange(_map)
+			.Select
+			(
+				[](std::pair<TKey, std::shared_ptr<std::vector<T>>> _pair)
+				{
+					return std::make_pair(_pair.first, Enumerable::FromRange(_pair.second));
+				}
+			);
+	}
+
 	bool Any()
 	{
 		auto enumerator = GetEnumerator();
@@ -1003,20 +1038,62 @@ private:
 	Enumerable() { }
 
 public:
+	
 	template<typename TRange>
 	static auto FromRange(TRange& range) -> TEnumerable<typename TRange::value_type>
 	{
-		return FromRange(range.begin(), range.end());
-	}
-
-	template<typename TIter>
-	static auto FromRange(TIter begin, TIter end) -> TEnumerable<typename TIter::value_type>
-	{
-		typedef TIter::value_type T;
+		typedef TRange::value_type T;
+		typedef TRange::const_iterator TIter;
 
 		struct State
 		{
-			State() { }
+			State(const TIter& iter, bool first)
+				: iter(iter)
+				, first(first)
+			{
+			}
+			TIter iter;
+			bool first;
+		};
+
+		return TEnumerable<T>
+		(
+			[&]()
+			{
+				auto state = std::make_shared<State>(range.begin(), true);
+				return std::make_shared<TEnumerator<T>>
+				(
+					[state, &range]()
+					{
+						if (!(state->first))
+						{
+							state->iter++;
+						}
+						state->first = false;
+						return state->iter != range.end();
+					},
+					[state]()
+					{
+						return *state->iter;
+					}
+				);
+			}
+		);
+	}
+
+	template<typename TRange>
+	static auto FromRange(std::shared_ptr<TRange> range) -> TEnumerable<typename TRange::value_type>
+	{
+		typedef TRange::value_type T;
+		typedef TRange::const_iterator TIter;
+
+		struct State
+		{
+			State(const TIter& iter, bool first)
+				: iter(iter)
+				, first(first)
+			{
+			}
 			TIter iter;
 			bool first;
 		};
@@ -1025,9 +1102,7 @@ public:
 		(
 			[=]()
 			{
-				auto state = std::make_shared<State>();
-				state->iter = begin;
-				state->first = true;
+				auto state = std::make_shared<State>(range->begin(), true);
 				return std::make_shared<TEnumerator<T>>
 				(
 					[=]()
@@ -1037,11 +1112,11 @@ public:
 							state->iter++;
 						}
 						state->first = false;
-						return state->iter != end;
+						return state->iter != range->end();
 					},
 					[=]()
 					{
-						return *(state->iter);
+						return *state->iter;
 					}
 				);
 			}
@@ -1050,10 +1125,10 @@ public:
 
 	//Factory function creates an enumerable that will only ever be enumerated once
 	//TFactory: void -> TEnumerable<T>
-	template<typename T, typename TFactory>
-	static TEnumerable<T> Factory(TFactory factory)
+	template<typename TFactory>
+	static auto Factory(TFactory factory) -> decltype(factory())
 	{
-		return TEnumerable<T>
+		return decltype(factory())
 		(
 			[=]()
 			{
