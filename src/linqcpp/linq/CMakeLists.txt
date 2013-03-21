@@ -1,7 +1,6 @@
 project(linq)
 
 add_library(${PROJECT_NAME} ${LIB_TYPE}
-	dllapi.h
 	Comparer.h
 	Comparer.cpp
 	Enumerable.h
