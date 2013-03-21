@@ -22,8 +22,8 @@ methods
 `Enumerable` static methods
 ------------
 - `TEnumerable<T> FromRange(TRange& range)`
-- `TEnumerable<T> FromRange(TIter begin, TIter end)`
- - Constructs an enumerable from STL iterators
+- `TEnumerable<T> FromRange(std::shared_ptr<TRange> range)`
+ - Constructs an enumerable from an STL range
 - `TEnumerable<T> Factory(TFactory factory)`
  - `TFactory = TEnumerable<T>()`
  - Repeated calls to `factory` argument each create an enumerable that can only be enumerated once
