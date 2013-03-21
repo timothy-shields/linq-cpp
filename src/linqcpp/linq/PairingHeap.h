@@ -40,7 +40,7 @@ public:
 		Node(T value)
 			: value(value)
 			, isActive(false)
-			, left(std::weak_ptr<Node>())
+			, left()
 			, right(nullptr)
 			, firstChild(nullptr)
 		{
@@ -124,50 +124,28 @@ public:
 		return node;
 	}
 
+	TEnumerable<std::shared_ptr<Node>> GetConsumingEnumerable()
+	{
+		return Enumerable::Generate([this](){ return ExtractMin(); });
+	}
+
 	TEnumerable<std::shared_ptr<Node>> Nodes(bool ordered = false)
 	{
 		if (!ordered)
 		{
-			return Nodes(root);
+			return SubtreeNodes(root);
 		}
-
-		struct State
+		else
 		{
-			State() { }
-			std::shared_ptr<PairingHeap<T>> clone;
-			std::shared_ptr<Node> value;
-		};
-
-		auto _this = std::make_shared<PairingHeap<T>>(*this);
-
-		return TEnumerable<std::shared_ptr<Node>>
-		(
-			[=]()
-			{
-				auto state = std::make_shared<State>();
-				state->clone = std::make_shared<PairingHeap<T>>(_this->Clone());
-
-				return std::make_shared<TEnumerator<std::shared_ptr<Node>>>
-				(
-					[=]()
-					{
-						if (!state->clone->IsEmpty())
-						{
-							state->value = state->clone->ExtractMin();
-							return true;
-						}
-						else
-						{
-							return false;
-						}
-					},
-					[=]()
-					{
-						return state->value;
-					}
-				);
-			}
-		);
+			return Enumerable::Factory
+			(
+				[this]()
+				{
+					auto clone = std::make_shared<PairingHeap>(Clone());
+					return Enumerable::Generate([clone](){ return clone->ExtractMin(); });
+				}
+			);
+		}
 	}
 
 	PairingHeap Clone()
@@ -275,22 +253,19 @@ private:
 	}
 
 	//Enumerable over the nodes in the given subtree
-	static TEnumerable<std::shared_ptr<Node>> Nodes(std::shared_ptr<Node> subtreeRoot)
+	static TEnumerable<std::shared_ptr<Node>> SubtreeNodes(std::shared_ptr<Node> subtreeRoot)
 	{
-		return TEnumerable<std::shared_ptr<Node>>::Concat
+		return Enumerable::Concat
 		(
-			TEnumerable<std::shared_ptr<Node>>::Return(subtreeRoot),
+			Enumerable::Return(subtreeRoot),
 
-			TEnumerable<std::shared_ptr<Node>>::Sequence
+			Enumerable::Sequence
 			(
 				subtreeRoot->firstChild,
 				[](std::shared_ptr<Node> child){ return child != nullptr; },
 				[](std::shared_ptr<Node> child){ return child->right; }
 			)
-			.SelectMany<std::shared_ptr<Node>>
-			(
-				[](std::shared_ptr<Node> child){ return PairingHeap<T>::Nodes(child); }
-			)
+			.SelectMany(PairingHeap::SubtreeNodes)
 		);
 	}
 
