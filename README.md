@@ -11,26 +11,69 @@ Readers familiar with .NET LINQ may want to skip directly to the [**methods**](h
 
 teaser
 ------
-Imagine you have data of the following types.
+Suppose you have the following types.
 
+    enum class Genders
+        Male
+        Female
+    
     class Employee
         int ID() const
         const std::string& FirstName() const
         const std::string& LastName() const
         int Age() const
+        Genders Gender() const;
         
     class Customer
         int ID() const
     
     class Department
-        const std::vector<std::shared_ptr<Employee>>& Employees() const
-        const std::vector<std::shared_ptr<Customer>>& Customers() const
+        const std::vector<Employee*>& Employees() const
+        const std::vector<Customer*>& Customers() const
 
-You're given a `std::vector<Department>` called `departments` and the following task.
+You're given a `std::vector<Department*>` called `departments` and the following task.
 
-> Get the names and employee IDs of employees younger than 21 who work in departments servicing customer 17. The results should be sorted by last name then first name.
+- Get the names and employee IDs of employees younger than 21 who work in departments servicing customer `int customerID`.
+- The results should be grouped by age and gender, and within each group the employees should be sorted by last name.
 
+Thank
 
+    std::vector<Department*> departments = ...;
+    int customerID = ...;
+    
+    auto results = Enumerable::FromRange(departments)
+        .Where([=](Department* department)
+        {
+            return Enumerable::FromRange(department->Customers())
+                .Any([=](Customer* customer)
+                {
+                    return customer->ID == customerID;
+                });
+        })
+        .SelectMany([](Department* department)
+        {
+            return Enumerable::FromRange(department->Employees());
+        })
+        .Where([](Employee* employee)
+        {
+            return employee->Age() < 21;
+        })
+        .GroupBy([](Employee* employee)
+        {
+            return std::make_tuple(employee->Age(), employee->Gender());
+        })
+        .Select([](std::pair<std::tuple<int, Genders>, TEnumerable<Employee*>> group)
+        {
+            return std::make_pair(
+                group.first,
+                group.second
+                    .OrderBy([](Employee* employee)
+                    {
+                        return employee->LastName();
+                    })
+                    .ToVector());
+        })
+        .ToVector();
 
 definitions
 -----------
