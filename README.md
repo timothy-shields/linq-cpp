@@ -63,9 +63,11 @@ You're given a `std::vector<Department*>` called `departments` and the following
 ## definitions
 
 ### `TEnumerable<T>`
-An enumerable of type `T` is an ordered sequence of zero or more values of type `T`.
+
+An enumerable of type `T` is a sequence of zero or more values of type `T`.
 
 ### `TEnumerator<T>`
+
 An enumerator of type `T` is the state of a traversal through a `TEnumerable<T>`.
 
 The single operation provided by `TEnumerable<T>` is `GetEnumerator`. It returns a new `TEnumerator<T>` traversal of the `TEnumerable<T>`, starting "one before" the beginning of the sequence.
