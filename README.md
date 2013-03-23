@@ -3,9 +3,34 @@ linq-cpp: LINQ for C++11 done right
 
 introduction
 ------------
-The `IEnumerable<T>` interface and associated LINQ extension methods provided by the .NET framework enable .NET programmers to write concise, fluent, and composable query expressions.
+The `IEnumerable<T>` interface and associated LINQ extension methods provided by the .NET framework enable programmers to write concise, fluent, and composable query expressions using powerful abstractions.
 
-linq-cpp brings equivalent functionality to the C++11 environment. Readers familiar with .NET LINQ may want to skip directly to the "methods" section.
+**linq-cpp** brings equivalent functionality to the C++11 environment.
+
+Readers familiar with .NET LINQ may want to skip directly to the [**methods**](https://github.com/timothy-shields/linq-cpp/edit/master/README.md#methods) section.
+
+teaser
+------
+Imagine you have data of the following types.
+
+    class Employee
+        int ID() const
+        const std::string& FirstName() const
+        const std::string& LastName() const
+        int Age() const
+        
+    class Customer
+        int ID() const
+    
+    class Department
+        const std::vector<std::shared_ptr<Employee>>& Employees() const
+        const std::vector<std::shared_ptr<Customer>>& Customers() const
+
+You're given a `std::vector<Department>` called `departments` and the following task.
+
+> Get the names and employee IDs of employees younger than 21 who work in departments servicing customer 17. The results should be sorted by last name then first name.
+
+
 
 definitions
 -----------
@@ -50,6 +75,10 @@ To make these concepts more concrete, consider the following example. Suppose `L
     E->MoveNext(); // returns true
     E->Current();  // returns 'B'
     E->MoveNext(); // returns false
+
+a powerful abstraction
+----------------------
+fskjkldfjgkl
 
 classes
 =======
