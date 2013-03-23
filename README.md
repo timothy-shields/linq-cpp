@@ -70,7 +70,7 @@ methods
 - `TEnumerable<T> Factory(TFactory factory)`
  - `TFactory = TEnumerable<T>()`
  - Repeated calls to `factory` argument each create an enumerable that can only be enumerated once
- - Result is Enumerable that can be enumerated as many times as desired
+ - Result is enumerable that can be enumerated as many times as desired
 - `TEnumerable<T> Repeat(T x)`
  - Represents an infinite sequence of which every element is `x`
 - `TEnumerable<T> Empty()`
