@@ -13,6 +13,7 @@ teaser
 ------
 Suppose you have the following types.
 
+```C++
     enum class Genders
         Male
         Female
@@ -22,7 +23,7 @@ Suppose you have the following types.
         const std::string& FirstName() const
         const std::string& LastName() const
         int Age() const
-        Genders Gender() const;
+        Genders Gender() const
         
     class Customer
         int ID() const
@@ -30,47 +31,34 @@ Suppose you have the following types.
     class Department
         const std::vector<Employee*>& Employees() const
         const std::vector<Customer*>& Customers() const
+```
 
 You're given a `std::vector<Department*>` called `departments` and the following task.
 
-- Get the names and employee IDs of employees younger than 21 who work in departments servicing customer `int customerID`.
-- The results should be grouped by age and gender, and within each group the employees should be sorted by last name.
+- Get the names and employee IDs of employees younger than 21 who work in departments servicing the customer with the given ID.
+- The results should be grouped by age and gender, and within each group the employees should be sorted by last name then first name.
 
-Thank
-
-    std::vector<Department*> departments = ...;
+Using **linq-cpp** this is a straightfoward task.
+    
+    vector<Department*> departments = ...;
     int customerID = ...;
     
-    auto results = Enumerable::FromRange(departments)
-        .Where([=](Department* department)
+    auto results =
+        Enumerable::FromRange(departments)
+        .Where([=](Department* d)
         {
-            return Enumerable::FromRange(department->Customers())
-                .Any([=](Customer* customer)
-                {
-                    return customer->ID == customerID;
-                });
+            return Enumerable::FromRange(d->Customers()).Any([=](Customer* c){ return c->ID == customerID; });
         })
-        .SelectMany([](Department* department)
-        {
-            return Enumerable::FromRange(department->Employees());
-        })
-        .Where([](Employee* employee)
-        {
-            return employee->Age() < 21;
-        })
-        .GroupBy([](Employee* employee)
-        {
-            return std::make_tuple(employee->Age(), employee->Gender());
-        })
-        .Select([](std::pair<std::tuple<int, Genders>, TEnumerable<Employee*>> group)
+        .SelectMany([](Department* d){ return Enumerable::FromRange(d->Employees()); })
+        .Where([](Employee* e){ return e->Age() < 21; })
+        .GroupBy([](Employee* e){ return make_tuple(e->Age(), e->Gender()); })
+        .Select([](pair<tuple<int, Genders>, TEnumerable<Employee*>> group)
         {
             return std::make_pair(
                 group.first,
                 group.second
-                    .OrderBy([](Employee* employee)
-                    {
-                        return employee->LastName();
-                    })
+                    .OrderBy([](Employee* e){ return make_tuple(e->LastName(), e->FirstName()); })
+                    .Select([](Employee* e){ return make_tuple(e->FirstName(), e->LastName(), e->ID()); })
                     .ToVector());
         })
         .ToVector();
