@@ -13,7 +13,6 @@ teaser
 ------
 Suppose you have the following types.
 
-```C++
     enum class Genders
         Male
         Female
@@ -31,7 +30,6 @@ Suppose you have the following types.
     class Department
         const std::vector<Employee*>& Employees() const
         const std::vector<Customer*>& Customers() const
-```
 
 You're given a `std::vector<Department*>` called `departments` and the following task.
 
@@ -106,10 +104,6 @@ To make these concepts more concrete, consider the following example. Suppose `L
     E->MoveNext(); // returns true
     E->Current();  // returns 'B'
     E->MoveNext(); // returns false
-
-a powerful abstraction
-----------------------
-fskjkldfjgkl
 
 classes
 =======
