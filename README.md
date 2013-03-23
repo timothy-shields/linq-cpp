@@ -14,9 +14,47 @@ An enumerable of type `T` (i.e. `TEnumerable<T>`) is an ordered sequence of zero
 
 An enumerator of type `T` (i.e. `TEnumerator<T>`) is the state of a traversal through a `TEnumerable<T>`.
 
+The single operation provided by `TEnumerable<T>` is `GetEnumerator`. It returns a new `TEnumerator<T>` traversal of the `TEnumerable<T>`, starting "one before" the beginning of the sequence.
+
+The two operations provided by `TEnumerator<T>` are `MoveNext` and `Current`. The `MoveNext` operation moves the `TEnumerator<T>` to the next value in the sequence. It returns `true` if the move to the next value was successful and `false` otherwise. `Current` returns the value `T` that the `TEnumerator<T>` is currently pointing to.
+
+To make these concepts more concrete, consider the following example. Suppose `L` is a `TEnumerable<char>` representing the two-value sequence `['A', 'B']`. Then the following operations return as commented.
+
+    std::shared_ptr<TEnumerator<char>> E = L.GetEnumerator();
+    E->MoveNext(); // returns true
+    E->Current();  // returns 'A'
+    E->MoveNext(); // returns true
+    E->Current();  // returns 'B'
+    E->MoveNext(); // returns false
+
+
+
+<table>
+  <tr>
+    <th>new concept</th>
+    <th>familiar analogue</th>
+  </tr>
+  <tr>
+    <td><code>TEnumerable&lt;T&gt; L;</code></td>
+    <td><code>std::vector&lt;T&gt; V;</code></td>
+  </tr>
+  <tr>
+    <td><code>std::shared_ptr&lt;TEnumerator&lt;T&gt;&gt; E = L.GetEnumerator();</code></td>
+    <td><code>std::vector&lt;T&gt;::iterator I = V.begin();</code></td>
+  </tr>
+  <tr>
+    <td><code>bool success = E->MoveNext();</code></td>
+    <td><code>bool success = (++I != V.end());</code></td>
+  </tr>
+  <tr>
+    <td><code>T value = E->Current();</code></td>
+    <td><code>T value = *I;</code></td>
+  </tr>
+</table>
+
 It may help initially to associate `TEnumerable<T>` with `std::vector<T>` and `TEnumerator<T>` with `std::vector<T>::iterator`.
 
-The single operation provided by a `TEnumerable<T>` is `GetEnumerator`. It returns a new `TEnumerator<T>` traversal.
+
 
 classes
 =======
