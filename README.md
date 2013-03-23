@@ -1,16 +1,15 @@
-linq-cpp: LINQ for C++11 done right
-===================================
+# linq-cpp: LINQ for C++11 done right
 
-introduction
-------------
+## introduction
+
 The `IEnumerable<T>` interface and associated LINQ extension methods provided by the .NET framework enable programmers to write concise, fluent, and composable query expressions using powerful abstractions.
 
 **linq-cpp** brings equivalent functionality to the C++11 environment.
 
 Readers familiar with .NET LINQ may want to skip directly to the [**methods**](README.md#methods) section.
 
-teaser
-------
+## teaser
+
 Suppose you have the following types.
 
     enum class Genders
@@ -61,11 +60,13 @@ You're given a `std::vector<Department*>` called `departments` and the following
         })
         .ToVector();
 
-definitions
------------
-An enumerable of type `T` (i.e. `TEnumerable<T>`) is an ordered sequence of zero or more values of type `T`.
+## definitions
 
-An enumerator of type `T` (i.e. `TEnumerator<T>`) is the state of a traversal through a `TEnumerable<T>`.
+### `TEnumerable<T>`
+An enumerable of type `T` is an ordered sequence of zero or more values of type `T`.
+
+### `TEnumerator<T>`
+An enumerator of type `T` is the state of a traversal through a `TEnumerable<T>`.
 
 The single operation provided by `TEnumerable<T>` is `GetEnumerator`. It returns a new `TEnumerator<T>` traversal of the `TEnumerable<T>`, starting "one before" the beginning of the sequence.
 
@@ -105,8 +106,8 @@ To make these concepts more concrete, consider the following example. Suppose `L
     E->Current();  // returns 'B'
     E->MoveNext(); // returns false
 
-classes
-=======
+## classes
+
     class TEnumerable<T>
         std::shared_ptr<TEnumerator<T>> GetEnumerator()
         
@@ -114,10 +115,10 @@ classes
         bool MoveNext()
         T Current()
 
-methods
-=======
-`Enumerable` static methods
-------------
+## methods
+
+### `Enumerable` static methods
+
 - `TEnumerable<T> FromRange(TRange& range)`
 - `TEnumerable<T> FromRange(std::shared_ptr<TRange> range)`
  - Constructs an enumerable from an STL range
@@ -148,8 +149,8 @@ methods
  - `TSelector = TResult(T1, T2)`
  - Merges two sequences by using the specified `selector` function
 
-`TEnumerable<T>` instance methods
-=================================
+### `TEnumerable<T>` instance methods
+
 - `TEnumerable<TResult> Select(TSelector selector)`
  - `TSelector = TResult(T)`
  - Projects each element of a sequence into a new form
