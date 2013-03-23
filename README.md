@@ -4,9 +4,19 @@ LINQ for C++11 done right
 
 introduction
 ------------
-The `IEnumerable<T>` interface and associated LINQ extension methods provided by the .NET framework enable .NET programmers to write concise, fluent, and composable query expressions. For anyone familiar with these tools, their incredible utility shouldn't need explaining. linq-cpp brings equivalent functionality to the C++11 environment.
+The `IEnumerable<T>` interface and associated LINQ extension methods provided by the .NET framework enable .NET programmers to write concise, fluent, and composable query expressions.
 
-If you are a programmer not familiar with .NET's `IEnumerable<T>` and LINQ, the rest of this section aims to quickly give you a basic understanding of what this library provides. (TODO) 
+linq-cpp brings equivalent functionality to the C++11 environment. Readers familiar with .NET LINQ may want to skip directly to the "methods" section.
+
+definitions
+-----------
+An enumerable of type `T` (i.e. `TEnumerable<T>`) is an ordered sequence of zero or more values of type `T`.
+
+An enumerator of type `T` (i.e. `TEnumerator<T>`) is the state of a traversal through a `TEnumerable<T>`.
+
+It may help initially to associate `TEnumerable<T>` with `std::vector<T>` and `TEnumerator<T>` with `std::vector<T>::iterator`.
+
+The single operation provided by a `TEnumerable<T>` is `GetEnumerator`. It returns a new `TEnumerator<T>` traversal.
 
 classes
 =======
