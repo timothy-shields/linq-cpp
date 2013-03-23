@@ -1,6 +1,5 @@
-linq-cpp
-========
-LINQ for C++11 done right
+linq-cpp: LINQ for C++11 done right
+===================================
 
 introduction
 ------------
@@ -18,16 +17,7 @@ The single operation provided by `TEnumerable<T>` is `GetEnumerator`. It returns
 
 The two operations provided by `TEnumerator<T>` are `MoveNext` and `Current`. The `MoveNext` operation moves the `TEnumerator<T>` to the next value in the sequence. It returns `true` if the move to the next value was successful and `false` otherwise. `Current` returns the value `T` that the `TEnumerator<T>` is currently pointing to.
 
-To make these concepts more concrete, consider the following example. Suppose `L` is a `TEnumerable<char>` representing the two-value sequence `['A', 'B']`. Then the following operations return as commented.
-
-    std::shared_ptr<TEnumerator<char>> E = L.GetEnumerator();
-    E->MoveNext(); // returns true
-    E->Current();  // returns 'A'
-    E->MoveNext(); // returns true
-    E->Current();  // returns 'B'
-    E->MoveNext(); // returns false
-
-
+It may help initially to associate these new concepts with familiar analogues in the standard template library.
 
 <table>
   <tr>
@@ -52,9 +42,14 @@ To make these concepts more concrete, consider the following example. Suppose `L
   </tr>
 </table>
 
-It may help initially to associate `TEnumerable<T>` with `std::vector<T>` and `TEnumerator<T>` with `std::vector<T>::iterator`.
+To make these concepts more concrete, consider the following example. Suppose `L` is a `TEnumerable<char>` representing the two-value sequence `['A', 'B']`. Then the following operations return as commented.
 
-
+    std::shared_ptr<TEnumerator<char>> E = L.GetEnumerator();
+    E->MoveNext(); // returns true
+    E->Current();  // returns 'A'
+    E->MoveNext(); // returns true
+    E->Current();  // returns 'B'
+    E->MoveNext(); // returns false
 
 classes
 =======
