@@ -36,7 +36,7 @@ You're given `std::vector<Department*> departments`, `int customerID`, and the f
 - The results should be grouped by age and gender, and within each group the employee data should be sorted by last name then first name.
 - An employee may work in multiple departments.
 
-**linq-cpp** makes this a straightfoward task.
+**linq-cpp** makes this a straightforward task.
     
     vector<Department*> departments = ...;
     int customerID = ...;
