@@ -209,6 +209,12 @@ To make these concepts more concrete, consider the following example. Suppose `L
  - Take elements while they are less than or equal to end
 - `TEnumerable<T> ToExclusive(T end)`
  - Take elements while they are less than end
+- `TEnumerable<T> Do(TAction action)`
+ - `TAction = void(T)`
+ - Inject a side effect of enumerating
+- `TEnumerable<T> DoIndexed(TAction action)`
+ - `TAction = void(T,int)`
+ - Inject a side effect of enumerating
 - `TEnumerable<T> Order(TComparer comparer)`
  - `TComparer = int(T, T)`
  - Sorts the elements of a sequence in ascending order using the given comparer
