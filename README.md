@@ -30,10 +30,10 @@ Suppose you have the following types.
         const std::vector<Employee*>& Employees() const
         const std::vector<Customer*>& Customers() const
 
-You're given a `std::vector<Department*>` called `departments` and the following task.
+You're given a `std::vector<Department*> departments`, `int customerID`, and the following task.
 
 - Get the names and employee IDs of employees younger than 21 who work in departments servicing the customer with the given ID.
-- The results should be grouped by age and gender, and within each group the employees should be sorted by last name then first name.
+- The results should be grouped by age and gender, and within each group the employee data should be sorted by last name then first name.
 
 **linq-cpp** makes this a straightfoward task.
     
