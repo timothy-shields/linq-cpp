@@ -62,17 +62,38 @@ You're given `std::vector<Department*> departments`, `int customerID`, and the f
 
 ## definitions
 
+### classes
+
+    class TEnumerable<T>
+        std::shared_ptr<TEnumerator<T>> GetEnumerator()
+        
+    class TEnumerator<T>
+        bool MoveNext()
+        T Current()
+
 ### `TEnumerable<T>`
 
-An enumerable of type `T` is a sequence of zero or more values of type `T`.
+- A sequence of zero or more values of type `T`
 
 ### `TEnumerator<T>`
 
-An enumerator of type `T` is the state of a traversal through a `TEnumerable<T>`.
+- The state of a traversal through a `TEnumerable<T>`
 
-The single operation provided by `TEnumerable<T>` is `GetEnumerator`. It returns a new `TEnumerator<T>` traversal of the `TEnumerable<T>`, starting "one before" the beginning of the sequence.
+### `TEnumerable<T>::GetEnumerator`
 
-The two operations provided by `TEnumerator<T>` are `MoveNext` and `Current`. The `MoveNext` operation moves the `TEnumerator<T>` to the next value in the sequence. It returns `true` if the move to the next value was successful and `false` otherwise. `Current` returns the value `T` that the `TEnumerator<T>` is currently pointing to.
+- Returns a new `TEnumerator<T>` traversal of the `TEnumerable<T>`
+- Starts "one before" the beginning of the sequence
+
+### `TEnumerator<T>::MoveNext`
+
+- Moves the `TEnumerator<T>` to the next value in the sequence
+- Returns `true` if the move to the next value was successful and `false` otherwise
+
+### `TEnumerator<T>::Current`
+
+- Returns the value `T` that the `TEnumerator<T>` is currently pointing to
+
+### analogues in STL
 
 It may help initially to associate these new concepts with familiar analogues in the standard template library.
 
@@ -99,6 +120,8 @@ It may help initially to associate these new concepts with familiar analogues in
   </tr>
 </table>
 
+### example
+
 To make these concepts more concrete, consider the following example. Suppose `L` is a `TEnumerable<char>` representing the two-value sequence `['A', 'B']`. Then the following operations return as commented.
 
     std::shared_ptr<TEnumerator<char>> E = L.GetEnumerator();
@@ -107,15 +130,6 @@ To make these concepts more concrete, consider the following example. Suppose `L
     E->MoveNext(); // returns true
     E->Current();  // returns 'B'
     E->MoveNext(); // returns false
-
-## classes
-
-    class TEnumerable<T>
-        std::shared_ptr<TEnumerator<T>> GetEnumerator()
-        
-    class TEnumerator<T>
-        bool MoveNext()
-        T Current()
 
 ## methods
 
