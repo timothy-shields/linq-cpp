@@ -34,6 +34,7 @@ You're given `std::vector<Department*> departments`, `int customerID`, and the f
 
 - Get the names and employee IDs of employees younger than 21 who work in departments servicing the customer with the given ID.
 - The results should be grouped by age and gender, and within each group the employee data should be sorted by last name then first name.
+- An employee may work in multiple departments.
 
 **linq-cpp** makes this a straightfoward task.
     
@@ -48,6 +49,7 @@ You're given `std::vector<Department*> departments`, `int customerID`, and the f
         })
         .SelectMany([](Department* d){ return Enumerable::FromRange(d->Employees()); })
         .Where([](Employee* e){ return e->Age() < 21; })
+        .Distinct()
         .GroupBy([](Employee* e){ return make_tuple(e->Age(), e->Gender()); })
         .Select([](pair<tuple<int, Genders>, TEnumerable<Employee*>> group)
         {
@@ -59,6 +61,8 @@ You're given `std::vector<Department*> departments`, `int customerID`, and the f
                     .ToVector());
         })
         .ToVector();
+
+
 
 ## definitions
 
