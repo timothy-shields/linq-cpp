@@ -41,6 +41,7 @@ You're given `std::vector<Department*> departments`, `int customerID`, and the f
     vector<Department*> departments = ...;
     int customerID = ...;
     
+    // decltype(results) is vector<pair< tuple<int, Genders>, vector<tuple<string, string, int>> >>
     auto results =
         Enumerable::FromRange(departments)
         .Where([=](Department* d)
@@ -61,8 +62,6 @@ You're given `std::vector<Department*> departments`, `int customerID`, and the f
                     .ToVector());
         })
         .ToVector();
-
-
 
 ## definitions
 
