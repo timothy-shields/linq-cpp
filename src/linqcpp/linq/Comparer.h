@@ -11,9 +11,9 @@ private:
 	Comparer() { }
 public:
 	template<typename T>
-	static std::function<int (T, T)> Default()
+	static std::function<int (const T&, const T&)> Default()
 	{
-		return [](T a, T b)
+		return [](const T& a, const T& b)
 		{
 			if (a < b)
 			{
@@ -31,32 +31,18 @@ public:
 	}
 
 	template<typename T, typename TKey>
-	static std::function<int (T, T)> Default(std::function<TKey (T)> keySelector)
+	static std::function<int (const T&, const T&)> Extend(std::function<int (const TKey&, const TKey&)> keyComparer, std::function<TKey (const T&)> keySelector)
 	{
-		return [=](T a, T b)
+		return [=](const T& a, const T& b)
 		{
-			auto aKey = keySelector(a);
-			auto bKey = keySelector(b);
-
-			if (aKey < bKey)
-			{
-				return -1;
-			}
-			else if (bKey < aKey)
-			{
-				return 1;
-			}
-			else
-			{
-				return 0;
-			}
+			return keyComparer(keySelector(a), keySelector(b));
 		};
 	}
 
 	template<typename T>
-	static std::function<int (T, T)> Dictionary(std::vector<std::function<int (T, T)>> comparers)
+	static std::function<int (const T&, const T&)> Dictionary(std::vector<std::function<int (const T&, const T&)>> comparers)
 	{
-		return [=](T a, T b)
+		return [=](const T& a, const T& b)
 		{
 			for (auto iter = comparers.begin(); iter != comparers.end(); ++iter)
 			{
@@ -71,11 +57,20 @@ public:
 	}
 
 	template<typename T>
-	static std::function<int (T, T)> Reverse(std::function<int (T, T)> comparer)
+	static std::function<int (const T&, const T&)> Reverse(std::function<int (const T&, const T&)> comparer)
 	{
-		return [=](T a, T b)
+		return [=](const T& a, const T& b)
 		{
-			return comparer(b, a);
+			return -comparer(a, b);
+		};
+	}
+
+	template<typename T>
+	static std::function<bool (const T&, const T&)> Less(std::function<int (const T&, const T&)> comparer)
+	{
+		return [=](const T& a, const T& b)
+		{
+			return comparer(a, b) < 0;
 		};
 	}
 };

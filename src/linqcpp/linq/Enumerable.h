@@ -5,19 +5,15 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <queue>
 #include <string>
 #include <tuple>
 #include <iostream>
 #include <sstream>
 
-#include "Comparer.h"
-#include "Functional.h"
-#include "PairingHeap.h"
-
 namespace linq {
 
-template<typename T>
-class PairingHeap;
+enum class Ordering { Ascending, Descending };
 
 template<typename T>
 class TEnumerator
@@ -166,7 +162,7 @@ public:
 	//Assumption: T = TEnumerable<*>
 	T SelectMany()
 	{
-		return SelectMany(Functional::Identity<T>);
+		return SelectMany([](T x){ return x; });
 	}
 
 	//TSelector: T -> TEnumerable<TResult>
@@ -466,125 +462,171 @@ public:
 			});
 	}
 
-	//TComparer: T, T -> int
-	template<typename TComparer>
-	TEnumerable<T> Order(TComparer comparer)
+	//TGreater: T, T -> bool
+	template<typename TGreater>
+	TEnumerable<T> OrderAscending(TGreater greater)
 	{
 		struct State
 		{
-			State(const TComparer& comparer)
-				: heap(comparer)
+			State(const TGreater& _greater)
+				: heap(_greater)
 			{
 			}
-			PairingHeap<T> heap;
+			std::priority_queue<T, std::vector<T>, TGreater> heap;
 			T value;
 		};
-
 		auto _getEnumerator(getEnumerator);
-
-		return TEnumerable<T>
-		(
-			[=]()
+		return TEnumerable<T>([=]()
+		{
+			auto enumerator = (*_getEnumerator)();
+			auto state = std::make_shared<State>(greater);
+			while (enumerator->MoveNext())
 			{
-				auto enumerator = (*_getEnumerator)();
-				auto state = std::make_shared<State>(comparer);
-
-				while (enumerator->MoveNext())
-				{
-					state->heap.Insert(enumerator->Current());
-				}
-
-				return std::make_shared<TEnumerator<T>>
-				(
-					[=]()
-					{
-						if (state->heap.Empty())
-						{
-							return false;
-						}
-						state->value = state->heap.ExtractMin()->value;
-						return true;
-					},
-					[=]()
-					{
-						return state->value;
-					}
-				);
+				state->heap.push(enumerator->Current());
 			}
-		);
+			return std::make_shared<TEnumerator<T>>(
+				[=]()
+				{
+					if (state->heap.empty())
+					{
+						return false;
+					}
+					state->value = state->heap.top();
+					state->heap.pop();
+					return true;
+				},
+				[=]()
+				{
+					return state->value;
+				});
+		});
 	}
 
-	TEnumerable<T> Order()
+	//TLess: T, T -> bool
+	template<typename TLess>
+	TEnumerable<T> OrderDescending(TLess less)
 	{
-		return Order(Comparer::Default<T>());
+		struct State
+		{
+			State(const TLess& _less)
+				: heap(_less)
+			{
+			}
+			std::priority_queue<T, std::vector<T>, TLess> heap;
+			T value;
+		};
+		auto _getEnumerator(getEnumerator);
+		return TEnumerable<T>([=]()
+		{
+			auto enumerator = (*_getEnumerator)();
+			auto state = std::make_shared<State>(less);
+			while (enumerator->MoveNext())
+			{
+				state->heap.push(enumerator->Current());
+			}
+			return std::make_shared<TEnumerator<T>>(
+				[=]()
+				{
+					if (state->heap.empty())
+					{
+						return false;
+					}
+					state->value = state->heap.top();
+					state->heap.pop();
+					return true;
+				},
+				[=]()
+				{
+					return state->value;
+				});
+		});
+	}
+
+	//TComparer: T, T -> int
+	template<typename TComparer>
+	TEnumerable<T> Order(Ordering ordering, TComparer comparer)
+	{
+		if (ordering == Ordering::Ascending)
+		{
+			return OrderAscending([comparer](const T& a, const T& b){ return comparer(a, b) > 0; });
+		}
+		else
+		{
+			return OrderDescending([comparer](const T& a, const T& b){ return comparer(a, b) < 0; });
+		}
+	}
+
+	TEnumerable<T> Order(Ordering ordering)
+	{
+		if (ordering == Ordering::Ascending)
+		{
+			return OrderAscending(std::greater<T>());
+		}
+		else
+		{
+			return OrderDescending(std::less<T>());
+		}
 	}
 
 	template<typename TKeySelector>
-	TEnumerable<T> OrderBy(TKeySelector keySelector)
+	TEnumerable<T> OrderBy(Ordering ordering, TKeySelector keySelector)
 	{
 		typedef decltype(keySelector(std::declval<T>())) TKey;
-		return
-			Select
-			(
-				[=](T x)
-				{
-					return std::make_pair(keySelector(x), x);
-				}
-			)
-			.Order
-			(
-				Comparer::Default<std::pair<TKey, T>, TKey>
-				(
-					[](std::pair<TKey, T> x)
-					{
-						return x.first;
-					}
-				)
-			)
-			.Select
-			(
-				[](std::pair<TKey, T> x)
-				{
-					return x.second;
-				}
-			);
+		typedef std::pair<TKey, T> TPair;
+		auto pairs = Select([=](T& x) -> TPair { return std::make_pair(keySelector(x), x); });
+		if (ordering == Ordering::Ascending)
+		{
+			pairs = pairs.OrderAscending([](const TPair& a, const TPair& b){ return a.first > b.first; });
+		}
+		else
+		{
+			pairs = pairs.OrderDescending([](const TPair& a, const TPair& b){ return a.first < b.first; });
+		}
+		return pairs.Select([](const TPair& x) -> T { return x.second; });
+	}
+
+	TEnumerable<T> Distinct()
+	{
+		auto _set = std::make_shared<std::set<T>>();
+		ForEach([=](T x){ _set->insert(x); });
+		return Enumerable::FromRange(_set);
+	}
+
+	template<typename TKeySelector>
+	TEnumerable<T> DistinctBy(TKeySelector keySelector)
+	{
+		typedef decltype(keySelector(std::declval<T>())) TKey;
+		auto _map = std::make_shared<std::map<TKey, T>>();
+		ForEach([=](T x){ _map->insert(keySelector(x), x); });
+		return Enumerable::FromRange(_map).Select([](std::pair<TKey, T>& _pair) -> T { return _pair.second; });
 	}
 
 	template<typename TKeySelector>
 	auto GroupBy(TKeySelector keySelector) -> TEnumerable<std::pair<decltype(keySelector(std::declval<T>())), TEnumerable<T>>>
 	{
 		typedef decltype(keySelector(std::declval<T>())) TKey;
-
 		auto _map = std::make_shared<std::map<TKey, std::shared_ptr<std::vector<T>>>>();
-
-		ForEach
-		(
-			[=](T x)
+		ForEach([=](T x)
+		{
+			TKey key = keySelector(x);
+			auto it = _map->find(key);
+			std::shared_ptr<std::vector<T>> _vector;
+			if (it != _map->end())
 			{
-				TKey key = keySelector(x);
-				auto it = _map->find(key);
-				std::shared_ptr<std::vector<T>> _vector;
-				if (it != _map->end())
-				{
-					_vector = it->second;
-				}
-				else
-				{
-					_vector = std::make_shared<std::vector<T>>();
-					_map->insert(std::make_pair(key, _vector));
-				}
-				_vector->push_back(x);
+				_vector = it->second;
 			}
-		);
-
+			else
+			{
+				_vector = std::make_shared<std::vector<T>>();
+				_map->insert(std::make_pair(key, _vector));
+			}
+			_vector->push_back(x);
+		});
 		return Enumerable::FromRange(_map)
-			.Select
-			(
-				[](std::pair<TKey, std::shared_ptr<std::vector<T>>> _pair)
-				{
-					return std::make_pair(_pair.first, Enumerable::FromRange(_pair.second));
-				}
-			);
+			.Select([](std::pair<TKey, std::shared_ptr<std::vector<T>>> _pair)
+			{
+				return std::make_pair(_pair.first, Enumerable::FromRange(_pair.second));
+			});
 	}
 
 	bool Any()
@@ -1307,7 +1349,7 @@ public:
 	template<typename T>
 	static TEnumerable<T> Sequence(T start)
 	{
-		return Sequence<T>(start, Functional::Increment<T>);
+		return Sequence<T>(start, [](T x){ return x + 1; });
 	}
 
 	template<typename T>

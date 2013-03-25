@@ -11,7 +11,7 @@ include_directories(
 add_preprocessor_definition(NOMINMAX)
 add_preprocessor_definition(WIN32_LEAN_AND_MEAN)
 
-set(LIB_TYPE SHARED)
+set(LIB_TYPE STATIC)
 
 macro(install_target_configuration TARGET_NAME CONFIGURATION_NAME)
 	INSTALL(TARGETS ${TARGET_NAME}

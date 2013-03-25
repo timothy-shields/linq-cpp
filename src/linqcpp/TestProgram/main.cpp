@@ -1,5 +1,5 @@
-#include <linqcpp/Utils/ProgramUtils.h>
 #include <linqcpp/linq/Enumerable.h>
+#include "ProgramUtils.h"
 
 #include <string>
 #include <random>
@@ -44,9 +44,28 @@ void run(int argc, char* argv[])
 {
 	auto lines = FileLines("C:\\Users\\Timothy\\Documents\\GitHub\\linq-cpp\\src\\CMakeLists.txt");
 
-	lines.OrderBy([](string line){ return -static_cast<int>(line.length()); })
-		.Take(10)
-		.ForEach([](string line){ cout << line << endl; });
+	cout << "30 longest lines:" << endl << endl;
+
+	lines.OrderBy(Ordering::Descending, [](string& line){ return line.length(); })
+		.Take(30)
+		.ForEach([](string& line){ cout << line.size() << ":\t||" << line << "||" << endl; });
+
+	cout << endl << endl;
+
+	cout << "30 shortest lines:" << endl << endl;
+
+	lines.OrderBy(Ordering::Ascending, [](string& line){ return line.length(); })
+		.Take(30)
+		.ForEach([](string& line){ cout << line.size() << ":\t||" << line << "||" << endl; });
+
+	cout << endl << endl;
+
+	cout << "grouped lines:" << endl << endl;
+
+	lines.GroupBy([](string& line){ return line.length(); })
+		.ForEach([](pair<size_t, TEnumerable<string>> group){ cout << group.first << "(" << group.second.Count() << "):" << endl << group.second.ToString("\n") << endl; });
+
+	cout << endl << endl;
 
 	cout << Enumerable::Sequence(0)
 		.Take(100)
