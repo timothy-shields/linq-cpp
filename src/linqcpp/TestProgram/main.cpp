@@ -77,132 +77,30 @@ void run(int argc, char* argv[])
 			})
 		<< endl;
 
-	//cout << "Select, ToVector" << endl;
-	//TimeIt("linq:", 100, [=](){
-	//	vector<int> v2(10);
-	//	Enumerable::FromRange<int>(v)
-	//		.Select<int>([](int x){ return x % 5; })
-	//		.Where([](int x){ return x % 2 != 0; })
-	//		.Order()
-	//		.Take(10)
-	//		.IntoVector(v2);
-	//});
+	auto v(Enumerable::Range(0, 1000).Select([](int x){ return (x * 2147483647) % 400; }).ToVector());
 
-	//TimeIt("std:", 100, [=](){
-	//	vector<int> v2(v.size());
-	//	for (auto it = v.begin(); it != v.end(); ++it)
-	//		if (*it % 2 != 0)
-	//			v2.push_back((*it) % 5);
-	//	sort(v2.begin(), v2.end());
-	//	vector<int> v3(v2.begin(), v2.begin() + 10);
-	//});
+	cout << "Select, ToVector" << endl;
+	TimeIt("linq:", 10, [=](){
+		vector<int> v2(10);
+		Enumerable::FromRange(v)
+			.Select([](int x){ return x % 5; })
+			.Where([](int x){ return x % 2 != 0; })
+			.Order(Ordering::Ascending)
+			.Take(10)
+			.IntoVector(v2);
+	});
+
+	TimeIt("std:", 10, [=](){
+		vector<int> v2(v.size());
+		for (auto it = v.begin(); it != v.end(); ++it)
+			if (*it % 2 != 0)
+				v2.push_back((*it) % 5);
+		sort(v2.begin(), v2.end());
+		vector<int> v3(v2.begin(), v2.begin() + 10);
+	});
 
 	string junk;
 	getline(cin, junk);
-}
-
-void abc(){
-
-
-	//{
-	//	PairingHeap<char> heap;
-	//	TEnumerable<char>::Range('A', 26)
-	//		.Concat(TEnumerable<char>::Range('a', 26))
-	//		.Concat(TEnumerable<char>::Range('0', 10))
-	//		.ForEach([&](char c){ heap.Insert(c); });
-	//	heap.Nodes()
-	//		.Select<char>([](shared_ptr<PairingHeap<char>::Node> node){ return node->value; })
-	//		.ForEach([](char c){ cout << c; });
-	//	cout << endl;
-
-	//	auto eee = heap.Nodes(true);
-	//	eee.Select<char>([](shared_ptr<PairingHeap<char>::Node> node){ return node->value; })
-	//		.ForEach([](char c){ cout << c; });
-	//	cout << endl;
-
-	//	//eee.Select<char>([](shared_ptr<PairingHeap<char>::Node> node){ return node->value; })
-	//	//	.ForEach([](char c){ cout << c; });
-	//	//cout << endl;
-
-	//	//eee.Select<char>([](shared_ptr<PairingHeap<char>::Node> node){ return node->value; })
-	//	//	.ForEach([](char c){ cout << c; });
-	//	//cout << endl;
-
-	//	cout << "Test case 1:" << endl;
-
-	//	auto enumerable = TEnumerable<int>::Range(1, 100)
-	//		.SelectMany<pair<int, int>>([](int x){
-	//			return TEnumerable<int>::From(6)
-	//			.ToInclusive(x)
-	//			.Select<pair<int, int>>([=](int y){
-	//				return std::make_pair(x, y);
-	//			});
-	//		});
-
-	//	auto myVec = enumerable.OrderByKey<int>([](pair<int, int> p){ return p.second; }).ToVector();
-
-	//	TEnumerable<pair<int, int>>::FromRange(myVec)
-	//		.ForEachIndexed([](pair<int, int> p, int i){
-	//			cout << i << ": " << p.first << ", " << p.second << endl;
-	//		});
-	//}
-
-	{
-		cout << "Test case 2:" << endl;
-
-		auto testing = Enumerable::Sequence(12, [](int x){ return x >= -3; }, [](int x){ return x - 1; })
-			.SelectMany([](int x)
-			{
-				return Enumerable::Sequence(0.0, [](double y){ return y + 0.1; })
-					.Take(11)
-					.Select([=](double y) { return y + x; });
-			})
-			.Index()
-			.ToVector();
-
-		testing = testing;
-
-		auto testing2 = Enumerable::Sequence(1, [](int x){ return (x + 7) % 5; }).Take(33).StaticCast<double>().ToVector();
-
-		testing2 = testing2;
-
-		auto groups = Enumerable::Range(1, 10)
-			.Select([](int x){
-				return make_pair(
-					x,
-					Enumerable::Sequence(6).ToInclusive(x));
-			});
-
-		auto abc = groups.ToVector();
-
-		abc = abc;
-
-		groups
-			.Where([](pair<int, TEnumerable<int>> p){
-				return p.second.Any([](int x){ return x % 2 != 0; });
-			})
-			.ForEach([](pair<int, TEnumerable<int>> group){
-				cout << group.first << ":" << endl;
-				group.second.ForEach([](int item){
-					cout << "\t" << item << endl;
-				});
-			});
-
-		auto numbers = groups
-			.SelectMany([](pair<int, TEnumerable<int>> group){
-				return group.second;
-			})
-			.StaticCast<double>()
-			.Select([](double x){ return x + 0.5; });
-
-		//cout << numbers.ToString(",") << endl;
-		cout << "Min: " << numbers.Min() << endl;
-		cout << "Max: " << numbers.Max() << endl;
-		cout << "Avg: " << numbers.Average() << endl;
-
-		string junk;
-		getline(cin, junk);
-	}
 }
 
 int main(int argc, char* argv[])
