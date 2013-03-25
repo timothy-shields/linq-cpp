@@ -17,7 +17,6 @@ Suppose you have the following types.
         Female
     
     class Employee
-        int ID() const
         const std::string& FirstName() const
         const std::string& LastName() const
         int Age() const
@@ -32,7 +31,7 @@ Suppose you have the following types.
 
 You're given `std::vector<Department*> departments`, `int customerID`, and the following task.
 
-- Get the names and employee IDs of employees younger than 21 who work in departments servicing the customer with the given ID.
+- Get the employees younger than 21 who work in departments servicing the customer with the given ID.
 - The results should be grouped by age and gender, and within each group the employee data should be sorted by last name then first name.
 - An employee may work in multiple departments.
 
@@ -41,8 +40,11 @@ You're given `std::vector<Department*> departments`, `int customerID`, and the f
     vector<Department*> departments = ...;
     int customerID = ...;
     
-    // decltype(results) is vector<pair< tuple<int, Genders>, vector<tuple<string, string, int>> >>
-    auto results =
+	// Could use "auto" to have the compiler determine the query's return type
+	// but an explicit breakdown makes it clearer.
+	typedef tuple<int, Genders> EmployeeGroupKey;
+	typedef pair<EmployeeGroupKey, vector<Employee*>> EmployeeGroup;
+    vector<EmployeeGroup> results =
         Enumerable::FromRange(departments)
         .Where([=](Department* d)
         {
@@ -58,7 +60,6 @@ You're given `std::vector<Department*> departments`, `int customerID`, and the f
                 group.first,
                 group.second
                     .OrderBy([](Employee* e){ return make_tuple(e->LastName(), e->FirstName()); })
-                    .Select([](Employee* e){ return make_tuple(e->FirstName(), e->LastName(), e->ID()); })
                     .ToVector());
         })
         .ToVector();
