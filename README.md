@@ -33,7 +33,7 @@ You're given `vector<Department*> departments`, `int customerID`, and the follow
 
 - Get the employees younger than 21 who work in departments servicing the customer with the given ID.
 - The results should be grouped by age and gender, and within each group the employee data should be sorted by last name then first name.
-- An employee may work in multiple departments.
+- An employee may work in multiple departments, but the results shouldn't contain any employee more than once.
 
 **linq-cpp** makes this complex task straightforward.
     
