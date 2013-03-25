@@ -1,15 +1,72 @@
-linq-cpp
-========
-LINQ for C++11 done right
+# linq-cpp: LINQ for C++11 done right
 
-introduction
-------------
-The `IEnumerable<T>` interface and associated LINQ extension methods provided by the .NET framework enable .NET programmers to write concise, fluent, and composable query expressions. For anyone familiar with these tools, their incredible utility shouldn't need explaining. linq-cpp brings equivalent functionality to the C++11 environment.
+## introduction
 
-If you are a programmer not familiar with .NET's `IEnumerable<T>` and LINQ, the rest of this section aims to quickly give you a basic understanding of what this library provides. (TODO) 
+The `IEnumerable<T>` interface and associated LINQ extension methods provided by the .NET framework enable programmers to write concise, fluent, and composable query expressions using powerful abstractions.
 
-classes
-=======
+**linq-cpp** brings equivalent functionality to the C++11 environment.
+
+Readers familiar with .NET LINQ may want to skip directly to the [**methods**](README.md#methods) section.
+
+## teaser
+
+Suppose you have the following types.
+
+    enum class Genders
+        Male
+        Female
+    
+    class Employee
+        int ID() const
+        const std::string& FirstName() const
+        const std::string& LastName() const
+        int Age() const
+        Genders Gender() const
+        
+    class Customer
+        int ID() const
+    
+    class Department
+        const std::vector<Employee*>& Employees() const
+        const std::vector<Customer*>& Customers() const
+
+You're given `std::vector<Department*> departments`, `int customerID`, and the following task.
+
+- Get the names and employee IDs of employees younger than 21 who work in departments servicing the customer with the given ID.
+- The results should be grouped by age and gender, and within each group the employee data should be sorted by last name then first name.
+- An employee may work in multiple departments.
+
+**linq-cpp** makes this a straightforward task.
+    
+    vector<Department*> departments = ...;
+    int customerID = ...;
+    
+    // decltype(results) is vector<pair< tuple<int, Genders>, vector<tuple<string, string, int>> >>
+    auto results =
+        Enumerable::FromRange(departments)
+        .Where([=](Department* d)
+        {
+            return Enumerable::FromRange(d->Customers()).Any([=](Customer* c){ return c->ID == customerID; });
+        })
+        .SelectMany([](Department* d){ return Enumerable::FromRange(d->Employees()); })
+        .Where([](Employee* e){ return e->Age() < 21; })
+        .Distinct()
+        .GroupBy([](Employee* e){ return make_tuple(e->Age(), e->Gender()); })
+        .Select([](pair<tuple<int, Genders>, TEnumerable<Employee*>> group)
+        {
+            return std::make_pair(
+                group.first,
+                group.second
+                    .OrderBy([](Employee* e){ return make_tuple(e->LastName(), e->FirstName()); })
+                    .Select([](Employee* e){ return make_tuple(e->FirstName(), e->LastName(), e->ID()); })
+                    .ToVector());
+        })
+        .ToVector();
+
+## definitions
+
+### classes
+
     class TEnumerable<T>
         std::shared_ptr<TEnumerator<T>> GetEnumerator()
         
@@ -17,17 +74,77 @@ classes
         bool MoveNext()
         T Current()
 
-methods
-=======
-`Enumerable` static methods
-------------
+### `TEnumerable<T>`
+
+- A sequence of zero or more values of type `T`
+
+### `TEnumerator<T>`
+
+- The state of a traversal through a `TEnumerable<T>`
+
+### `TEnumerable<T>::GetEnumerator`
+
+- Returns a new `TEnumerator<T>` traversal of the `TEnumerable<T>`
+- Starts "one before" the beginning of the sequence
+
+### `TEnumerator<T>::MoveNext`
+
+- Moves the `TEnumerator<T>` to the next value in the sequence
+- Returns `true` if the move to the next value was successful and `false` otherwise
+
+### `TEnumerator<T>::Current`
+
+- Returns the value `T` that the `TEnumerator<T>` is currently pointing to
+
+### analogues in STL
+
+It may help initially to associate these new concepts with familiar analogues in the standard template library.
+
+<table>
+  <tr>
+    <th>new concept</th>
+    <th>familiar analogue</th>
+  </tr>
+  <tr>
+    <td><code>TEnumerable&lt;T&gt; L;</code></td>
+    <td><code>std::vector&lt;T&gt; V;</code></td>
+  </tr>
+  <tr>
+    <td><code>std::shared_ptr&lt;TEnumerator&lt;T&gt;&gt; E = L.GetEnumerator();</code></td>
+    <td><code>std::vector&lt;T&gt;::iterator I = V.begin();</code></td>
+  </tr>
+  <tr>
+    <td><code>bool success = E->MoveNext();</code></td>
+    <td><code>bool success = (++I != V.end());</code></td>
+  </tr>
+  <tr>
+    <td><code>T value = E->Current();</code></td>
+    <td><code>T value = *I;</code></td>
+  </tr>
+</table>
+
+### example
+
+To make these concepts more concrete, consider the following example. Suppose `L` is a `TEnumerable<char>` representing the two-value sequence `['A', 'B']`. Then the following operations return as commented.
+
+    std::shared_ptr<TEnumerator<char>> E = L.GetEnumerator();
+    E->MoveNext(); // returns true
+    E->Current();  // returns 'A'
+    E->MoveNext(); // returns true
+    E->Current();  // returns 'B'
+    E->MoveNext(); // returns false
+
+## methods
+
+### `Enumerable` static methods
+
 - `TEnumerable<T> FromRange(TRange& range)`
 - `TEnumerable<T> FromRange(std::shared_ptr<TRange> range)`
  - Constructs an enumerable from an STL range
 - `TEnumerable<T> Factory(TFactory factory)`
  - `TFactory = TEnumerable<T>()`
  - Repeated calls to `factory` argument each create an enumerable that can only be enumerated once
- - Result is Enumerable that can be enumerated as many times as desired
+ - Result is enumerable that can be enumerated as many times as desired
 - `TEnumerable<T> Repeat(T x)`
  - Represents an infinite sequence of which every element is `x`
 - `TEnumerable<T> Empty()`
@@ -51,8 +168,8 @@ methods
  - `TSelector = TResult(T1, T2)`
  - Merges two sequences by using the specified `selector` function
 
-`TEnumerable<T>` instance methods
-=================================
+### `TEnumerable<T>` instance methods
+
 - `TEnumerable<TResult> Select(TSelector selector)`
  - `TSelector = TResult(T)`
  - Projects each element of a sequence into a new form
@@ -95,6 +212,12 @@ methods
  - Take elements while they are less than or equal to end
 - `TEnumerable<T> ToExclusive(T end)`
  - Take elements while they are less than end
+- `TEnumerable<T> Do(TAction action)`
+ - `TAction = void(T)`
+ - Inject a side effect of enumerating
+- `TEnumerable<T> DoIndexed(TAction action)`
+ - `TAction = void(T,int)`
+ - Inject a side effect of enumerating
 - `TEnumerable<T> Order(TComparer comparer)`
  - `TComparer = int(T, T)`
  - Sorts the elements of a sequence in ascending order using the given comparer
