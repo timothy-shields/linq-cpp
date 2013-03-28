@@ -42,63 +42,129 @@ TEnumerable<string> FileLines(string path)
 
 void run(int argc, char* argv[])
 {
-	auto lines = FileLines("C:\\Users\\Timothy\\Documents\\GitHub\\linq-cpp\\src\\CMakeLists.txt");
+	std::ostream& stream = std::cout;
 
-	cout << "30 longest lines:" << endl << endl;
-
-	lines.OrderBy(Ordering::Descending, [](string& line){ return line.length(); })
-		.Take(30)
-		.ForEach([](string& line){ cout << line.size() << ":\t||" << line << "||" << endl; });
-
-	cout << endl << endl;
-
-	cout << "30 shortest lines:" << endl << endl;
-
-	lines.OrderBy(Ordering::Ascending, [](string& line){ return line.length(); })
-		.Take(30)
-		.ForEach([](string& line){ cout << line.size() << ":\t||" << line << "||" << endl; });
-
-	cout << endl << endl;
-
-	cout << "grouped lines:" << endl << endl;
-
-	lines.GroupBy([](string& line){ return line.length(); })
-		.ForEach([](pair<size_t, TEnumerable<string>> group){ cout << group.first << "(" << group.second.Count() << "):" << endl << group.second.ToString("\n") << endl; });
-
-	cout << endl << endl;
-
-	cout << Enumerable::Sequence(0)
-		.Take(100)
-		.GroupBy([](int x){ return x % 10; })
-		.ToString("\n",
-			[](std::stringstream& stream, std::pair<int, TEnumerable<int>> _pair)
-			{
-				stream << "n % 10 == " << _pair.first << ": " << _pair.second.ToString();
-			})
-		<< endl;
-
-	auto v(Enumerable::Range(0, 1000).Select([](int x){ return (x * 2147483647) % 400; }).ToVector());
-
-	cout << "Select, ToVector" << endl;
-	TimeIt("linq:", 10, [=](){
-		vector<int> v2(10);
-		Enumerable::FromRange(v)
-			.Select([](int x){ return x % 5; })
-			.Where([](int x){ return x % 2 != 0; })
-			.Order(Ordering::Ascending)
-			.Take(10)
-			.IntoVector(v2);
+	std::map<std::string, std::function<bool()>> tests;
+	auto AddTest = [&](std::string name, std::function<bool()> func)
+	{
+		std::map<std::string, std::function<bool()>>::iterator it;
+		bool success;
+		std::tie(it, success) = tests.insert(std::make_pair(name, func));
+		if (!success)
+			it->second = []()->bool{ throw std::logic_error("More than one test defined with this same name!"); };
+	};
+	
+	AddTest("FromRange by reference", []()->bool
+	{
+		std::vector<int> v;
+		v.push_back(5);
+		return Enumerable::SequenceEqual(
+			Enumerable::FromRange(v),
+			Enumerable::Return(5));
 	});
 
-	TimeIt("std:", 10, [=](){
-		vector<int> v2(v.size());
-		for (auto it = v.begin(); it != v.end(); ++it)
-			if (*it % 2 != 0)
-				v2.push_back((*it) % 5);
-		sort(v2.begin(), v2.end());
-		vector<int> v3(v2.begin(), v2.begin() + 10);
+	AddTest("FromRange by shared_ptr", []()->bool
+	{
+		auto v = std::make_shared<std::vector<int>>();
+		v->push_back(5);
+		auto e = Enumerable::FromRange(v);
+		v.reset();
+		return Enumerable::SequenceEqual(
+			e,
+			Enumerable::Return(5));
 	});
 
+	AddTest("Repeat", []()->bool
+	{
+		std::vector<int> v;
+		for (int i = 0; i < 10; i++)
+			v.push_back(5);
+		return Enumerable::SequenceEqual(
+			Enumerable::FromRange(v),
+			Enumerable::Repeat(5).Take(10));
+	});
+
+	AddTest("Empty", []()->bool
+	{
+		std::vector<int> v;
+		return Enumerable::SequenceEqual(
+			Enumerable::FromRange(v),
+			Enumerable::Empty<int>());
+	});
+
+	AddTest("Return", []()->bool
+	{
+		std::vector<int> v;
+		v.push_back(5);
+		return Enumerable::SequenceEqual(
+			Enumerable::FromRange(v),
+			Enumerable::Return(5));
+	});
+
+	AddTest("Concat", []()->bool
+	{
+		std::vector<int> v;
+		v.push_back(1);
+		v.push_back(3);
+		v.push_back(4);
+		return Enumerable::SequenceEqual(
+			Enumerable::FromRange(v),
+			Enumerable::Concat(Enumerable::Return(1), Enumerable::Range(3, 2)));
+	});
+
+	AddTest("Zip", []()->bool
+	{
+		std::vector<int> v1;
+		v1.push_back(-4);
+		v1.push_back(2);
+		v1.push_back(1);
+		std::vector<int> v2;
+		v2.push_back(4);
+		v2.push_back(-1);
+		v2.push_back(1);
+		return Enumerable::SequenceEqual(
+			Enumerable::Range(0, 3),
+			Enumerable::Zip(Enumerable::FromRange(v1), Enumerable::FromRange(v2), [](int a, int b){ return a + b; }));
+	});
+
+	int successCount = 0;
+	int failureCount = 0;
+	std::vector<std::string> failureNames;
+	for (auto test = tests.begin(); test != tests.end(); ++test)
+	{
+		const auto& name = test->first;
+		const auto& func = test->second;
+
+		stream << "========================================" << std::endl;
+		stream << "Test: " << name << std::endl;
+		bool success = false;
+		try
+		{
+			success = func();
+		}
+		catch(std::exception& e)
+		{
+			stream << "Exception: " << e.what() << std::endl;
+		}
+		catch(...)
+		{
+			stream << "Exception: <unknown>" << std::endl;
+		}
+		stream << (success ? "Success" : "Failure") << std::endl;
+		(success ? successCount : failureCount)++;
+		if (!success)
+			failureNames.push_back(name);
+	}
+
+	stream << "========================================" << std::endl;
+	stream << std::endl;
+	stream << "Success count: " << successCount << std::endl;
+	stream << "Failure count: " << failureCount << std::endl;
+	stream << "Failed tests:" << std::endl;
+	for (auto failureName = failureNames.begin(); failureName != failureNames.end(); ++failureName)
+		stream << "    " << *failureName << std::endl;
+
+	//Wait for user input
 	string junk;
 	getline(cin, junk);
 }

@@ -633,6 +633,11 @@ public:
 		return false;
 	}
 
+	bool Contains(T x)
+	{
+		return Any([](const T& y){ return x == y; });
+	}
+
 	template<typename TPredicate>
 	bool All(TPredicate predicate)
 	{
@@ -980,10 +985,12 @@ public:
 
 	//TKeySelector: T -> TKey
 	//TValueSelector: T -> TValue
-	template<typename TKey, typename TValue, typename TKeySelector, typename TValueSelector>
-	std::map<TKey, TValue> ToMap(TKeySelector keySelector, TValueSelector valueSelector)
+	template<typename TKeySelector, typename TValueSelector>
+	auto ToMap(TKeySelector keySelector, TValueSelector valueSelector) -> std::map<decltype(keySelector(std::declval<T>())), decltype(valueSelector(std::declval<T>()))>
 	{
-		std::map<TKey, T> _map;
+		typedef decltype(keySelector(std::declval<T>())) TKey;
+		typedef decltype(valueSelector(std::declval<T>())) TValue;
+		std::map<TKey, TValue> _map;
 		IntoMap(_map, keySelector, valueSelector);
 		return _map;
 	}
@@ -996,9 +1003,10 @@ public:
 	}
 
 	//TKeySelector: T -> TKey
-	template<typename TKey, typename TKeySelector>
-	std::map<TKey, T> ToMap(TKeySelector keySelector)
+	template<typename TKeySelector>
+	auto ToMap(TKeySelector keySelector) -> std::map<decltype(keySelector(std::declval<T>())), T>
 	{
+		typedef decltype(keySelector(std::declval<T>())) TKey;
 		std::map<TKey, T> _map;
 		IntoMap(_map, keySelector);
 		return _map;
@@ -1015,8 +1023,41 @@ public:
 	template<typename TKey, typename TValue>
 	std::map<TKey, TValue> ToMap()
 	{
-		std::map<TKey, T> _map;
+		std::map<TKey, TValue> _map;
 		IntoMap(_map);
+		return _map;
+	}
+	//Having trouble getting the compiler to accept what seems like a better implementation:
+	//auto ToMap() -> std::map<decltype(std::declval<T>().first), decltype(std::declval<T>().second)>
+	//{
+	//	typedef decltype(std::declval<T>().first) TKey;
+	//	typedef decltype(std::declval<T>().second) TValue;
+	//	std::map<TKey, TValue> _map;
+	//	IntoMap(_map);
+	//	return _map;
+	//}
+
+	template<typename TKeySelector>
+	auto ToLookup(TKeySelector keySelector) -> std::map<decltype(keySelector(std::declval<T>())), std::shared_ptr<std::vector<T>>>
+	{
+		typedef decltype(keySelector(std::declval<T>())) TKey;
+		auto _map = std::make_shared<std::map<TKey, std::shared_ptr<std::vector<T>>>>();
+		ForEach([=](T x)
+		{
+			TKey key = keySelector(x);
+			auto it = _map->find(key);
+			std::shared_ptr<std::vector<T>> _vector;
+			if (it != _map->end())
+			{
+				_vector = it->second;
+			}
+			else
+			{
+				_vector = std::make_shared<std::vector<T>>();
+				_map->insert(std::make_pair(key, _vector));
+			}
+			_vector->push_back(x);
+		});
 		return _map;
 	}
 
@@ -1066,9 +1107,9 @@ public:
 		typedef TRange::const_iterator TIter;
 		struct State
 		{
-			State(const TIter& iter, bool first)
+			State(const TIter& iter)
 				: iter(iter)
-				, first(first)
+				, first(true)
 			{
 			}
 			TIter iter;
@@ -1076,7 +1117,7 @@ public:
 		};
 		return TEnumerable<T>([&range]()
 		{
-			auto state = std::make_shared<State>(range.begin(), true);
+			auto state = std::make_shared<State>(range.begin());
 			return std::make_shared<TEnumerator<T>>(
 				[state, &range]()
 				{
@@ -1153,7 +1194,7 @@ public:
 		{
 			return std::make_shared<TEnumerator<T>>(
 				[](){ return false; },
-				[](){ throw std::runtime_error("Current should never be called on TEnumerable<T>::Empty."); });
+				[]()->T{ throw std::runtime_error("Current should never be called on Enumerable<T>::Empty."); });
 		});
 	}
 
@@ -1274,51 +1315,10 @@ public:
 	template<typename T>
 	static TEnumerable<T> Concat(TEnumerable<T> first, TEnumerable<T> second)
 	{
-		struct State
-		{
-			State(std::shared_ptr<TEnumerator<T>> firstEnumerator, std::shared_ptr<TEnumerator<T>> secondEnumerator)
-				: firstEnumerator(firstEnumerator)
-				, secondEnumerator(secondEnumerator)
-				, first(true)
-			{
-			}
-			std::shared_ptr<TEnumerator<T>> firstEnumerator;
-			std::shared_ptr<TEnumerator<T>> secondEnumerator;
-			bool first;
-		};
-		auto _getFirstEnumerator(first.getEnumerator);
-		auto _getSecondEnumerator(second.getEnumerator);
-		return TEnumerable<T>([=]()
-		{
-			auto state = std::make_shared<State>((*_getFirstEnumerator)(), (*_getSecondEnumerator)());
-			return std::make_shared<TEnumerator<T>>(
-				[=]()
-				{
-					if (state->first)
-					{
-						if (state->firstEnumerator->MoveNext())
-						{
-							return true;
-						}
-						else
-						{
-							state->first = false;
-						}
-					}
-					return state->secondEnumerator->MoveNext();
-				},
-				[=]()
-				{
-					if (state->first)
-					{
-						return state->firstEnumerator->Current();
-					}
-					else
-					{
-						return state->secondEnumerator->Current();
-					}
-				});
-		});
+		auto enumerables = std::make_shared<std::vector<TEnumerable<T>>>();
+		enumerables->push_back(first);
+		enumerables->push_back(second);
+		return Enumerable::FromRange(enumerables).SelectMany();
 	}
 
 	//TSelector: T1, T2 -> TResult
@@ -1345,6 +1345,22 @@ public:
 				[=](){ return state->firstEnumerator->MoveNext() && state->secondEnumerator->MoveNext(); },
 				[=](){ return selector(state->firstEnumerator->Current(), state->secondEnumerator->Current()); });
 		});
+	}
+
+	template<typename T>
+	static bool SequenceEqual(TEnumerable<T> first, TEnumerable<T> second)
+	{
+		auto firstEnumerator = first.GetEnumerator();
+		auto secondEnumerator = second.GetEnumerator();
+		while (true)
+		{
+			bool firstSuccess = firstEnumerator->MoveNext();
+			bool secondSuccess = secondEnumerator->MoveNext();
+			if (!firstSuccess && !secondSuccess)
+				return true;
+			if (firstSuccess != secondSuccess || firstEnumerator->Current() != secondEnumerator->Current())
+				return false;
+		}
 	}
 };
 
