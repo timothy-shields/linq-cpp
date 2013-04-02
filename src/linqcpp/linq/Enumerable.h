@@ -591,22 +591,7 @@ public:
 	{
 		typedef decltype(keySelector(std::declval<T>())) TKey;
 		auto _map = std::make_shared<std::map<TKey, std::shared_ptr<std::vector<T>>>>();
-		ForEach([=](T x)
-		{
-			TKey key = keySelector(x);
-			auto it = _map->find(key);
-			std::shared_ptr<std::vector<T>> _vector;
-			if (it != _map->end())
-			{
-				_vector = it->second;
-			}
-			else
-			{
-				_vector = std::make_shared<std::vector<T>>();
-				_map->insert(std::make_pair(key, _vector));
-			}
-			_vector->push_back(x);
-		});
+		IntoLookup(*_map, keySelector);
 		return Enumerable::FromRange(_map)
 			.Select([](std::pair<TKey, std::shared_ptr<std::vector<T>>> _pair)
 			{
@@ -633,9 +618,9 @@ public:
 		return false;
 	}
 
-	bool Contains(T x)
+	bool Contains(T item)
 	{
-		return Any([](const T& y){ return x == y; });
+		return Any(std::bind2nd(std::equal_to<T>, item));
 	}
 
 	template<typename TPredicate>
@@ -695,6 +680,22 @@ public:
 	T Last(TPredicate predicate)
 	{
 		return Where(predicate).Last();
+	}
+
+	T ElementAt(int i)
+	{
+		if (i >= 0)
+		{
+			int k = 0;
+			auto enumerator = GetEnumerator();
+			while (enumerator->MoveNext())
+			{
+				if (k == i)
+					return enumerator->Current();
+				k++;
+			}
+		}
+		throw std::runtime_error("TEnumerable<T>::ElementAt index out of bounds.");
 	}
 
 	T Single()
@@ -1027,37 +1028,34 @@ public:
 		IntoMap(_map);
 		return _map;
 	}
-	//Having trouble getting the compiler to accept what seems like a better implementation:
-	//auto ToMap() -> std::map<decltype(std::declval<T>().first), decltype(std::declval<T>().second)>
-	//{
-	//	typedef decltype(std::declval<T>().first) TKey;
-	//	typedef decltype(std::declval<T>().second) TValue;
-	//	std::map<TKey, TValue> _map;
-	//	IntoMap(_map);
-	//	return _map;
-	//}
 
-	template<typename TKeySelector>
-	auto ToLookup(TKeySelector keySelector) -> std::map<decltype(keySelector(std::declval<T>())), std::shared_ptr<std::vector<T>>>
+	template<typename TKey, typename TKeySelector>
+	void IntoLookup(std::map<TKey, std::shared_ptr<std::vector<T>>>& _map, TKeySelector keySelector)
 	{
-		typedef decltype(keySelector(std::declval<T>())) TKey;
-		auto _map = std::make_shared<std::map<TKey, std::shared_ptr<std::vector<T>>>>();
-		ForEach([=](T x)
+		ForEach([&_map, keySelector](T x)
 		{
 			TKey key = keySelector(x);
-			auto it = _map->find(key);
+			auto it = _map.find(key);
 			std::shared_ptr<std::vector<T>> _vector;
-			if (it != _map->end())
+			if (it != _map.end())
 			{
 				_vector = it->second;
 			}
 			else
 			{
 				_vector = std::make_shared<std::vector<T>>();
-				_map->insert(std::make_pair(key, _vector));
+				_map.insert(std::make_pair(key, _vector));
 			}
 			_vector->push_back(x);
 		});
+	}
+
+	template<typename TKeySelector>
+	auto ToLookup(TKeySelector keySelector) -> std::map<decltype(keySelector(std::declval<T>())), std::shared_ptr<std::vector<T>>>
+	{
+		typedef decltype(keySelector(std::declval<T>())) TKey;
+		std::map<TKey, std::shared_ptr<std::vector<T>>> _map;
+		IntoLookup(_map, keySelector);
 		return _map;
 	}
 
@@ -1229,6 +1227,36 @@ public:
 		});
 	}
 	
+	template<typename T>
+	static TEnumerable<T> Return(T item0, T item1)
+	{
+		return Enumerable::Concat(Enumerable::Return(item0), Enumerable::Return(item1));
+	}
+
+	template<typename T>
+	static TEnumerable<T> Return(T item0, T item1, T item2)
+	{
+		return Enumerable::Concat(Enumerable::Return(item0), Enumerable::Return(item1, item2));
+	}
+
+	template<typename T>
+	static TEnumerable<T> Return(T item0, T item1, T item2, T item3)
+	{
+		return Enumerable::Concat(Enumerable::Return(item0), Enumerable::Return(item1, item2, item3));
+	}
+
+	template<typename T>
+	static TEnumerable<T> Return(T item0, T item1, T item2, T item3, T item4)
+	{
+		return Enumerable::Concat(Enumerable::Return(item0), Enumerable::Return(item1, item2, item3, item4));
+	}
+
+	template<typename T>
+	static TEnumerable<T> Return(T item0, T item1, T item2, T item3, T item4, T item5)
+	{
+		return Enumerable::Concat(Enumerable::Return(item0), Enumerable::Return(item1, item2, item3, item4, item5));
+	}
+
 	//TFactory: void -> T
 	template<typename TFactory>
 	static auto Generate(TFactory factory) -> TEnumerable<decltype(factory())>

@@ -146,12 +146,12 @@ To make these concepts more concrete, consider the following example. Suppose `L
  - `TFactory = TEnumerable<T>()`
  - Repeated calls to `factory` argument each create an enumerable that can only be enumerated once
  - Result is enumerable that can be enumerated as many times as desired
-- `TEnumerable<T> Repeat(T x)`
- - Represents an infinite sequence of which every element is `x`
+- `TEnumerable<T> Repeat(T item)`
+ - Represents an infinite sequence of which every element is `item`
 - `TEnumerable<T> Empty()`
  - Represents an empty sequence
-- `TEnumerable<T> Return(T x)`
- - Represents a sequence that contains a single element `x`
+- `TEnumerable<T> Return(T item)`
+ - Represents a sequence that contains a single element `item`
 - `TEnumerable<T> Generate(TFactory factory)`
  - Repeated calls to factory generate elements of sequence
 - `TEnumerable<T> Sequence(T start, TPredicate predicate, TNext next)`
@@ -235,12 +235,14 @@ To make these concepts more concrete, consider the following example. Suppose `L
  - Determines whether a sequence contains any elements
 - `bool Any(TPredicate predicate)`
  - Determines whether any element of a sequence satisfies a condition
+- `bool Contains(T item)`
 - `bool All(TPredicate predicate)`
  - Determines whether all elements of a sequence satisfy a condition
 - `T First()`
 - `T First(TPredicate predicate)`
 - `T Last()`
 - `T Last(TPredicate predicate)`
+- `T ElementAt(int i)`
 - `T Single()`
 - `T Single(TPredicate predicate)`
 - `int Count()`
@@ -286,6 +288,10 @@ To make these concepts more concrete, consider the following example. Suppose `L
 - `std::map<TKey, TValue> ToMap()`
  - `TKeySelector = TKey(T)`
  - `TValueSelector = TValue(T)`
+- `void IntoLookup(std::map<TKey, std::shared_ptr<std::vector<T>>>& _map, TKeySelector keySelector)`
+ - `TKeySelector = TKey(T)`
+- `std::map<TKey, std::shared_ptr<std::vector<T>>> ToLookup(TKeySelector keySelector)`
+ - `TKeySelector = TKey(T)`
 - `std::string ToString(std::string separator, TWriter writer)`
 - `std::string ToString(std::string separator)`
 - `std::string ToString()`

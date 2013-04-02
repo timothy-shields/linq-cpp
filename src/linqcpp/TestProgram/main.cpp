@@ -76,12 +76,9 @@ void run(int argc, char* argv[])
 
 	AddTest("Repeat", []()->bool
 	{
-		std::vector<int> v;
-		for (int i = 0; i < 10; i++)
-			v.push_back(5);
 		return Enumerable::SequenceEqual(
-			Enumerable::FromRange(v),
-			Enumerable::Repeat(5).Take(10));
+			Enumerable::Return(5, 5, 5),
+			Enumerable::Repeat(5).Take(3));
 	});
 
 	AddTest("Empty", []()->bool
@@ -114,17 +111,24 @@ void run(int argc, char* argv[])
 
 	AddTest("Zip", []()->bool
 	{
-		std::vector<int> v1;
-		v1.push_back(-4);
-		v1.push_back(2);
-		v1.push_back(1);
-		std::vector<int> v2;
-		v2.push_back(4);
-		v2.push_back(-1);
-		v2.push_back(1);
 		return Enumerable::SequenceEqual(
 			Enumerable::Range(0, 3),
-			Enumerable::Zip(Enumerable::FromRange(v1), Enumerable::FromRange(v2), [](int a, int b){ return a + b; }));
+			Enumerable::Zip(
+				Enumerable::Return(-4, 2, 1),
+				Enumerable::Return(4, -1, 1),
+				[](int a, int b){ return a + b; }));
+	});
+
+	AddTest("GroupBy", []()->bool
+	{
+		auto L = Enumerable::Return(1, 2, 3, 3, 0, 5).ToLookup([](int x){ return x % 3; });
+		L=L;
+		auto e = Enumerable::Return(1, 2, 3, 3, 0, 5)
+			.GroupBy([](int x){ return x % 3; });
+		return e.Count() == 3
+			&& e.ElementAt(0).first == 0 && Enumerable::SequenceEqual(e.ElementAt(0).second, Enumerable::Return(3, 3, 0))
+			&& e.ElementAt(1).first == 1 && Enumerable::SequenceEqual(e.ElementAt(1).second, Enumerable::Return(1))
+			&& e.ElementAt(2).first == 2 && Enumerable::SequenceEqual(e.ElementAt(2).second, Enumerable::Return(2, 5));			
 	});
 
 	int successCount = 0;
