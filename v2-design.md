@@ -17,11 +17,11 @@ make a function `make_interactive` that has analagous signatures so that `Enumer
 
 should be able to do something like this:
 
-auto a = interactive<void>::range(0, 10)
-    .select([](int n){ return 3 * n; })
-    .capture_unique();
+    auto a = interactive<void>::range(0, 10)
+        .select([](int n){ return 3 * n; })
+        .capture_unique();
     
-auto b = make_interactive(a)
-    .where([](int n){ return (n % 2) == 0; })
-    .to_vector();
+    auto b = make_interactive(a)
+        .where([](int n){ return (n % 2) == 0; })
+        .to_vector();
     
