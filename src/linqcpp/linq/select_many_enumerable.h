@@ -1,12 +1,12 @@
 #pragma once
 
-#include "select_enumerator.h"
+#include "select_many_enumerator.h"
 
 template <typename Source, typename Selector>
-class select_enumerable
+class select_many_enumerable
 {
 public:
-	typedef select_enumerator<typename Source::enumerator_type, Selector> enumerator_type;
+	typedef select_many_enumerator<typename Source::enumerator_type, Selector> enumerator_type;
 	typedef typename enumerator_type::value_type value_type;
 	
 private:
@@ -14,13 +14,13 @@ private:
 	Selector selector;
 	
 public:
-	select_enumerable(const Source& source, const Selector& selector)
+	select_many_enumerable(const Source& source, const Selector& selector)
 		: source(source)
 		, selector(selector)
 	{
 	}
 
-	select_enumerable(Source&& source, const Selector& selector)
+	select_many_enumerable(Source&& source, const Selector& selector)
 		: source(std::move(source))
 		, selector(selector)
 	{

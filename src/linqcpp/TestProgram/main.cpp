@@ -11,6 +11,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "linqcpp/linq/interactive.h"
+
 using namespace std;
 using namespace linq;
 
@@ -42,6 +44,30 @@ TEnumerable<string> FileLines(string path)
 
 void run(int argc, char* argv[])
 {
+	auto seq = interactive<void>::_for(0, [](int n){ return n < 10; }, [](int n){ return n + 1; });
+	auto ffff = [](int n)
+		{
+			return interactive<void>::empty<int>(); //interactive<void>::_for(0, [](int i){ return i < 3; }, [](int i){ return i + 1; });
+				//.select([=](int i){ return n + i; });
+		};
+	auto uuu = seq
+		.select_many(ffff)
+		.to_vector();
+	auto vvv = seq
+		.select([](int n){ return 3 * n - 2; })
+		._where([](int n){ return (n % 2) == 0; })
+		.select([](int n){ return -static_cast<double>(n); })
+		.to_vector();
+
+	std::string junk;
+	std::getline(std::cin, junk);
+	return;
+}
+
+void run2(int argc, char* argv[])
+{
+	//vvv = vvv;
+
 	std::ostream& stream = std::cout;
 
 	std::map<std::string, std::function<bool()>> tests;
@@ -121,8 +147,6 @@ void run(int argc, char* argv[])
 
 	AddTest("GroupBy", []()->bool
 	{
-		auto L = Enumerable::Return(1, 2, 3, 3, 0, 5).ToLookup([](int x){ return x % 3; });
-		L=L;
 		auto e = Enumerable::Return(1, 2, 3, 3, 0, 5)
 			.GroupBy([](int x){ return x % 3; });
 		return e.Count() == 3

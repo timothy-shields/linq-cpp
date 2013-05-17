@@ -7,7 +7,7 @@ class return_enumerable
 {
 public:
 	typedef return_enumerator<T> enumerator_type;
-	typedef enumerator_type::value_type value_type;
+	typedef typename enumerator_type::value_type value_type;
 	
 private:
 	value_type value;

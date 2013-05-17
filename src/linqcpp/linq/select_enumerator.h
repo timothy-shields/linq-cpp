@@ -1,12 +1,11 @@
 #pragma once
 
-#include <type_traits>
-
 template <typename Source, typename Selector>
 class select_enumerator
 {
 public:
-	typedef std::result_of<Selector, Source::value_type>::type value_type;
+	//should use std::result_of here - but doesn't work without variadic templates
+	typedef decltype(std::declval<Selector>()(std::declval<typename Source::value_type>())) value_type;
 
 private:
 	Source source;

@@ -60,6 +60,24 @@ public:
 	}
 };
 
+/*
+
+The enumerator<T> concept:
+	typedef T value_type;
+	enumerator<T>(enumerator<T>&& other);
+	bool move_next();
+	const T& current() const; (unless it should never be callable)
+	T& current(); (unless it should never be callable)
+
+The enumerable<T> concept:
+	typedef T value_type;
+	typedef ... enumerator_type;
+	enumerator_type get_enumerator();
+
+Lifetime of enumerable<T> is always at least as long as the lifetime of any enumerator<T> it returns from get_enumerator()
+
+*/
+
 class Enumerable;
 
 template<typename T>
