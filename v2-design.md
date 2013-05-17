@@ -25,3 +25,9 @@ should be able to do something like this:
         .where([](int n){ return (n % 2) == 0; })
         .to_vector();
     
+and have it behave identically to this:
+
+    auto b = interactive<void>::range(0, 10)
+        .select([](int n){ return 3 * n; })
+        .where([](int n){ return (n % 2) == 0; })
+        .to_vector();
