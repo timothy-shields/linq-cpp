@@ -9,7 +9,7 @@
 #include "for_enumerable.h"
 #include "generate_enumerable.h"
 #include "select_enumerable.h"
-#include "select_many_enumerable.h"
+#include "concat.h"
 #include "where_enumerable.h"
 
 template <typename Enumerable>
@@ -31,6 +31,16 @@ public:
 	std::shared_ptr<enumerable_type> ref_count()
 	{
 		return std::make_shared<enumerable_type>(std::move(enumerable));
+	}
+
+	std::shared_ptr<enumerable<value_type>> capture()
+	{
+		return interactive<void>::capture(std::move(ref_count()));
+	}
+
+	enumerable_type& get_enumerable()
+	{
+		return enumerable;
 	}
 
 	template <typename Selector>

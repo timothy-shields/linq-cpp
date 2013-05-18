@@ -26,8 +26,7 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
 	select_enumerable.h
 	select_enumerator.h
 
-	select_many_enumerable.h
-	select_many_enumerator.h
+	concat.h
 
 	where_enumerable.h
 	where_enumerator.h

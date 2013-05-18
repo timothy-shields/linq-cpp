@@ -56,6 +56,35 @@ void TimeIt(string text, int repeatCount, std::function<void ()> f)
 //	});
 //}
 
+class A
+{
+private:
+	std::unique_ptr<int> p;
+	A(const A& a)
+	{
+	}
+public:
+	A()
+	{
+	}
+	A(A&& a)
+		: p(std::move(a.p))
+	{
+	}
+	A& operator=(A&& a)
+	{
+
+	}
+};
+
+class testtest
+{
+	static A f()
+	{
+		return A();
+	}
+};
+
 void run(int argc, char* argv[])
 {
 	auto seq = interactive<void>::_for(0, [](int n){ return n < 10; }, [](int n){ return n + 1; });
