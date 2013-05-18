@@ -7,6 +7,7 @@
 #include "empty_enumerable.h"
 #include "return_enumerable.h"
 #include "for_enumerable.h"
+#include "generate_enumerable.h"
 #include "select_enumerable.h"
 #include "select_many_enumerable.h"
 #include "where_enumerable.h"
@@ -27,15 +28,15 @@ public:
 	{
 	}
 
-	std::shared_ptr<enumerable_type> to_shared()
+	std::shared_ptr<enumerable_type> ref_count()
 	{
-		return std::make_shared<enumerable_type>(enumerable);
+		return std::make_shared<enumerable_type>(std::move(enumerable));
 	}
 
 	template <typename Selector>
 	interactive<select_enumerable<enumerable_type, Selector>> select(const Selector& selector)
 	{
-		return select_enumerable<enumerable_type, Selector>(enumerable, selector);
+		return select_enumerable<enumerable_type, Selector>(std::move(enumerable), selector);
 	}
 
 	template <typename Selector>
@@ -47,7 +48,7 @@ public:
 	template <typename Predicate>
 	interactive<where_enumerable<enumerable_type, Predicate>> _where(const Predicate& predicate)
 	{
-		return where_enumerable<enumerable_type, Predicate>(enumerable, predicate);
+		return where_enumerable<enumerable_type, Predicate>(std::move(enumerable), predicate);
 	}
 
 	template <typename Action>
@@ -93,16 +94,16 @@ public:
 	{
 		return return_enumerable<value_type>(value);
 	}
-	
-	template <typename value_type>
-	static interactive<return_enumerable<value_type>> _return(value_type&& value)
-	{
-		return return_enumerable<value_type>(value);
-	}
 
 	template <typename value_type, typename Condition, typename Next>
 	static interactive<for_enumerable<value_type, Condition, Next>> _for(const value_type& start, const Condition& condition, const Next& next)
 	{
 		return for_enumerable<value_type, Condition, Next>(start, condition, next);
+	}
+
+	template <typename Generator>
+	static interactive<generate_enumerable<Generator>> generate(const Generator& generator)
+	{
+		return generate_enumerable<Generator>(generator);
 	}
 };

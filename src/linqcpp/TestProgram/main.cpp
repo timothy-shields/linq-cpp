@@ -40,6 +40,22 @@ void TimeIt(string text, int repeatCount, std::function<void ()> f)
 //	});
 //}
 
+//std::shared_ptr<enumerable<string>> FileLines(string path)
+//{
+//	return interactive<void>::factory([=]()
+//	{
+//		auto stream = make_shared<ifstream>(path);
+//
+//		return interactive<void>::generate([=]()
+//			{
+//				string line;
+//				std::getline(*stream, line);
+//				return line;
+//			})
+//			.TakeWhile([=](string line){ return !stream->eof(); });
+//	});
+//}
+
 void run(int argc, char* argv[])
 {
 	auto seq = interactive<void>::_for(0, [](int n){ return n < 10; }, [](int n){ return n + 1; });
@@ -53,7 +69,7 @@ void run(int argc, char* argv[])
 		.to_vector();
 	auto vvv = seq
 		.select([](int n){ return 3 * n - 2; })
-		.to_shared();
+		.ref_count();
 
 	auto www = interactive<void>::capture(std::move(vvv))
 		._where([](int n){ return (n % 2) == 0; })

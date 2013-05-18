@@ -1,26 +1,18 @@
 #pragma once
 
 #include "enumerable.h"
-#include "return_enumerator.h"
+#include "empty_enumerator.h"
 
 template <typename T>
-class return_enumerable : public enumerable<T>
+class empty_enumerable : public enumerable<T>
 {
 public:
-	typedef return_enumerator<T> enumerator_type;
-
-private:
-	value_type value;
+	typedef empty_enumerator<T> enumerator_type;
 
 public:
-	return_enumerable(const value_type& value)
-		: value(value)
-	{
-	}
-	
 	enumerator_type get_enumerator()
 	{
-		return enumerator_type(value);
+		return enumerator_type();
 	}
 
 	std::unique_ptr<enumerator<value_type>> get_enumerator_ptr()

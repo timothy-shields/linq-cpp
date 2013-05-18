@@ -19,6 +19,9 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
 
 	for_enumerable.h
 	for_enumerator.h
+
+	generate_enumerable.h
+	generate_enumerator.h
 	
 	select_enumerable.h
 	select_enumerator.h
