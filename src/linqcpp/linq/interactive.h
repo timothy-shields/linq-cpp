@@ -3,6 +3,7 @@
 #include <utility>
 #include <vector>
 
+#include "captured_enumerable.h"
 #include "empty_enumerable.h"
 #include "return_enumerable.h"
 #include "for_enumerable.h"
@@ -26,9 +27,9 @@ public:
 	{
 	}
 
-	enumerable_type to_enumerable()
+	std::shared_ptr<enumerable_type> to_shared()
 	{
-		return enumerable;
+		return std::make_shared<enumerable_type>(enumerable);
 	}
 
 	template <typename Selector>
@@ -69,6 +70,18 @@ template <>
 class interactive<void>
 {
 public:
+	template <typename enumerable_type>
+	static interactive<captured_enumerable<enumerable_type>> capture(const std::shared_ptr<enumerable_type>& enumerable_ptr)
+	{
+		return captured_enumerable<enumerable_type>(enumerable_ptr);
+	}
+
+	template <typename enumerable_type>
+	static interactive<captured_enumerable<enumerable_type>> capture(std::shared_ptr<enumerable_type>&& enumerable_ptr)
+	{
+		return captured_enumerable<enumerable_type>(std::move(enumerable_ptr));
+	}
+
 	template <typename value_type>
 	static interactive<empty_enumerable<value_type>> empty()
 	{

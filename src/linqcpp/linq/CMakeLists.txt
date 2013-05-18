@@ -3,11 +3,14 @@ project(linq)
 add_library(${PROJECT_NAME} ${LIB_TYPE}
 	Comparer.h
 	Comparer.cpp
-	Enumerable.h
-	Enumerable.cpp
 	
 	interactive.h
 	
+	enumerable.h
+	enumerator.h
+
+	captured_enumerable.h
+
 	empty_enumerable.h
 	empty_enumerator.h
 	

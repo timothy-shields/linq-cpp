@@ -1,11 +1,10 @@
 #pragma once
 
-template <typename Source, typename Predicate>
-class where_enumerator
-{
-public:
-	typedef typename Source::value_type value_type;
+#include "enumerator.h"
 
+template <typename Source, typename Predicate>
+class where_enumerator : public enumerator<typename Source::value_type>
+{
 private:
 	Source source;
 	Predicate& predicate;

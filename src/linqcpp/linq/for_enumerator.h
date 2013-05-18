@@ -2,12 +2,11 @@
 
 #include <utility>
 
+#include "enumerator.h"
+
 template <typename T, typename Condition, typename Next>
-class for_enumerator
+class for_enumerator : public enumerator<T>
 {
-public:
-	typedef T value_type;
-	
 private:
 	bool first;
 	value_type value;

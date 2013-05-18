@@ -1,14 +1,14 @@
 #pragma once
 
+#include "enumerable.h"
 #include "select_enumerator.h"
 
 template <typename Source, typename Selector>
-class select_enumerable
+class select_enumerable : public enumerable<typename select_enumerator<typename Source::enumerator_type, typename Selector>::value_type>
 {
 public:
 	typedef select_enumerator<typename Source::enumerator_type, Selector> enumerator_type;
-	typedef typename enumerator_type::value_type value_type;
-	
+
 private:
 	Source source;
 	Selector selector;
@@ -29,5 +29,10 @@ public:
 	enumerator_type get_enumerator()
 	{
 		return enumerator_type(source.get_enumerator(), selector);
+	}
+
+	std::unique_ptr<enumerator<value_type>> get_enumerator_ptr()
+	{
+		return make_unique<enumerator_type>(std::move(get_enumerator()));
 	}
 };

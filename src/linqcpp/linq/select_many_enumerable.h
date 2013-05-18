@@ -30,4 +30,9 @@ public:
 	{
 		return enumerator_type(source.get_enumerator(), selector);
 	}
+
+	std::unique_ptr<enumerator<value_type>> get_enumerator_ptr()
+	{
+		return make_unique<enumerator_type>(std::move(get_enumerator()));
+	}
 };
