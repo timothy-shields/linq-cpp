@@ -11,6 +11,8 @@ std::unique_ptr<T> make_unique(U&& u)
     return std::unique_ptr<T>(new T(std::forward<U>(u)));
 }
 
+//CopyConstructable: http://en.cppreference.com/w/cpp/concept/CopyConstructible
+//CopyAssignable: http://en.cppreference.com/w/cpp/concept/CopyAssignable
 template <typename T>
 class enumerable
 {

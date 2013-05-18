@@ -42,7 +42,7 @@ public:
 	template <typename Selector>
 	interactive<select_many_enumerable<enumerable_type, Selector>> select_many(const Selector& selector)
 	{
-		return select_many_enumerable<enumerable_type, Selector>(enumerable, selector);
+		return select_many_enumerable<enumerable_type, Selector>(std::move(enumerable), selector);
 	}
 
 	template <typename Predicate>

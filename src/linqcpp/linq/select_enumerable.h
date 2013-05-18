@@ -22,7 +22,7 @@ public:
 
 	enumerator_type get_enumerator()
 	{
-		return enumerator_type(source.get_enumerator(), selector);
+		return enumerator_type(std::move(source.get_enumerator()), selector);
 	}
 
 	std::unique_ptr<enumerator<value_type>> get_enumerator_ptr()

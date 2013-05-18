@@ -1,7 +1,9 @@
 #pragma once
 
+#include "enumerator.h"
+
 template <typename Source, typename Selector>
-class select_many_enumerator
+class select_many_enumerator : public enumerator<select_many_enumerator<Source, Selector>::vlaue
 {
 private:
 	//should use std::result_of here - but doesn't work without variadic templates

@@ -1,5 +1,7 @@
 #pragma once
 
+//MoveConstructable: http://en.cppreference.com/w/cpp/concept/MoveConstructible
+//MoveAssignable: http://en.cppreference.com/w/cpp/concept/MoveAssignable
 template <typename T>
 class enumerator
 {
