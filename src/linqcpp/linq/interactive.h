@@ -12,20 +12,32 @@
 #include "concat.h"
 #include "where_enumerable.h"
 
+// Implements Enumerable<T>
 template <typename Enumerable>
 class interactive
 {
 public:
 	typedef Enumerable enumerable_type;
+	typedef typename enumerable_type::enumerator_type enumerator_type;
 	typedef typename enumerable_type::value_type value_type;
 	
 private:
 	enumerable_type enumerable;
 	
 public:
+	interactive(interactive&& other)
+		: enumerable(std::move(other.enumerable))
+	{
+	}
+
 	interactive(Enumerable&& enumerable)
 		: enumerable(std::move(enumerable))
 	{
+	}
+
+	enumerator_type get_enumerator()
+	{
+		return enumerable.get_enumerator();
 	}
 
 	std::shared_ptr<enumerable_type> ref_count()
@@ -33,14 +45,9 @@ public:
 		return std::make_shared<enumerable_type>(std::move(enumerable));
 	}
 
-	std::shared_ptr<enumerable<value_type>> capture()
+	std::shared_ptr<captured_enumerable<enumerable_type>> capture()
 	{
 		return interactive<void>::capture(std::move(ref_count()));
-	}
-
-	enumerable_type& get_enumerable()
-	{
-		return enumerable;
 	}
 
 	template <typename Selector>
@@ -49,10 +56,15 @@ public:
 		return select_enumerable<enumerable_type, Selector>(std::move(enumerable), selector);
 	}
 
-	template <typename Selector>
-	interactive<select_many_enumerable<enumerable_type, Selector>> select_many(const Selector& selector)
+	interactive<concat_enumerable<enumerable_type>> concat()
 	{
-		return select_many_enumerable<enumerable_type, Selector>(std::move(enumerable), selector);
+		return concat_enumerable<enumerable_type>(std::move(enumerable));
+	}
+	
+	template <typename Selector>
+	auto select_many(const Selector& selector) -> decltype(select(selector).concat())
+	{
+		return select(selector).concat();
 	}
 
 	template <typename Predicate>
@@ -77,8 +89,7 @@ public:
 	}
 };
 
-template <>
-class interactive<void>
+class ix
 {
 public:
 	template <typename enumerable_type>

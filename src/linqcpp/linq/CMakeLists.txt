@@ -27,6 +27,7 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
 	select_enumerator.h
 
 	concat.h
+	dynamic_concat.h
 
 	where_enumerable.h
 	where_enumerator.h

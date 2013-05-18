@@ -13,6 +13,7 @@
 // o value_type& current()
 // o Starts "one before" first value
 
+// Implements concept Enumerator<T> - as should inheriting types
 template <typename T>
 class enumerator
 {
