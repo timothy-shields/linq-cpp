@@ -14,6 +14,12 @@ private:
 	Predicate predicate;
 	
 public:
+	where_enumerable(where_enumerable&& other)
+		: source(std::move(other.source))
+		, predicate(std::move(other.predicate))
+	{
+	}
+
 	where_enumerable(Source&& source, const Predicate& predicate)
 		: source(std::move(source))
 		, predicate(predicate)

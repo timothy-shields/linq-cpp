@@ -14,6 +14,14 @@ private:
 	Next& next;
 	
 public:
+	for_enumerator(for_enumerator&& other)
+		: first(other.first)
+		, value(other.value)
+		, condition(other.condition)
+		, next(other.next)
+	{
+	}
+
 	for_enumerator(const value_type& start, Condition& condition, Next& next)
 		: first(true)
 		, value(start)

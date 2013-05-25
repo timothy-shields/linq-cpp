@@ -10,6 +10,7 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
 	enumerator.h
 
 	captured_enumerable.h
+	captured_enumerator.h
 
 	empty_enumerable.h
 	empty_enumerator.h
@@ -26,7 +27,10 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
 	select_enumerable.h
 	select_enumerator.h
 
-	concat.h
+	concat_traits.h
+	concat_enumerable.h
+	concat_enumerator.h
+		
 	dynamic_concat.h
 
 	where_enumerable.h

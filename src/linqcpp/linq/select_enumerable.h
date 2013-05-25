@@ -14,8 +14,9 @@ private:
 	Selector selector;
 	
 public:
+
 	select_enumerable(Source&& source, const Selector& selector)
-		: source(std::move(source))
+		: source(source)
 		, selector(selector)
 	{
 	}

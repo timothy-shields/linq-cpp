@@ -90,7 +90,8 @@ void run(int argc, char* argv[])
 	auto seq = ix::_for(0, [](int n){ return n < 10; }, [](int n){ return n + 1; });
 	auto ffff = [](int n)
 	{
-		return ix::_for(0, [](int i){ return i < 3; }, [](int i){ return i + 1; });
+		return ix::_for(0, [](int i){ return i < 3; }, [](int i){ return i + 1; })
+			.ref_count();
 			//.select([=](int i){ return n + i; });
 	};
 	auto uuu = seq
@@ -100,11 +101,11 @@ void run(int argc, char* argv[])
 		.select([](int n){ return 3 * n - 2; })
 		.ref_count();
 
-	auto www = ix::capture(std::move(vvv))
-		._where([](int n){ return (n % 2) == 0; })
-		.select([](int n){ return -static_cast<double>(n); })
+	auto www = ix::capture(vvv);
+		//._where([](int n){ return (n % 2) == 0; })
+		//.select([](int n){ return -static_cast<double>(n); })
 		//.select_many(ffff)
-		.to_vector();
+		//.to_vector();
 
 	std::string junk;
 	std::getline(std::cin, junk);

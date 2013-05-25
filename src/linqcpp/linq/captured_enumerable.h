@@ -1,34 +1,38 @@
 #pragma once
 
 #include "enumerable.h"
+#include "captured_enumerator.h"
 
-template <typename Enumerable>
-class captured_enumerable : public enumerable<typename Enumerable::value_type>
+template <typename T>
+class captured_enumerable : public enumerable<T>
 {
 public:
-	typedef typename Enumerable::enumerator_type enumerator_type;
+	typedef captured_enumerator<T> enumerator_type;
 
 private:
-	std::shared_ptr<Enumerable> enumerable_ptr;
+	std::shared_ptr<enumerable<T>> source_ptr;
+
+	captured_enumerable(const captured_enumerable&); // not defined
+	captured_enumerable& operator=(const captured_enumerable&); // not defined
 
 public:
-	captured_enumerable(const std::shared_ptr<Enumerable>& enumerable_ptr)
-		: enumerable_ptr(enumerable_ptr)
+	captured_enumerable(captured_enumerable&& other)
+		: source_ptr(std::move(other.source_ptr))
 	{
 	}
 
-	captured_enumerable(std::shared_ptr<Enumerable>&& enumerable_ptr)
-		: enumerable_ptr(std::move(enumerable_ptr))
+	captured_enumerable(const std::shared_ptr<enumerable<T>>& source_ptr)
+		: source_ptr(source_ptr)
 	{
 	}
 	
 	enumerator_type get_enumerator()
 	{
-		return enumerable_ptr->get_enumerator();
+		return enumerator_type(std::move(get_enumerator_ptr()));
 	}
 
 	std::unique_ptr<enumerator<value_type>> get_enumerator_ptr()
 	{
-		return make_unique<enumerator_type>(std::move(get_enumerator()));
+		return source_ptr->get_enumerator_ptr();
 	}
 };

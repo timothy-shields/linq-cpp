@@ -9,9 +9,18 @@ private:
 	Source source;
 	Predicate& predicate;
 	
+	where_enumerator(const where_enumerator&); // not defined
+	where_enumerator& operator=(const where_enumerator&); // not defined
+
 public:
+	where_enumerator(where_enumerator&& other)
+		: source(std::move(other.source))
+		, predicate(other.predicate)
+	{
+	}
+
 	where_enumerator(Source&& source, Predicate& predicate)
-		: source(std::move(source))
+		: source(source)
 		, predicate(predicate)
 	{
 	}

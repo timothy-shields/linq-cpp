@@ -10,10 +10,21 @@ private:
 	Selector& selector;
 	value_type value;
 	
+	select_enumerator(const select_enumerator&); // not defined
+	select_enumerator& operator=(const select_enumerator&); // not defined
+
 public:
+	select_enumerator(select_enumerator&& other)
+		: source(std::move(other.source))
+		, selector(other.selector)
+		, value(other.value)
+	{
+	}
+
 	select_enumerator(Source&& source, Selector& selector)
-		: source(std::move(source))
+		: source(source)
 		, selector(selector)
+		, value()
 	{
 	}
 	

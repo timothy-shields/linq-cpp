@@ -3,13 +3,14 @@
 #include <utility>
 #include <vector>
 
+#include "enumerable.h"
 #include "captured_enumerable.h"
 #include "empty_enumerable.h"
 #include "return_enumerable.h"
 #include "for_enumerable.h"
 #include "generate_enumerable.h"
 #include "select_enumerable.h"
-#include "concat.h"
+#include "concat_enumerable.h"
 #include "where_enumerable.h"
 
 // Implements Enumerable<T>
@@ -22,16 +23,16 @@ public:
 	typedef typename enumerable_type::value_type value_type;
 	
 private:
-	enumerable_type enumerable;
+	enumerable_type source;
 	
 public:
 	interactive(interactive&& other)
-		: enumerable(std::move(other.enumerable))
+		: source(std::move(other.source))
 	{
 	}
 
-	interactive(Enumerable&& enumerable)
-		: enumerable(std::move(enumerable))
+	interactive(enumerable_type&& source)
+		: source(source)
 	{
 	}
 
@@ -40,25 +41,20 @@ public:
 		return enumerable.get_enumerator();
 	}
 
-	std::shared_ptr<enumerable_type> ref_count()
+	std::shared_ptr<enumerable<value_type>> ref_count()
 	{
-		return std::make_shared<enumerable_type>(std::move(enumerable));
-	}
-
-	std::shared_ptr<captured_enumerable<enumerable_type>> capture()
-	{
-		return interactive<void>::capture(std::move(ref_count()));
+		return std::make_shared<enumerable_type>(std::move(source));
 	}
 
 	template <typename Selector>
 	interactive<select_enumerable<enumerable_type, Selector>> select(const Selector& selector)
 	{
-		return select_enumerable<enumerable_type, Selector>(std::move(enumerable), selector);
+		return select_enumerable<enumerable_type, Selector>(std::move(source), selector);
 	}
 
 	interactive<concat_enumerable<enumerable_type>> concat()
 	{
-		return concat_enumerable<enumerable_type>(std::move(enumerable));
+		return concat_enumerable<enumerable_type>(std::move(source));
 	}
 	
 	template <typename Selector>
@@ -70,15 +66,15 @@ public:
 	template <typename Predicate>
 	interactive<where_enumerable<enumerable_type, Predicate>> _where(const Predicate& predicate)
 	{
-		return where_enumerable<enumerable_type, Predicate>(std::move(enumerable), predicate);
+		return where_enumerable<enumerable_type, Predicate>(std::move(source), predicate);
 	}
 
 	template <typename Action>
 	void for_each(const Action& action)
 	{
-		auto enumerator = enumerable.get_enumerator();
-		while (enumerator.move_next())
-			action(enumerator.current());
+		auto e = source.get_enumerator();
+		while (e.move_next())
+			action(e.current());
 	}
 
 	std::vector<value_type> to_vector()
@@ -92,16 +88,10 @@ public:
 class ix
 {
 public:
-	template <typename enumerable_type>
-	static interactive<captured_enumerable<enumerable_type>> capture(const std::shared_ptr<enumerable_type>& enumerable_ptr)
+	template <typename value_type>
+	static interactive<captured_enumerable<value_type>> capture(const std::shared_ptr<enumerable<value_type>>& enumerable_ptr)
 	{
-		return captured_enumerable<enumerable_type>(enumerable_ptr);
-	}
-
-	template <typename enumerable_type>
-	static interactive<captured_enumerable<enumerable_type>> capture(std::shared_ptr<enumerable_type>&& enumerable_ptr)
-	{
-		return captured_enumerable<enumerable_type>(std::move(enumerable_ptr));
+		return captured_enumerable<value_type>(enumerable_ptr);
 	}
 
 	template <typename value_type>
