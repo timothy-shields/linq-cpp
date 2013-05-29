@@ -1,5 +1,9 @@
 # linq-cpp: LINQ for C++11 done right
 
+## contact
+
+If you're interested in using or contributing to this library, please contact me at `timothy.shields@live.com`.
+
 ## introduction
 
 The `IEnumerable<T>` interface and associated LINQ extension methods provided by the .NET framework enable programmers to write concise, fluent, and composable query expressions using powerful abstractions.
