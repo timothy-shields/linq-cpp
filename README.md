@@ -2,7 +2,7 @@
 
 ## contact
 
-If you're interested in using or contributing to this library, I'd like to hear from you! Contact me at `timothy.shields@live.com`.
+If you're interested in using or contributing to this library, I'd like to hear from you! Contact me at timothy.shields@live.com.
 
 ## introduction
 
