@@ -2,9 +2,7 @@
 
 **linq-cpp** is configured to build using [CMake][1].
 
-**linq-cpp** is written to be 100% compliant with the C++11 standard.
-[Visual Studio Express 2012 for Windows Desktop][2]
-is being used currently to build **linq-cpp**, but any compiler compliant with the C++11 standard should work as well.
+**linq-cpp** is written to be 100% compliant with the C++11 standard. Currently, [Visual Studio Express 2012 for Windows Desktop][2] is being used to build **linq-cpp**, but any compiler compliant with the C++11 standard should work.
 
 Let `~` denote the directory for your local clone of the repository.
 
