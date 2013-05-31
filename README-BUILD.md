@@ -1,4 +1,4 @@
-# how to build **linq-cpp**
+# how to build
 
 **linq-cpp** is configured to build using [CMake][1].
 
