@@ -32,7 +32,7 @@ public:
 	}
 
 	interactive(enumerable_type&& source)
-		: source(source)
+		: source(std::move(source))
 	{
 	}
 
@@ -47,7 +47,7 @@ public:
 	}
 
 	template <typename Selector>
-	interactive<select_enumerable<enumerable_type, Selector>> select(const Selector& selector)
+	interactive<select_enumerable<enumerable_type, Selector>> select(Selector selector)
 	{
 		return select_enumerable<enumerable_type, Selector>(std::move(source), selector);
 	}
@@ -58,13 +58,13 @@ public:
 	}
 	
 	template <typename Selector>
-	auto select_many(const Selector& selector) -> decltype(select(selector).concat())
+	auto select_many(Selector selector) -> decltype(select(selector).concat())
 	{
 		return select(selector).concat();
 	}
 
 	template <typename Predicate>
-	interactive<where_enumerable<enumerable_type, Predicate>> _where(const Predicate& predicate)
+	interactive<where_enumerable<enumerable_type, Predicate>> _where(Predicate predicate)
 	{
 		return where_enumerable<enumerable_type, Predicate>(std::move(source), predicate);
 	}
@@ -89,7 +89,7 @@ class ix
 {
 public:
 	template <typename value_type>
-	static interactive<captured_enumerable<value_type>> capture(const std::shared_ptr<enumerable<value_type>>& enumerable_ptr)
+	static interactive<captured_enumerable<value_type>> capture(std::shared_ptr<enumerable<value_type>> enumerable_ptr)
 	{
 		return captured_enumerable<value_type>(enumerable_ptr);
 	}
@@ -101,19 +101,19 @@ public:
 	}
 
 	template <typename value_type>
-	static interactive<return_enumerable<value_type>> _return(const value_type& value)
+	static interactive<return_enumerable<value_type>> _return(value_type value)
 	{
 		return return_enumerable<value_type>(value);
 	}
 
 	template <typename value_type, typename Condition, typename Next>
-	static interactive<for_enumerable<value_type, Condition, Next>> _for(const value_type& start, const Condition& condition, const Next& next)
+	static interactive<for_enumerable<value_type, Condition, Next>> _for(value_type start, Condition condition, Next next)
 	{
 		return for_enumerable<value_type, Condition, Next>(start, condition, next);
 	}
 
 	template <typename Generator>
-	static interactive<generate_enumerable<Generator>> generate(const Generator& generator)
+	static interactive<generate_enumerable<Generator>> generate(Generator generator)
 	{
 		return generate_enumerable<Generator>(generator);
 	}

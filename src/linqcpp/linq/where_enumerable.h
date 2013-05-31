@@ -12,6 +12,9 @@ public:
 private:
 	Source source;
 	Predicate predicate;
+
+	where_enumerable(const where_enumerable&); // not defined
+	where_enumerable& operator=(const where_enumerable&); // not defined
 	
 public:
 	where_enumerable(where_enumerable&& other)

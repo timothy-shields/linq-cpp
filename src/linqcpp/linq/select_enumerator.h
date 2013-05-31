@@ -22,7 +22,7 @@ public:
 	}
 
 	select_enumerator(Source&& source, Selector& selector)
-		: source(source)
+		: source(std::move(source))
 		, selector(selector)
 		, value()
 	{

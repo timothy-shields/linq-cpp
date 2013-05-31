@@ -20,7 +20,7 @@ public:
 	}
 
 	where_enumerator(Source&& source, Predicate& predicate)
-		: source(source)
+		: source(std::move(source))
 		, predicate(predicate)
 	{
 	}

@@ -94,14 +94,16 @@ void run(int argc, char* argv[])
 			.ref_count();
 			//.select([=](int i){ return n + i; });
 	};
-	auto uuu = seq
-		//.select_many(ffff)
-		.to_vector();
+
 	auto vvv = seq
 		.select([](int n){ return 3 * n - 2; })
-		.ref_count();
+		.to_vector();
 
-	auto www = ix::capture(vvv);
+	auto vvv2 = seq
+		.select([](int n){ return 3 * n - 2; })
+		.to_vector();
+
+	//auto www = ix::capture(vvv)
 		//._where([](int n){ return (n % 2) == 0; })
 		//.select([](int n){ return -static_cast<double>(n); })
 		//.select_many(ffff)

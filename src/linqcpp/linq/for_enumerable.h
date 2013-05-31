@@ -15,7 +15,14 @@ private:
 	Next next;
 
 public:
-	for_enumerable(const value_type& start, const Condition& condition, const Next& next)
+	for_enumerable(for_enumerable&& other)
+		: start(std::move(other.start))
+		, condition(std::move(other.condition))
+		, next(std::move(other.next))
+	{
+	}
+
+	for_enumerable(value_type start, Condition condition, Next next)
 		: start(start)
 		, condition(condition)
 		, next(next)

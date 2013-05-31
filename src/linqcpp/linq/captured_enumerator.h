@@ -18,7 +18,7 @@ public:
 	}
 
 	captured_enumerator(std::unique_ptr<enumerator<T>>&& source_ptr)
-		: source_ptr(source_ptr)
+		: source_ptr(std::move(source_ptr))
 	{
 	}
 

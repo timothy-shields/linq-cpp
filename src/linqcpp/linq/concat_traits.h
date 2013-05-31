@@ -1,9 +1,5 @@
 #pragma once
 
-// Source:
-// o Implements concept Enumerable<E>
-// o E implements concept Enumerable<T>
-
 template <typename Source>
 struct concat_traits
 {

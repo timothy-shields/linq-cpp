@@ -12,11 +12,19 @@ public:
 private:
 	Source source;
 	Selector selector;
+
+	select_enumerable(const select_enumerable&); // not defined
+	select_enumerable& operator=(const select_enumerable&); // not defined
 	
 public:
+	select_enumerable(select_enumerable&& other)
+		: source(std::move(other.source))
+		, selector(std::move(other.selector))
+	{
+	}
 
 	select_enumerable(Source&& source, const Selector& selector)
-		: source(source)
+		: source(std::move(source))
 		, selector(selector)
 	{
 	}

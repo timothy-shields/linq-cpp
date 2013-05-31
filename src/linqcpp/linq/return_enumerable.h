@@ -13,6 +13,16 @@ private:
 	value_type value;
 
 public:
+	return_enumerable(return_enumerable&& other)
+		: value(std::move(other.value))
+	{
+	}
+
+	return_enumerable(value_type&& value)
+		: value(std::move(value))
+	{
+	}
+
 	return_enumerable(const value_type& value)
 		: value(value)
 	{

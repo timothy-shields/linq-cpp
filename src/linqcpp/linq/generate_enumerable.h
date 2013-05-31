@@ -13,7 +13,7 @@ private:
 	Generator generator;
 
 public:
-	generate_enumerable(const Generator& generator)
+	generate_enumerable(Generator generator)
 		: generator(generator)
 	{
 	}

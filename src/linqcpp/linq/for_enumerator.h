@@ -16,7 +16,7 @@ private:
 public:
 	for_enumerator(for_enumerator&& other)
 		: first(other.first)
-		, value(other.value)
+		, value(std::move(other.value))
 		, condition(other.condition)
 		, next(other.next)
 	{
