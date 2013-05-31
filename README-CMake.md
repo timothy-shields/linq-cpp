@@ -1,4 +1,6 @@
-# CMake configuration
+**linq-cpp** is configured to build using [CMake](http://www.cmake.org/).<br>
+[Visual Studio Express 2012 for Windows Desktop](http://www.microsoft.com/visualstudio/eng/products/visual-studio-express-for-windows-desktop#product-express-desktop)
+is being used currently to build **linq-cpp**, but any compiler compliant with the C++11 standard should work as well.
 
 Let `~` denote the directory for your local clone of the repository.
 
