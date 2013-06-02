@@ -7,7 +7,7 @@ class select_enumerator : public enumerator<decltype(std::declval<Selector>()(st
 {
 private:
 	Source source;
-	Selector& selector;
+	Selector selector;
 	value_type value;
 	
 	select_enumerator(const select_enumerator&); // not defined
@@ -16,12 +16,12 @@ private:
 public:
 	select_enumerator(select_enumerator&& other)
 		: source(std::move(other.source))
-		, selector(other.selector)
-		, value(other.value)
+		, selector(std::move(other.selector))
+		, value(std::move(other.value))
 	{
 	}
 
-	select_enumerator(Source&& source, Selector& selector)
+	select_enumerator(Source&& source, Selector selector)
 		: source(std::move(source))
 		, selector(selector)
 		, value()

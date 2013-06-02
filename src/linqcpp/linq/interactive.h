@@ -24,11 +24,25 @@ public:
 	
 private:
 	enumerable_type source;
+
+	interactive(const interactive& other); // not defined
+	interactive& operator=(const interactive& other); // not defined
 	
 public:
-	interactive(interactive&& other)
-		: source(std::move(other.source))
+	interactive()
+		: source()
 	{
+	}
+
+	interactive(interactive&& other)
+	{
+		*this = std::move(other);
+	}
+
+	interactive& operator=(interactive&& other)
+	{
+		source = std::move(other.source);
+		return *this;
 	}
 
 	interactive(enumerable_type&& source)
@@ -38,12 +52,17 @@ public:
 
 	enumerator_type get_enumerator()
 	{
-		return enumerable.get_enumerator();
+		return source.get_enumerator();
 	}
 
 	std::shared_ptr<enumerable<value_type>> ref_count()
 	{
 		return std::make_shared<enumerable_type>(std::move(source));
+	}
+
+	interactive<captured_enumerable<value_type>> capture()
+	{
+		return captured_enumerable<value_type>(ref_count());
 	}
 
 	template <typename Selector>
@@ -80,7 +99,7 @@ public:
 	std::vector<value_type> to_vector()
 	{
 		std::vector<value_type> vector;
-		for_each([&](const value_type& value){ vector.push_back(value); });
+		for_each([&](const value_type& value){ vector.emplace_back(value); });
 		return vector;
 	}
 };

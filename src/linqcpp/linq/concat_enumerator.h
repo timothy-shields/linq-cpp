@@ -2,6 +2,7 @@
 
 #include <utility>
 
+#include "optional.h"
 #include "enumerator.h"
 #include "concat_traits.h"
 
@@ -12,13 +13,18 @@ private:
 	typedef typename concat_traits<Source>::inner_enumerator_type inner_enumerator_type;
 
 	Source source;
-	bool first;
-	inner_enumerator_type inner_enumerator;
+	optional<inner_enumerator_type> inner_enumerator;
 	
 public:
+	concat_enumerator(concat_enumerator&& other)
+		: source(std::move(other.source))
+		, inner_enumerator(std::move(other.inner_enumerator))
+	{
+	}
+
 	concat_enumerator(Source&& source)
-		: source(source)
-		, first(true)
+		: source(std::move(source))
+		, inner_enumerator()
 	{
 	}
 	
@@ -26,13 +32,13 @@ public:
 	{
 		while (true)
 		{
-			if (!first && inner_enumerator.move_next())
+			if (inner_enumerator && inner_enumerator.value().move_next())
 			{
 				return true;
 			}
 			else if (source.move_next())
 			{
-				inner_enumerator = std::move(source.current().get_enumerator());
+				inner_enumerator = source.current().get_enumerator();
 			}
 			else
 			{
@@ -41,6 +47,6 @@ public:
 		}
 	}
 	
-	const value_type& current() const { return inner.current(); }
-	value_type& current() { return inner.current(); }
+	const value_type& current() const { return inner_enumerator.value().current(); }
+	value_type& current() { return inner_enumerator.value().current(); }
 };

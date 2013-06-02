@@ -56,35 +56,6 @@ void TimeIt(string text, int repeatCount, std::function<void ()> f)
 //	});
 //}
 
-//class A
-//{
-//private:
-//	std::unique_ptr<int> p;
-//	A(const A& a)
-//	{
-//	}
-//public:
-//	A()
-//	{
-//	}
-//	A(A&& a)
-//		: p(std::move(a.p))
-//	{
-//	}
-//	A& operator=(A&& a)
-//	{
-//
-//	}
-//};
-//
-//class testtest
-//{
-//	static A f()
-//	{
-//		return A();
-//	}
-//};
-
 void run(int argc, char* argv[])
 {
 	auto seq = ix::_for(0, [](int n){ return n < 10; }, [](int n){ return n + 1; });
@@ -96,7 +67,13 @@ void run(int argc, char* argv[])
 	};
 
 	auto vvv = seq
-		.select([](int n){ return 3 * n - 2; })
+		.select([](int n){ return 4 * n - 2; })
+		.select([](int n)
+	    {
+			return ix::_for(n, [=](int k){ return k < (n+3); }, [](int k){ return k + 1; })
+				.capture();
+		})
+		.concat()
 		.to_vector();
 
 	auto vvv2 = seq

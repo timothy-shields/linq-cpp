@@ -12,9 +12,20 @@ private:
 	captured_enumerator& operator=(const captured_enumerator&); // not defined
 
 public:
-	captured_enumerator(captured_enumerator&& other)
-		: source_ptr(std::move(other.source_ptr))
+	captured_enumerator()
+		: source_ptr()
 	{
+	}
+
+	captured_enumerator(captured_enumerator&& other)
+	{
+		*this = std::move(other);
+	}
+
+	captured_enumerator& operator=(captured_enumerator&& other)
+	{
+		source_ptr = std::move(other.source_ptr);
+		return *this;
 	}
 
 	captured_enumerator(std::unique_ptr<enumerator<T>>&& source_ptr)

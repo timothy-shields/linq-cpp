@@ -10,19 +10,19 @@ class for_enumerator : public enumerator<T>
 private:
 	bool first;
 	value_type value;
-	Condition& condition;
-	Next& next;
+	Condition condition;
+	Next next;
 	
 public:
 	for_enumerator(for_enumerator&& other)
 		: first(other.first)
 		, value(std::move(other.value))
-		, condition(other.condition)
-		, next(other.next)
+		, condition(std::move(other.condition))
+		, next(std::move(other.next))
 	{
 	}
 
-	for_enumerator(const value_type& start, Condition& condition, Next& next)
+	for_enumerator(value_type start, Condition condition, Next next)
 		: first(true)
 		, value(start)
 		, condition(condition)

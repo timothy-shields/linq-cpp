@@ -3,6 +3,9 @@ project(linq)
 add_library(${PROJECT_NAME} ${LIB_TYPE}
 	Comparer.h
 	Comparer.cpp
+
+	make_unique.h
+	optional.h
 	
 	interactive.h
 	

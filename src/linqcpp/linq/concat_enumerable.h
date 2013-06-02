@@ -10,20 +10,26 @@ template <typename Source>
 class concat_enumerable : public enumerable<typename concat_traits<Source>::inner_value_type>
 {
 public:
-	typedef concat_enumerator<Source> enumerator_type;
+	typedef concat_enumerator<typename Source::enumerator_type> enumerator_type;
 	
 private:
 	Source source;
 	
 public:
+	concat_enumerable(concat_enumerable&& other)
+		: source(std::move(other.source))
+	{
+	}
+
 	concat_enumerable(Source&& source)
-		: source(source)
+		: source(std::move(source))
 	{
 	}
 
 	enumerator_type get_enumerator()
 	{
-		return enumerator_type(std::move(source.get_enumerator()));
+		enumerator_type e(std::move(source.get_enumerator()));
+		return e;
 	}
 
 	std::unique_ptr<enumerator<value_type>> get_enumerator_ptr()

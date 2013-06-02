@@ -16,9 +16,20 @@ private:
 	captured_enumerable& operator=(const captured_enumerable&); // not defined
 
 public:
-	captured_enumerable(captured_enumerable&& other)
-		: source_ptr(std::move(other.source_ptr))
+	captured_enumerable()
+		: source_ptr()
 	{
+	}
+
+	captured_enumerable(captured_enumerable&& other)
+	{
+		*this = std::move(other);
+	}
+
+	captured_enumerable& operator=(captured_enumerable&& other)
+	{
+		source_ptr = std::move(other.source_ptr);
+		return *this;
 	}
 
 	captured_enumerable(const std::shared_ptr<enumerable<T>>& source_ptr)
