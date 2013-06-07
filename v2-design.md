@@ -1,3 +1,8 @@
+Try to implement everything like this:
+
+http://community.bartdesmet.net/blogs/bart/archive/2010/01/01/the-essence-of-linq-minlinq.aspx
+
+
 `interactive<void>` enters the monad
 
 `interactive<Enumerable>` transforms within the monad and exits the monad
