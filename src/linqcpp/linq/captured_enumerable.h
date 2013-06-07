@@ -22,8 +22,8 @@ public:
 	}
 
 	captured_enumerable(captured_enumerable&& other)
+		: source_ptr(std::move(other.source_ptr))
 	{
-		*this = std::move(other);
 	}
 
 	captured_enumerable& operator=(captured_enumerable&& other)

@@ -9,6 +9,10 @@ class empty_enumerable : public enumerable<T>
 public:
 	typedef empty_enumerator<T> enumerator_type;
 
+private:
+	empty_enumerable(const empty_enumerable&); // not defined
+	empty_enumerable& operator=(const empty_enumerable&); // not defined
+
 public:
 	enumerator_type get_enumerator()
 	{

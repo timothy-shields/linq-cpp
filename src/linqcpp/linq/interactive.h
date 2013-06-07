@@ -35,8 +35,8 @@ public:
 	}
 
 	interactive(interactive&& other)
+		: source(std::move(other.source))
 	{
-		*this = std::move(other);
 	}
 
 	interactive& operator=(interactive&& other)
@@ -75,9 +75,9 @@ public:
 	{
 		return concat_enumerable<enumerable_type>(std::move(source));
 	}
-	
+
 	template <typename Selector>
-	auto select_many(Selector selector) -> decltype(select(selector).concat())
+	auto select_many(Selector selector) -> interactive<decltype(select(selector).concat())>
 	{
 		return select(selector).concat();
 	}

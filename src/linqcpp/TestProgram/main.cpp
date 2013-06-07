@@ -68,12 +68,11 @@ void run(int argc, char* argv[])
 
 	auto vvv = seq
 		.select([](int n){ return 4 * n - 2; })
-		.select([](int n)
+		.select_many([](int n)
 	    {
 			return ix::_for(n, [=](int k){ return k < (n+3); }, [](int k){ return k + 1; })
 				.capture();
 		})
-		.concat()
 		.to_vector();
 
 	auto vvv2 = seq

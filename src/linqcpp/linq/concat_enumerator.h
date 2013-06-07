@@ -14,6 +14,9 @@ private:
 
 	Source source;
 	optional<inner_enumerator_type> inner_enumerator;
+
+	concat_enumerator(const concat_enumerator&); // not defined
+	concat_enumerator& operator=(const concat_enumerator&); // not defined
 	
 public:
 	concat_enumerator(concat_enumerator&& other)

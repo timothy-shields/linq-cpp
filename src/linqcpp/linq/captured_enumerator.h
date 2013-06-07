@@ -18,8 +18,8 @@ public:
 	}
 
 	captured_enumerator(captured_enumerator&& other)
+		: source_ptr(std::move(other.source_ptr))
 	{
-		*this = std::move(other);
 	}
 
 	captured_enumerator& operator=(captured_enumerator&& other)
