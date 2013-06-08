@@ -38,12 +38,7 @@ public:
 		return source_ptr->move_next();
 	}
 
-	const value_type& current() const
-	{
-		return source_ptr->current();
-	}
-
-	value_type& current()
+	value_type current()
 	{
 		return source_ptr->current();
 	}

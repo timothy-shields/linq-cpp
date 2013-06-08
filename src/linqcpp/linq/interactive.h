@@ -5,6 +5,7 @@
 
 #include "enumerable.h"
 #include "captured_enumerable.h"
+#include "memoize_enumerable.h"
 #include "empty_enumerable.h"
 #include "return_enumerable.h"
 #include "for_enumerable.h"
@@ -63,6 +64,11 @@ public:
 	interactive<captured_enumerable<value_type>> capture()
 	{
 		return captured_enumerable<value_type>(ref_count());
+	}
+
+	interactive<memoize_enumerable<enumerable_type>> memoize()
+	{
+		return memoize_enumerable<enumerable_type>(std::move(source));
 	}
 
 	template <typename Selector>

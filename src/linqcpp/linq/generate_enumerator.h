@@ -23,6 +23,5 @@ public:
 		return true;
 	}
 
-	const value_type& current() const { return value; }
-	value_type& current() { return value; }
+	value_type current() { return value; }
 };

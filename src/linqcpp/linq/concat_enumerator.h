@@ -50,6 +50,5 @@ public:
 		}
 	}
 	
-	const value_type& current() const { return inner_enumerator.value().current(); }
-	value_type& current() { return inner_enumerator.value().current(); }
+	value_type current() { return inner_enumerator.value().current(); }
 };

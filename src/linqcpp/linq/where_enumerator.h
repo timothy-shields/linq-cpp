@@ -40,6 +40,5 @@ public:
 		}
 	}
 	
-	const value_type& current() const { return source.current(); }
-	value_type& current() { return source.current(); }
+	value_type current() { return source.current(); }
 };

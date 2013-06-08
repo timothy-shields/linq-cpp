@@ -79,6 +79,5 @@ public:
 		}
 	}
 	
-	const value_type& current() const { return inner.current(); }
-	value_type& current() { return inner.current(); }
+	value_type current() { return inner.current(); }
 };

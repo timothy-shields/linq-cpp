@@ -9,8 +9,7 @@
 //   o value_type == T
 // o bool move_next()
 //   o Returns true if and only if there is a next value
-// o const value_type& current() const
-// o value_type& current()
+// o value_type current()
 // o Starts "one before" first value
 
 // Implements concept Enumerator<T> - as should inheriting types
@@ -20,6 +19,5 @@ class enumerator
 public:
 	typedef T value_type;
 	virtual bool move_next() = 0;
-	virtual const value_type& current() const = 0;
-	virtual value_type& current() = 0;
+	virtual value_type current() = 0;
 };

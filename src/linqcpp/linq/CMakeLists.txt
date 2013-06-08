@@ -15,6 +15,9 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
 	captured_enumerable.h
 	captured_enumerator.h
 
+	memoize_enumerable.h
+	memoize_enumerator.h
+
 	empty_enumerable.h
 	empty_enumerator.h
 	
