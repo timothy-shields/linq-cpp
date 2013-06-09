@@ -23,7 +23,7 @@ public:
 	{
 	}
 
-	return_enumerable(const value_type& value)
+	return_enumerable(value_type const& value)
 		: value(value)
 	{
 	}

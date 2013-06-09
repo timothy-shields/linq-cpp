@@ -12,8 +12,8 @@ public:
 private:
 	Source source;
 
-	memoize_enumerable(const memoize_enumerable&); // not defined
-	memoize_enumerable& operator=(const memoize_enumerable&); // not defined
+	memoize_enumerable(memoize_enumerable const &); // not defined
+	memoize_enumerable& operator=(memoize_enumerable const&); // not defined
 
 public:
 	memoize_enumerable(memoize_enumerable&& other)

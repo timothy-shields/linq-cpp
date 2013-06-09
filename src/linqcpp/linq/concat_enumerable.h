@@ -15,8 +15,8 @@ public:
 private:
 	Source source;
 
-	concat_enumerable(const concat_enumerable&); // not defined
-	concat_enumerable& operator=(const concat_enumerable&); // not defined
+	concat_enumerable(concat_enumerable const&); // not defined
+	concat_enumerable& operator=(concat_enumerable const&); // not defined
 	
 public:
 	concat_enumerable(concat_enumerable&& other)

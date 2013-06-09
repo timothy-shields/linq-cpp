@@ -43,5 +43,8 @@ public:
 		return condition(value);
 	}
 	
-	value_type current() { return value; }
+	value_type current()
+	{
+		return value;
+	}
 };

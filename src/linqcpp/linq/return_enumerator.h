@@ -31,5 +31,8 @@ public:
 		}
 	}
 	
-	value_type& current() { return value; }
+	value_type const& current()
+	{
+		return value;
+	}
 };

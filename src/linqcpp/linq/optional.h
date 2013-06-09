@@ -50,6 +50,13 @@ public:
 		return _has_value;
 	}
 
-	T& value() { return _value; }
-	const T& value() const { return _value; }
+	T& value()
+	{
+		return _value;
+	}
+
+	T const& value() const
+	{
+		return _value;
+	}
 };

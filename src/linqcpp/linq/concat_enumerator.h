@@ -15,8 +15,8 @@ private:
 	Source source;
 	optional<inner_enumerator_type> inner_enumerator;
 
-	concat_enumerator(const concat_enumerator&); // not defined
-	concat_enumerator& operator=(const concat_enumerator&); // not defined
+	concat_enumerator(concat_enumerator const&); // not defined
+	concat_enumerator& operator=(concat_enumerator const&); // not defined
 	
 public:
 	concat_enumerator(concat_enumerator&& other)
@@ -50,5 +50,8 @@ public:
 		}
 	}
 	
-	value_type current() { return inner_enumerator.value().current(); }
+	value_type current()
+	{
+		return inner_enumerator.value().current();
+	}
 };
