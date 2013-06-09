@@ -13,6 +13,10 @@
 #include "select_enumerable.h"
 #include "concat_enumerable.h"
 #include "where_enumerable.h"
+#include "take_while_enumerable.h"
+#include "skip_while_enumerable.h"
+#include "counter_predicate.h"
+#include "negated_predicate.h"
 
 // Implements Enumerable<T>
 template <typename Enumerable>
@@ -26,15 +30,10 @@ public:
 private:
 	enumerable_type source;
 
-	interactive(const interactive& other); // not defined
-	interactive& operator=(const interactive& other); // not defined
+	interactive(interactive const& other); // not defined
+	interactive& operator=(interactive const& other); // not defined
 	
 public:
-	interactive()
-		: source()
-	{
-	}
-
 	interactive(interactive&& other)
 		: source(std::move(other.source))
 	{
@@ -72,7 +71,7 @@ public:
 	}
 
 	template <typename Selector>
-	interactive<select_enumerable<enumerable_type, Selector>> select(Selector selector)
+	interactive<select_enumerable<enumerable_type, Selector>> select(Selector const& selector)
 	{
 		return select_enumerable<enumerable_type, Selector>(std::move(source), selector);
 	}
@@ -89,13 +88,74 @@ public:
 	}
 
 	template <typename Predicate>
-	interactive<where_enumerable<enumerable_type, Predicate>> _where(Predicate predicate)
+	interactive<where_enumerable<enumerable_type, Predicate>> where(Predicate const& predicate)
 	{
 		return where_enumerable<enumerable_type, Predicate>(std::move(source), predicate);
 	}
 
+	template <typename Predicate>
+	interactive<take_while_enumerable<enumerable_type, Predicate>> take_while(Predicate const& predicate)
+	{
+		return take_while_enumerable<enumerable_type, Predicate>(std::move(source), predicate);
+	}
+
+	template <typename Predicate>
+	auto take_until(Predicate const& predicate) ->
+		interactive<decltype(
+			take_while(negate_predicate<value_type>(predicate))
+		)>
+	{
+		return take_while(negate_predicate<value_type>(predicate));
+	}
+
+	auto take(std::size_t count) ->
+		interactive<decltype(
+			take_while(counter_predicate<value_type>(count))
+		)>
+	{
+		return take_while(counter_predicate<value_type>(count));
+	}
+
+	template <typename Predicate>
+	interactive<skip_while_enumerable<enumerable_type, Predicate>> skip_while(Predicate const& predicate)
+	{
+		return skip_while_enumerable<enumerable_type, Predicate>(std::move(source), predicate);
+	}
+
+	template <typename Predicate>
+	auto skip_until(Predicate const& predicate) ->
+		interactive<decltype(
+			skip_while(negate_predicate<value_type>(predicate))
+		)>
+	{
+		return skip_while(negate_predicate<value_type>(predicate));
+	}
+
+	auto skip(std::size_t count) ->
+		interactive<decltype(
+			skip_while(counter_predicate<value_type>(count))
+		)>
+	{
+		return skip_while(counter_predicate<value_type>(count));
+	}
+
+	std::size_t count()
+	{
+		std::size_t n = 0;
+		auto e = source.get_enumerator();
+		while (e.move_next())
+			++n;
+		return n;
+	}
+
+	template <typename Predicate>
+	std::size_t count_if(Predicate const& predicate)
+	{
+		return where(predicate).count();
+	}
+
 	template <typename Action>
-	void for_each(const Action& action)
+	void for_each(Action const& action)
 	{
 		auto e = source.get_enumerator();
 		while (e.move_next())
@@ -105,7 +165,7 @@ public:
 	std::vector<value_type> to_vector()
 	{
 		std::vector<value_type> vector;
-		for_each([&](const value_type& value){ vector.emplace_back(value); });
+		for_each([&](value_type const& value){ vector.emplace_back(value); });
 		return vector;
 	}
 };

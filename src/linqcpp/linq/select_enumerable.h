@@ -13,8 +13,8 @@ private:
 	Source source;
 	Selector selector;
 
-	select_enumerable(const select_enumerable&); // not defined
-	select_enumerable& operator=(const select_enumerable&); // not defined
+	select_enumerable(select_enumerable const&); // not defined
+	select_enumerable& operator=(select_enumerable const&); // not defined
 	
 public:
 	select_enumerable(select_enumerable&& other)
@@ -23,7 +23,7 @@ public:
 	{
 	}
 
-	select_enumerable(Source&& source, const Selector& selector)
+	select_enumerable(Source&& source, Selector const& selector)
 		: source(std::move(source))
 		, selector(selector)
 	{

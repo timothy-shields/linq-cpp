@@ -7,10 +7,10 @@ class where_enumerator : public enumerator<typename Source::value_type>
 {
 private:
 	Source source;
-	Predicate& predicate;
+	Predicate predicate;
 	
-	where_enumerator(const where_enumerator&); // not defined
-	where_enumerator& operator=(const where_enumerator&); // not defined
+	where_enumerator(where_enumerator const&); // not defined
+	where_enumerator& operator=(where_enumerator const&); // not defined
 
 public:
 	where_enumerator(where_enumerator&& other)
@@ -19,7 +19,7 @@ public:
 	{
 	}
 
-	where_enumerator(Source&& source, Predicate& predicate)
+	where_enumerator(Source&& source, Predicate const& predicate)
 		: source(std::move(source))
 		, predicate(predicate)
 	{
@@ -40,5 +40,8 @@ public:
 		}
 	}
 	
-	value_type current() { return source.current(); }
+	value_type current()
+	{
+		return source.current();
+	}
 };

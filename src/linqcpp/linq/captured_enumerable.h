@@ -12,8 +12,8 @@ public:
 private:
 	std::shared_ptr<enumerable<T>> source_ptr;
 
-	captured_enumerable(const captured_enumerable&); // not defined
-	captured_enumerable& operator=(const captured_enumerable&); // not defined
+	captured_enumerable(captured_enumerable const&); // not defined
+	captured_enumerable& operator=(captured_enumerable const&); // not defined
 
 public:
 	captured_enumerable()
@@ -32,7 +32,7 @@ public:
 		return *this;
 	}
 
-	captured_enumerable(const std::shared_ptr<enumerable<T>>& source_ptr)
+	captured_enumerable(std::shared_ptr<enumerable<T>> const& source_ptr)
 		: source_ptr(source_ptr)
 	{
 	}

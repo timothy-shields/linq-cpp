@@ -1,29 +1,29 @@
 #pragma once
 
 #include "enumerable.h"
-#include "where_enumerator.h"
+#include "skip_while_enumerator.h"
 
 template <typename Source, typename Predicate>
-class where_enumerable : public enumerable<typename Source::value_type>
+class skip_while_enumerable : public enumerable<typename Source::value_type>
 {
 public:
-	typedef where_enumerator<typename Source::enumerator_type, Predicate> enumerator_type;
+	typedef skip_while_enumerator<typename Source::enumerator_type, Predicate> enumerator_type;
 
 private:
 	Source source;
 	Predicate predicate;
 
-	where_enumerable(where_enumerable const&); // not defined
-	where_enumerable& operator=(where_enumerable const&); // not defined
+	skip_while_enumerable(skip_while_enumerable const&); // not defined
+	skip_while_enumerable& operator=(skip_while_enumerable const&); // not defined
 	
 public:
-	where_enumerable(where_enumerable&& other)
+	skip_while_enumerable(skip_while_enumerable&& other)
 		: source(std::move(other.source))
 		, predicate(std::move(other.predicate))
 	{
 	}
 
-	where_enumerable(Source&& source, Predicate const& predicate)
+	skip_while_enumerable(Source&& source, Predicate const& predicate)
 		: source(std::move(source))
 		, predicate(predicate)
 	{

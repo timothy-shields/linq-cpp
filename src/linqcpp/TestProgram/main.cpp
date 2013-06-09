@@ -69,13 +69,16 @@ void run(int argc, char* argv[])
 	auto vvv = seq
 		.select([](int n){ return 4 * n; })
 		.select([](int n){ return n - 2; })
-		.select(std::hash<int>())
 		.memoize()
-		.select_many([](std::size_t n)
+		.where([](int n){ return (n % 2) == 0; })
+		.select_many([](int n)
 	    {
-			return ix::_for(n, [=](std::size_t k){ return k < (n+3); }, [](std::size_t k){ return k + 1; })
+			return ix::_for(n, [=](int k){ return k < (n+3); }, [](int k){ return k + 1; })
 				.capture();
 		})
+		.skip(3)
+		.take(15)
+		.skip_until([](std::size_t n){ return n > 10; })
 		.to_vector();
 
 	auto vvv2 = seq

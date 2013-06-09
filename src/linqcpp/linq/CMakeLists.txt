@@ -41,6 +41,15 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
 
 	where_enumerable.h
 	where_enumerator.h
+
+	take_while_enumerable.h
+	take_while_enumerator.h
+
+	skip_while_enumerable.h
+	skip_while_enumerator.h
+
+	counter_predicate.h
+	negated_predicate.h
 	
 	)
 	

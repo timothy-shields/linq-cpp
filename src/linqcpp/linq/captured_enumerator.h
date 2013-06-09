@@ -8,8 +8,8 @@ class captured_enumerator : public enumerator<T>
 private:
 	std::unique_ptr<enumerator<T>> source_ptr;
 
-	captured_enumerator(const captured_enumerator&); // not defined
-	captured_enumerator& operator=(const captured_enumerator&); // not defined
+	captured_enumerator(captured_enumerator const&); // not defined
+	captured_enumerator& operator=(captured_enumerator const&); // not defined
 
 public:
 	captured_enumerator()
