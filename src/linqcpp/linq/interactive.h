@@ -139,6 +139,54 @@ public:
 		return skip_while(counter_predicate<value_type>(count));
 	}
 
+	template <typename Predicate>
+	bool all(Predicate const& predicate)
+	{
+		auto e = source.get_enumerator();
+		while (e.move_next())
+		{
+			if (!predicate(e.current()))
+				return false;
+		}
+		return true;
+	}
+
+	bool any()
+	{
+		auto e = source.get_enumerator();
+		return e.move_next();
+	}
+
+	template <typename Predicate>
+	bool any(Predicate const& predicate)
+	{
+		auto e = source.get_enumerator();
+		while (e.move_next())
+		{
+			if (predicate(e.current()))
+				return true;
+		}
+		return false;
+	}
+
+	value_type first()
+	{
+		auto e = source.get_enumerator();
+		if (e.move_next())
+			return e.current();
+		else
+			throw std::logic_error("Should never call first on an empty enumerable.");
+	}
+
+	value_type first_or_default(value_type default_value = value_type())
+	{
+		auto e = source.get_enumerator();
+		if (e.move_next())
+			return e.current();
+		else
+			return default_value;
+	}
+
 	std::size_t count()
 	{
 		std::size_t n = 0;
