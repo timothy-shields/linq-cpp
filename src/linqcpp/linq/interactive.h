@@ -6,6 +6,7 @@
 #include "enumerable.h"
 #include "captured_enumerable.h"
 #include "memoize_enumerable.h"
+#include "from_enumerable.h"
 #include "empty_enumerable.h"
 #include "return_enumerable.h"
 #include "for_enumerable.h"
@@ -213,8 +214,13 @@ public:
 	std::vector<value_type> to_vector()
 	{
 		std::vector<value_type> vector;
-		for_each([&](value_type const& value){ vector.emplace_back(value); });
+		into_vector(vector);
 		return vector;
+	}
+
+	void into_vector(std::vector<value_type>& vector)
+	{
+		for_each([&](value_type const& value){ vector.emplace_back(value); });
 	}
 };
 
@@ -225,6 +231,12 @@ public:
 	static interactive<captured_enumerable<value_type>> capture(std::shared_ptr<enumerable<value_type>> enumerable_ptr)
 	{
 		return captured_enumerable<value_type>(enumerable_ptr);
+	}
+
+	template <typename Iterator>
+	static interactive<from_enumerable<Iterator>> from(Iterator const& begin, Iterator const& end)
+	{
+		return from_enumerable<Iterator>(begin, end);
 	}
 
 	template <typename value_type>

@@ -58,7 +58,8 @@ void TimeIt(string text, int repeatCount, std::function<void ()> f)
 
 void run(int argc, char* argv[])
 {
-	auto seq = ix::_for(0, [](int n){ return n < 10; }, [](int n){ return n + 1; });
+	auto seq = ix::_for(0, [](int n){ return n < 10; }, [](int n){ return n + 1; })
+		.to_vector();
 	auto ffff = [](int n)
 	{
 		return ix::_for(0, [](int i){ return i < 3; }, [](int i){ return i + 1; })
@@ -66,7 +67,13 @@ void run(int argc, char* argv[])
 			//.select([=](int i){ return n + i; });
 	};
 
-	auto vvv = seq
+	auto r = ix::_for(0, [](int n){ return n < 10000000; }, [](int n){ return n + 1; })
+		.to_vector();
+	std::vector<double> output;
+	output.reserve(10000000);
+	ix::from(r.rbegin(), r.rend()).select([](int n){ return std::sqrt(static_cast<double>(n)); }).into_vector(output);
+
+	auto vvv = ix::from(seq.begin(), seq.end())
 		.select([](int n){ return 4 * n; })
 		.select([](int n){ return n - 2; })
 		.memoize()
@@ -81,7 +88,7 @@ void run(int argc, char* argv[])
 		.skip_until([](std::size_t n){ return n > 10; })
 		.to_vector();
 
-	auto vvv2 = seq
+	auto vvv2 = ix::from(seq.begin(), seq.end())
 		.select([](int n){ return 3 * n - 2; })
 		.to_vector();
 

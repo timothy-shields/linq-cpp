@@ -18,6 +18,9 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
 	memoize_enumerable.h
 	memoize_enumerator.h
 
+	from_enumerable.h
+	from_enumerator.h
+
 	empty_enumerable.h
 	empty_enumerator.h
 	
