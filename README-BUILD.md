@@ -2,7 +2,9 @@
 
 **linq-cpp** is configured to build using [CMake][1].
 
-**linq-cpp** is written to be fully compliant with the C++11 standard and cross-platform. Currently, [Visual Studio Express 2012 for Windows Desktop][2] is being used to build **linq-cpp**, but any compiler compliant with the C++11 standard should work.
+**linq-cpp** is written to be fully compliant with the C++11 standard and cross-platform. It **has no dependencies** outside of the C++11 `std` library.
+
+Currently, [Visual Studio Express 2012 for Windows Desktop][2] is being used to build **linq-cpp**, but any compiler compliant with the C++11 standard should work.
 
 ## steps
 
