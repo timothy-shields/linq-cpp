@@ -148,8 +148,14 @@ public:
 	template <typename T, typename BinaryOperation>
 	T aggregate(BinaryOperation const& func)
 	{
-		T seed;
-		return aggregate(seed, func);
+		T value;
+		auto e = source.get_enumerator();
+		if (!e.move_next())
+			throw std::logic_error("Should never call aggregate on an empty enumerable.");
+		value = e.current();
+		while (e.move_next())
+			value = func(value, e.current());
+		return value;
 	}
 
 	value_type sum()
@@ -160,6 +166,28 @@ public:
 	value_type product()
 	{
 		return aggregate(static_cast<value_type>(1), std::multiplies<value_type>());
+	}
+
+	value_type min()
+	{
+		return aggregate(std::min<value_type>);
+	}
+
+	template <typename Selector>
+	auto min(Selector const& selector) -> decltype(select(selector).min())
+	{
+		return select(selector).min();
+	}
+
+	value_type max()
+	{
+		return aggregate(std::max<value_type>);
+	}
+
+	template <typename Selector>
+	auto max(Selector const& selector) -> decltype(select(selector).max())
+	{
+		return select(selector).max();
 	}
 
 	template <typename Predicate>
