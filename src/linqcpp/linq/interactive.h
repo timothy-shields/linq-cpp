@@ -18,6 +18,7 @@
 #include "skip_while_enumerable.h"
 #include "counter_predicate.h"
 #include "negated_predicate.h"
+#include "static_cast_selector.h"
 
 // Implements Enumerable<T>
 template <typename Enumerable>
@@ -77,13 +78,19 @@ public:
 		return select_enumerable<enumerable_type, Selector>(std::move(source), selector);
 	}
 
+	template <typename T>
+	auto static_cast_() -> decltype(select(static_cast_selector<value_type, T>()))
+	{
+		return select(static_cast_selector<value_type, T>());
+	}
+
 	interactive<concat_enumerable<enumerable_type>> concat()
 	{
 		return concat_enumerable<enumerable_type>(std::move(source));
 	}
 
 	template <typename Selector>
-	auto select_many(Selector selector) -> interactive<decltype(select(selector).concat())>
+	auto select_many(Selector selector) -> decltype(select(selector).concat())
 	{
 		return select(selector).concat();
 	}
@@ -101,18 +108,12 @@ public:
 	}
 
 	template <typename Predicate>
-	auto take_until(Predicate const& predicate) ->
-		interactive<decltype(
-			take_while(negate_predicate<value_type>(predicate))
-		)>
+	auto take_until(Predicate const& predicate) -> decltype(take_while(negate_predicate<value_type>(predicate)))
 	{
 		return take_while(negate_predicate<value_type>(predicate));
 	}
 
-	auto take(std::size_t count) ->
-		interactive<decltype(
-			take_while(counter_predicate<value_type>(count))
-		)>
+	auto take(std::size_t count) -> decltype(take_while(counter_predicate<value_type>(count)))
 	{
 		return take_while(counter_predicate<value_type>(count));
 	}
@@ -124,20 +125,41 @@ public:
 	}
 
 	template <typename Predicate>
-	auto skip_until(Predicate const& predicate) ->
-		interactive<decltype(
-			skip_while(negate_predicate<value_type>(predicate))
-		)>
+	auto skip_until(Predicate const& predicate) -> decltype(skip_while(negate_predicate<value_type>(predicate)))
 	{
 		return skip_while(negate_predicate<value_type>(predicate));
 	}
 
-	auto skip(std::size_t count) ->
-		interactive<decltype(
-			skip_while(counter_predicate<value_type>(count))
-		)>
+	auto skip(std::size_t count) -> decltype(skip_while(counter_predicate<value_type>(count)))
 	{
 		return skip_while(counter_predicate<value_type>(count));
+	}
+
+	template <typename T, typename BinaryOperation>
+	T aggregate(T seed, BinaryOperation const& func)
+	{
+		T value = seed;
+		auto e = source.get_enumerator();
+		while (e.move_next())
+			value = func(value, e.current());
+		return value;
+	}
+
+	template <typename T, typename BinaryOperation>
+	T aggregate(BinaryOperation const& func)
+	{
+		T seed;
+		return aggregate(seed, func);
+	}
+
+	value_type sum()
+	{
+		return aggregate(static_cast<value_type>(0), std::plus<value_type>());
+	}
+
+	value_type product()
+	{
+		return aggregate(static_cast<value_type>(1), std::multiplies<value_type>());
 	}
 
 	template <typename Predicate>
@@ -246,13 +268,13 @@ public:
 	}
 
 	template <typename value_type>
-	static interactive<return_enumerable<value_type>> _return(value_type value)
+	static interactive<return_enumerable<value_type>> return_(value_type value)
 	{
 		return return_enumerable<value_type>(value);
 	}
 
 	template <typename value_type, typename Condition, typename Next>
-	static interactive<for_enumerable<value_type, Condition, Next>> _for(value_type start, Condition condition, Next next)
+	static interactive<for_enumerable<value_type, Condition, Next>> for_(value_type start, Condition condition, Next next)
 	{
 		return for_enumerable<value_type, Condition, Next>(start, condition, next);
 	}

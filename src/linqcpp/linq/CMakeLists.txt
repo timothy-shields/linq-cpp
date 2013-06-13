@@ -53,6 +53,8 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
 
 	counter_predicate.h
 	negated_predicate.h
+
+	static_cast_selector.h
 	
 	)
 	

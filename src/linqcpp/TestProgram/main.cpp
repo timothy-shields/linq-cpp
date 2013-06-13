@@ -58,20 +58,25 @@ void TimeIt(string text, int repeatCount, std::function<void ()> f)
 
 void run(int argc, char* argv[])
 {
-	auto seq = ix::_for(0, [](int n){ return n < 10; }, [](int n){ return n + 1; })
+	auto seq = ix::for_(0, [](int n){ return n < 10; }, [](int n){ return n + 1; })
 		.to_vector();
 	auto ffff = [](int n)
 	{
-		return ix::_for(0, [](int i){ return i < 3; }, [](int i){ return i + 1; })
+		return ix::for_(0, [](int i){ return i < 3; }, [](int i){ return i + 1; })
 			.ref_count();
 			//.select([=](int i){ return n + i; });
 	};
 
-	auto r = ix::_for(0, [](int n){ return n < 10000000; }, [](int n){ return n + 1; })
+	auto r = ix::for_(0, [](int n){ return n < 10000000; }, [](int n){ return n + 1; })
 		.to_vector();
+
 	std::vector<double> output;
 	output.reserve(10000000);
-	ix::from(r.rbegin(), r.rend()).select([](int n){ return std::sqrt(static_cast<double>(n)); }).into_vector(output);
+
+	ix::from(r.rbegin(), r.rend())
+		.static_cast_<double>()
+		.select([](double n){ return std::sqrt(n); })
+		.into_vector(output);
 
 	auto vvv = ix::from(seq.begin(), seq.end())
 		.select([](int n){ return 4 * n; })
@@ -80,13 +85,13 @@ void run(int argc, char* argv[])
 		.where([](int n){ return (n % 2) == 0; })
 		.select_many([](int n)
 	    {
-			return ix::_for(n, [=](int k){ return k < (n+3); }, [](int k){ return k + 1; })
+			return ix::for_(n, [=](int k){ return k < (n+3); }, [](int k){ return k + 1; })
 				.capture();
 		})
 		.skip(3)
 		.take(15)
 		.skip_until([](std::size_t n){ return n > 10; })
-		.to_vector();
+		.sum();
 
 	auto vvv2 = ix::from(seq.begin(), seq.end())
 		.select([](int n){ return 3 * n - 2; })
