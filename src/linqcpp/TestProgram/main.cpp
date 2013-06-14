@@ -78,6 +78,8 @@ void run(int argc, char* argv[])
 	//	.select([](double n){ return std::sqrt(n); })
 	//	.into_vector(output);
 
+	auto rrr = ix::iota(0).take(100).to_vector();
+
 	auto vvv = ix::from(seq.begin(), seq.end())
 		.select([](int n){ return 4 * n; })
 		.select([](int n){ return n - 2; })

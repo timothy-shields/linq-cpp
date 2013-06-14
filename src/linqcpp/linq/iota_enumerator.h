@@ -26,9 +26,12 @@ public:
 	
 	bool move_next()
 	{
-		if (!first)
+		if (first)
 		{
 			first = false;
+		}
+		else
+		{
 			++value;
 		}
 		return true;
