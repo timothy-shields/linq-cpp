@@ -25,6 +25,11 @@ public:
 	{
 	}
 	
+	bool move_first()
+	{
+		return source.move_first();
+	}
+
 	bool move_next()
 	{
 		return source.move_next();

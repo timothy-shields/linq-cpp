@@ -141,8 +141,18 @@ public:
 	{
 		T value = seed;
 		auto e = source.get_enumerator();
-		while (e.move_next())
+		if (!e.move_first())
+		{
+			return value;
+		}
+		while (true)
+		{
 			value = func(value, e.current());
+			if (!e.move_next())
+			{
+				break;
+			}
+		}
 		return value;
 	}
 
@@ -150,10 +160,12 @@ public:
 	value_type aggregate(BinaryOperation const& func)
 	{
 		auto e = source.get_enumerator();
-		move_next_or_throw(e);
+		move_first_or_throw(e);
 		value_type value = e.current();
 		while (e.move_next())
+		{
 			value = func(value, e.current());
+		}
 		return value;
 	}
 
@@ -184,7 +196,7 @@ public:
 		typedef std::result_of<Selector(value_type)>::type key_type;
 
 		auto e = source.get_enumerator();
-		move_next_or_throw(e);
+		move_first_or_throw(e);
 		value_type min_value = e.current();
 		key_type min_key = selector(best_value);
 		while (e.move_next())
@@ -224,7 +236,7 @@ public:
 	std::pair<value_type, value_type> minmax()
 	{
 		auto e = source.get_enumerator();
-		move_next_or_throw(e);
+		move_first_or_throw(e);
 		value_type min_value = e.current();
 		value_type max_value = min_value;
 		while (e.move_next())
@@ -254,7 +266,7 @@ public:
 		typedef std::result_of<Selector(value_type)>::type key_type;
 
 		auto e = source.get_enumerator();
-		move_next_or_throw(e);
+		move_first_or_throw(e);
 		value_type min_value = e.current();
 		key_type min_key = selector(min_value);
 		value_type max_value = min_value;
@@ -281,43 +293,53 @@ public:
 	bool all(Predicate const& predicate)
 	{
 		auto e = source.get_enumerator();
-		while (e.move_next())
+		if (!e.move_first())
+		{
+			return true;
+		}
+		while (true)
 		{
 			if (!predicate(e.current()))
 				return false;
+			if (!e.move_next())
+				return true;
 		}
-		return true;
 	}
 
 	bool any()
 	{
 		auto e = source.get_enumerator();
-		return e.move_next();
+		return e.move_first();
 	}
 
 	template <typename Predicate>
 	bool any(Predicate const& predicate)
 	{
 		auto e = source.get_enumerator();
-		while (e.move_next())
+		if (!e.move_first())
+		{
+			return false;
+		}
+		while (true)
 		{
 			if (predicate(e.current()))
 				return true;
+			if (!e.move_next())
+				return false;
 		}
-		return false;
 	}
 
 	value_type first()
 	{
 		auto e = source.get_enumerator();
-		move_next_or_throw(e);
+		move_first_or_throw(e);
 		return e.current();			
 	}
 
 	value_type first_or_default(value_type default_value = value_type())
 	{
 		auto e = source.get_enumerator();
-		if (e.move_next())
+		if (e.move_first())
 			return e.current();
 		else
 			return default_value;
@@ -325,8 +347,10 @@ public:
 
 	std::size_t count()
 	{
-		std::size_t n = 0;
 		auto e = source.get_enumerator();
+		if (!e.move_first())
+			return 0;
+		std::size_t n = 1;
 		while (e.move_next())
 			++n;
 		return n;
@@ -342,8 +366,16 @@ public:
 	void for_each(Action const& action)
 	{
 		auto e = source.get_enumerator();
-		while (e.move_next())
+		if (!e.move_first())
+		{
+			return;
+		}
+		while (true)
+		{
 			action(e.current());
+			if (!e.move_next())
+				return;
+		}
 	}
 
 	std::vector<value_type> to_vector()

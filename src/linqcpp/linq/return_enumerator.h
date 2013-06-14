@@ -8,27 +8,22 @@ template <typename T>
 class return_enumerator : public enumerator<T>
 {
 private:
-	bool first;
 	value_type& value;
 	
 public:
 	return_enumerator(value_type& value)
-		: first(true)
-		, value(value)
+		: value(value)
 	{
+	}
+
+	bool move_first()
+	{
+		return true;
 	}
 	
 	bool move_next()
 	{
-		if (first)
-		{
-			first = false;
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 	
 	value_type const& current()

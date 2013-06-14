@@ -8,9 +8,14 @@ template <typename T>
 class empty_enumerator : public enumerator<T>
 {
 public:
-	bool move_next()
+	bool move_first()
 	{
 		return false;
+	}
+	
+	bool move_next()
+	{
+		throw std::logic_error("Should never call move_next on empty_enumerator");
 	}
 
 	value_type current()

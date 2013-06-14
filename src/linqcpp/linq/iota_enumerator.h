@@ -23,17 +23,15 @@ public:
 		, value(start)
 	{
 	}
+
+	bool move_first()
+	{
+		return true;
+	}
 	
 	bool move_next()
 	{
-		if (first)
-		{
-			first = false;
-		}
-		else
-		{
-			++value;
-		}
+		++value;
 		return true;
 	}
 	

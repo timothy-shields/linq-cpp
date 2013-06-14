@@ -33,6 +33,11 @@ public:
 	{
 	}
 
+	bool move_first()
+	{
+		return source_ptr->move_first();
+	}
+
 	bool move_next()
 	{
 		return source_ptr->move_next();

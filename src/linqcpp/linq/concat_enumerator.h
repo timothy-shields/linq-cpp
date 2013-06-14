@@ -2,7 +2,6 @@
 
 #include <utility>
 
-#include "optional.h"
 #include "enumerator.h"
 #include "concat_traits.h"
 
@@ -13,7 +12,7 @@ private:
 	typedef typename concat_traits<Source>::inner_enumerator_type inner_enumerator_type;
 
 	Source source;
-	optional<inner_enumerator_type> inner_enumerator;
+	inner_enumerator_type inner_enumerator;
 
 	concat_enumerator(concat_enumerator const&); // not defined
 	concat_enumerator& operator=(concat_enumerator const&); // not defined
@@ -30,12 +29,21 @@ public:
 		, inner_enumerator()
 	{
 	}
-	
-	bool move_next()
+
+	bool move_first()
 	{
+		if (source.move_first())
+		{
+			inner_enumerator = source.current().get_enumerator();
+		}
+		else
+		{
+			return false;
+		}
+
 		while (true)
 		{
-			if (inner_enumerator && inner_enumerator.value().move_next())
+			if (inner_enumerator.move_first())
 			{
 				return true;
 			}
@@ -50,8 +58,42 @@ public:
 		}
 	}
 	
+	bool move_next()
+	{
+		while (true)
+		{
+			if (inner_enumerator.move_next())
+			{
+				return true;
+			}
+			else if (source.move_next())
+			{
+				inner_enumerator = source.current().get_enumerator();
+				while (true)
+				{
+					if (inner_enumerator.move_first())
+					{
+						return true;
+					}
+					else if (source.move_next())
+					{
+						inner_enumerator = source.current().get_enumerator();
+					}
+					else
+					{
+						return false;
+					}
+				}
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+	
 	value_type current()
 	{
-		return inner_enumerator.value().current();
+		return inner_enumerator.current();
 	}
 };

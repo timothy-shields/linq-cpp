@@ -24,6 +24,26 @@ public:
 		, predicate(predicate)
 	{
 	}
+
+	bool move_first()
+	{
+		if (!source.move_first())
+		{
+			return false;
+		}
+
+		while (true)
+		{
+			if (predicate(source.current()))
+			{
+				return true;
+			}
+			else if (!source.move_next())
+			{
+				return false;
+			}
+		}
+	}
 	
 	bool move_next()
 	{

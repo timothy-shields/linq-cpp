@@ -25,6 +25,19 @@ public:
 	{
 	}
 
+	bool move_first()
+	{
+		if (source.move_first())
+		{
+			value = source.current();
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	bool move_next()
 	{
 		if (source.move_next())
