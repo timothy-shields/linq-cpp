@@ -70,13 +70,13 @@ void run(int argc, char* argv[])
 	auto r = ix::for_(0, [](int n){ return n < 10000000; }, [](int n){ return n + 1; })
 		.to_vector();
 
-	std::vector<double> output;
-	output.reserve(10000000);
+	//std::vector<double> output;
+	//output.reserve(10000000);
 
-	ix::from(r.rbegin(), r.rend())
-		.static_cast_<double>()
-		.select([](double n){ return std::sqrt(n); })
-		.into_vector(output);
+	//ix::from(r.rbegin(), r.rend())
+	//	.static_cast_<double>()
+	//	.select([](double n){ return std::sqrt(n); })
+	//	.into_vector(output);
 
 	auto vvv = ix::from(seq.begin(), seq.end())
 		.select([](int n){ return 4 * n; })
@@ -91,7 +91,7 @@ void run(int argc, char* argv[])
 		.skip(3)
 		.take(15)
 		.skip_until([](std::size_t n){ return n > 10; })
-		.sum();
+		.minmax();
 
 	auto vvv2 = ix::from(seq.begin(), seq.end())
 		.select([](int n){ return 3 * n - 2; })

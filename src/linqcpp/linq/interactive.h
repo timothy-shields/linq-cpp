@@ -145,14 +145,12 @@ public:
 		return value;
 	}
 
-	template <typename T, typename BinaryOperation>
-	T aggregate(BinaryOperation const& func)
+	template <typename BinaryOperation>
+	value_type aggregate(BinaryOperation const& func)
 	{
-		T value;
 		auto e = source.get_enumerator();
-		if (!e.move_next())
-			throw std::logic_error("Should never call aggregate on an empty enumerable.");
-		value = e.current();
+		move_next_or_throw(e);
+		value_type value = e.current();
 		while (e.move_next())
 			value = func(value, e.current());
 		return value;
@@ -179,6 +177,28 @@ public:
 		return select(selector).min();
 	}
 
+	template <typename Selector, typename Compare>
+	value_type min_by(Selector const& selector, Compare compare = std::less<typename std::result_of<Selector(value_type)>::type>())
+	{
+		typedef std::result_of<Selector(value_type)>::type key_type;
+
+		auto e = source.get_enumerator();
+		move_next_or_throw(e);
+		value_type min_value = e.current();
+		key_type min_key = selector(best_value);
+		while (e.move_next())
+		{
+			value_type current_value = e.current();
+			key_type current_key = selector(current_value);
+			if (compare(current_key, min_key))
+			{
+				min_value = current_value;
+				min_key = current_key;
+			}
+		}
+		return best_value;
+	}
+
 	value_type max()
 	{
 		return aggregate(std::max<value_type>);
@@ -188,6 +208,72 @@ public:
 	auto max(Selector const& selector) -> decltype(select(selector).max())
 	{
 		return select(selector).max();
+	}
+
+	template <typename Selector, typename Compare>
+	value_type max_by(Selector const& selector, Compare compare = std::less<typename std::result_of<Selector(value_type)>::type>())
+	{
+		typedef std::result_of<Selector(value_type)>::type key_type;
+		return min_by(selector, [=](key_type&& a, key_type&& b)
+		{
+			return compare(std::forward(b), std::forward(a));
+		});
+	}
+
+	std::pair<value_type, value_type> minmax()
+	{
+		auto e = source.get_enumerator();
+		move_next_or_throw(e);
+		value_type min_value = e.current();
+		value_type max_value = min_value;
+		while (e.move_next())
+		{
+			value_type current_value = e.current();
+			if (current_value < min_value)
+			{
+				min_value = current_value;
+			}
+			else if (max_value < current_value)
+			{
+				max_value = current_value;
+			}
+		}
+		return std::make_pair(min_value, max_value);
+	}
+
+	template <typename Selector>
+	auto minmax(Selector const& selector) -> decltype(select(selector).minmax())
+	{
+		return select(selector).minmax();
+	}
+
+	template <typename Selector, typename Compare>
+	std::pair<value_type, value_type> minmax_by(Selector const& selector, Compare compare = std::less<typename std::result_of<Selector(value_type)>::type>())
+	{
+		typedef std::result_of<Selector(value_type)>::type key_type;
+
+		auto e = source.get_enumerator();
+		move_next_or_throw(e);
+		value_type min_value = e.current();
+		key_type min_key = selector(min_value);
+		value_type max_value = min_value;
+		key_type max_key = min_key;
+		while (e.move_next())
+		{
+			value_type current_value = e.current();
+			key_type current_key = selector(current_value);
+			if (compare(current_key, min_key))
+			{
+				min_value = current_value;
+				min_key = current_key;
+			}
+			else if (compare(max_key, current_key))
+			{
+				max_value = current_value;
+				max_key = current_key;
+			}
+		}
+		return std::make_pair(min_value, max_value);
 	}
 
 	template <typename Predicate>
@@ -223,10 +309,8 @@ public:
 	value_type first()
 	{
 		auto e = source.get_enumerator();
-		if (e.move_next())
-			return e.current();
-		else
-			throw std::logic_error("Should never call first on an empty enumerable.");
+		move_next_or_throw(e);
+		return e.current();			
 	}
 
 	value_type first_or_default(value_type default_value = value_type())

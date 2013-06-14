@@ -21,3 +21,10 @@ public:
 	virtual bool move_next() = 0;
 	virtual value_type current() = 0;
 };
+
+template <typename Enumerator>
+void move_next_or_throw(Enumerator& e)
+{
+	if (!e.move_next())
+		throw new std::logic_error("move_next returned false");
+}
