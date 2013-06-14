@@ -9,6 +9,7 @@
 #include "from_enumerable.h"
 #include "empty_enumerable.h"
 #include "return_enumerable.h"
+#include "iota_enumerable.h"
 #include "for_enumerable.h"
 #include "generate_enumerable.h"
 #include "select_enumerable.h"
@@ -383,6 +384,12 @@ public:
 	static interactive<return_enumerable<value_type>> return_(value_type value)
 	{
 		return return_enumerable<value_type>(value);
+	}
+
+	template <typename value_type>
+	static interactive<iota_enumerable<value_type>> iota(value_type start)
+	{
+		return iota_enumerable<value_type>(start);
 	}
 
 	template <typename value_type, typename Condition, typename Next>

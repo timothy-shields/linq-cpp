@@ -27,6 +27,9 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
 	return_enumerable.h
 	return_enumerator.h
 
+	iota_enumerable.h
+	iota_enumerator.h
+
 	for_enumerable.h
 	for_enumerator.h
 
