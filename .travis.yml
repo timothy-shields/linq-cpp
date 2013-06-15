@@ -13,4 +13,4 @@ notifications:
     on_failure: always
 script: 
   - cmake -G "Unix Makefiles" -D CMAKE_INSTALL_PREFIX:STRING=./install --build ./build ./src
-  - gcc "-std=c++11"
+  - make
