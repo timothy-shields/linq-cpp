@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.7)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 macro(add_preprocessor_definition PREPROCESSOR_DEFINITION)
 	add_definitions(-D${PREPROCESSOR_DEFINITION})
