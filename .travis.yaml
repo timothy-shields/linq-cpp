@@ -1,3 +1,15 @@
 # Example at https://github.com/bwhite/picarus/blob/master/.travis.yml
 
 language: cpp
+compiler:
+  - gcc
+  - clang
+branches:
+  only:
+    - master
+notifications:
+  recipients:
+    - timothy.shields@live.com
+  email:
+    on_success: change
+    on_failure: always
