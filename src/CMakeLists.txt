@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 2.8.7)
 
 macro(add_preprocessor_definition PREPROCESSOR_DEFINITION)
 	add_definitions(-D${PREPROCESSOR_DEFINITION})
