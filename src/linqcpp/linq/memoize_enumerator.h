@@ -1,13 +1,19 @@
 #pragma once
 
+#include <type_traits>
+
 #include "enumerator.h"
+#include "memoize_traits.h"
 
 template <typename Source>
-class memoize_enumerator : public enumerator<typename Source::value_type>
+class memoize_enumerator : public enumerator<typename memoize_traits<Source>::value_type>
 {
+public:
+	typedef typename memoize_traits<Source>::value_type value_type;
+
 private:
 	Source source;
-	value_type value;
+	typename Source::value_type value;
 
 	memoize_enumerator(const memoize_enumerator&); // not defined
 	memoize_enumerator& operator=(const memoize_enumerator&); // not defined
@@ -51,7 +57,7 @@ public:
 		}
 	}
 
-	value_type& current()
+	value_type current()
 	{
 		return value;
 	}

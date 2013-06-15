@@ -3,8 +3,11 @@
 #include "enumerator.h"
 
 template <typename Source, typename Selector>
-class select_enumerator : public enumerator<decltype(std::declval<Selector>()(std::declval<typename Source::value_type>()))>
+class select_enumerator : public enumerator<typename std::result_of<Selector(typename Source::value_type)>::type>
 {
+public:
+	typedef typename std::result_of<Selector(typename Source::value_type)>::type value_type;
+
 private:
 	Source source;
 	Selector selector;

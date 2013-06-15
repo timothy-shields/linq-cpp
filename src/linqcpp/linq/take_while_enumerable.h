@@ -8,6 +8,7 @@ class take_while_enumerable : public enumerable<typename Source::value_type>
 {
 public:
 	typedef take_while_enumerator<typename Source::enumerator_type, Predicate> enumerator_type;
+	typedef typename enumerator_type::value_type value_type;
 
 private:
 	Source source;

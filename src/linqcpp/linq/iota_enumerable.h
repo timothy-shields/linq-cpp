@@ -9,6 +9,7 @@ class iota_enumerable : public enumerable<T>
 {
 public:
 	typedef iota_enumerator<T> enumerator_type;
+	typedef typename enumerator_type::value_type value_type;
 
 private:
 	value_type start;

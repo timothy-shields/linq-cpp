@@ -8,6 +8,9 @@
 template <typename Source>
 class concat_enumerator : public enumerator<typename concat_traits<Source>::inner_value_type>
 {
+public:
+	typedef typename concat_traits<Source>::inner_value_type value_type;
+
 private:
 	typedef typename concat_traits<Source>::inner_enumerator_type inner_enumerator_type;
 

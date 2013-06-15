@@ -14,6 +14,7 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
 	captured_enumerable.h
 	captured_enumerator.h
 
+	memoize_traits.h
 	memoize_enumerable.h
 	memoize_enumerator.h
 
@@ -31,9 +32,6 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
 
 	for_enumerable.h
 	for_enumerator.h
-
-	generate_enumerable.h
-	generate_enumerator.h
 	
 	select_enumerable.h
 	select_enumerator.h
@@ -41,8 +39,6 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
 	concat_traits.h
 	concat_enumerable.h
 	concat_enumerator.h
-		
-	dynamic_concat.h
 
 	where_enumerable.h
 	where_enumerator.h

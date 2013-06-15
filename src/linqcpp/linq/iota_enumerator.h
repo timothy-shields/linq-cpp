@@ -7,6 +7,9 @@
 template <typename T>
 class iota_enumerator : public enumerator<T>
 {
+public:
+	typedef T value_type;
+
 private:
 	bool first;
 	value_type value;

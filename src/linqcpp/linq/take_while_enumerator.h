@@ -5,6 +5,9 @@
 template <typename Source, typename Predicate>
 class take_while_enumerator : public enumerator<typename Source::value_type>
 {
+public:
+	typedef typename Source::value_type value_type;
+
 private:
 	Source source;
 	Predicate predicate;

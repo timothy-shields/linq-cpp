@@ -7,6 +7,9 @@
 template <typename Iterator>
 class from_enumerator : public enumerator<typename std::iterator_traits<Iterator>::reference>
 {
+public:
+	typedef typename std::iterator_traits<Iterator>::reference value_type;
+
 private:
 	Iterator curr;
 	Iterator end;
@@ -38,7 +41,7 @@ public:
 		return curr != end;
 	}
 	
-	value_type& current()
+	value_type current()
 	{
 		return *curr;
 	}

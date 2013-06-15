@@ -11,6 +11,7 @@ class concat_enumerable : public enumerable<typename concat_traits<Source>::inne
 {
 public:
 	typedef concat_enumerator<typename Source::enumerator_type> enumerator_type;
+	typedef typename enumerator_type::value_type value_type;
 	
 private:
 	Source source;

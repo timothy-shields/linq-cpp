@@ -8,6 +8,7 @@ class from_enumerable : public enumerable<typename from_enumerator<Iterator>::va
 {
 public:
 	typedef from_enumerator<Iterator> enumerator_type;
+	typedef typename enumerator_type::value_type value_type;
 
 private:
 	Iterator begin;

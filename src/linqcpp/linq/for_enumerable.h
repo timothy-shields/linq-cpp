@@ -9,6 +9,7 @@ class for_enumerable : public enumerable<T>
 {
 public:
 	typedef for_enumerator<T, Condition, Next> enumerator_type;
+	typedef typename enumerator_type::value_type value_type;
 
 private:
 	value_type start;

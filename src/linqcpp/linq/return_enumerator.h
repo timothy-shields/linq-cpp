@@ -7,11 +7,14 @@
 template <typename T>
 class return_enumerator : public enumerator<T>
 {
+public:
+	typedef T value_type;
+
 private:
-	value_type& value;
+	value_type value;
 	
 public:
-	return_enumerator(value_type& value)
+	return_enumerator(value_type value)
 		: value(value)
 	{
 	}
@@ -26,7 +29,7 @@ public:
 		return false;
 	}
 	
-	value_type const& current()
+	value_type current()
 	{
 		return value;
 	}

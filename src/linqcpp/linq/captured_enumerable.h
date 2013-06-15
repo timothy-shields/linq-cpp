@@ -8,9 +8,10 @@ class captured_enumerable : public enumerable<T>
 {
 public:
 	typedef captured_enumerator<T> enumerator_type;
+	typedef typename enumerator_type::value_type value_type;
 
 private:
-	std::shared_ptr<enumerable<T>> source_ptr;
+	std::shared_ptr<enumerable<value_type>> source_ptr;
 
 	captured_enumerable(captured_enumerable const&); // not defined
 	captured_enumerable& operator=(captured_enumerable const&); // not defined
@@ -32,7 +33,7 @@ public:
 		return *this;
 	}
 
-	captured_enumerable(std::shared_ptr<enumerable<T>> const& source_ptr)
+	captured_enumerable(std::shared_ptr<enumerable<value_type>> const& source_ptr)
 		: source_ptr(source_ptr)
 	{
 	}
@@ -42,7 +43,7 @@ public:
 		return enumerator_type(std::move(get_enumerator_ptr()));
 	}
 
-	std::unique_ptr<enumerator<T>> get_enumerator_ptr()
+	std::unique_ptr<enumerator<value_type>> get_enumerator_ptr()
 	{
 		return source_ptr->get_enumerator_ptr();
 	}

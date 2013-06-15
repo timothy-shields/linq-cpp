@@ -8,6 +8,7 @@ class select_enumerable : public enumerable<typename select_enumerator<typename 
 {
 public:
 	typedef select_enumerator<typename Source::enumerator_type, Selector> enumerator_type;
+	typedef typename enumerator_type::value_type value_type;
 
 private:
 	Source source;

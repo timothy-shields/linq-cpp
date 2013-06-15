@@ -7,6 +7,9 @@
 template <typename T, typename Condition, typename Next>
 class for_enumerator : public enumerator<T>
 {
+public:
+	typedef T value_type;
+
 private:
 	value_type value;
 	Condition condition;

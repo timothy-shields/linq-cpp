@@ -8,6 +8,7 @@ class return_enumerable : public enumerable<T>
 {
 public:
 	typedef return_enumerator<T> enumerator_type;
+	typedef typename enumerator_type::value_type value_type;
 
 private:
 	value_type value;
@@ -18,12 +19,7 @@ public:
 	{
 	}
 
-	return_enumerable(value_type&& value)
-		: value(std::move(value))
-	{
-	}
-
-	return_enumerable(value_type const& value)
+	return_enumerable(value_type value)
 		: value(value)
 	{
 	}

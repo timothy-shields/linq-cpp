@@ -11,7 +11,6 @@
 #include "return_enumerable.h"
 #include "iota_enumerable.h"
 #include "for_enumerable.h"
-#include "generate_enumerable.h"
 #include "select_enumerable.h"
 #include "concat_enumerable.h"
 #include "where_enumerable.h"
@@ -428,11 +427,5 @@ public:
 	static interactive<for_enumerable<value_type, Condition, Next>> for_(value_type start, Condition condition, Next next)
 	{
 		return for_enumerable<value_type, Condition, Next>(start, condition, next);
-	}
-
-	template <typename Generator>
-	static interactive<generate_enumerable<Generator>> generate(Generator generator)
-	{
-		return generate_enumerable<Generator>(generator);
 	}
 };

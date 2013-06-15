@@ -8,6 +8,7 @@ class empty_enumerable : public enumerable<T>
 {
 public:
 	typedef empty_enumerator<T> enumerator_type;
+	typedef typename enumerator_type::value_type value_type;
 
 	enumerator_type get_enumerator()
 	{
