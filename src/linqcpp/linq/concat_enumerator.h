@@ -60,30 +60,28 @@ public:
 	
 	bool move_next()
 	{
+		if (inner_enumerator.move_next())
+		{
+			return true;
+		}
+		else if (source.move_next())
+		{
+			inner_enumerator = source.current().get_enumerator();
+		}
+		else
+		{
+			return false;
+		}
+		
 		while (true)
 		{
-			if (inner_enumerator.move_next())
+			if (inner_enumerator.move_first())
 			{
 				return true;
 			}
 			else if (source.move_next())
 			{
 				inner_enumerator = source.current().get_enumerator();
-				while (true)
-				{
-					if (inner_enumerator.move_first())
-					{
-						return true;
-					}
-					else if (source.move_next())
-					{
-						inner_enumerator = source.current().get_enumerator();
-					}
-					else
-					{
-						return false;
-					}
-				}
 			}
 			else
 			{
