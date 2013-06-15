@@ -5,12 +5,6 @@ compiler: gcc
 branches:
   only:
     - master
-notifications:
-  recipients:
-    - timothy.shields@live.com
-  email:
-    on_success: change
-    on_failure: always
 script: 
   - cmake -G "Unix Makefiles" -D CMAKE_INSTALL_PREFIX:STRING=./install --build ./build ./src
   - make
