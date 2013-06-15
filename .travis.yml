@@ -11,4 +11,4 @@ notifications:
   email:
     on_success: change
     on_failure: always
-script: cmake -G "Visual Studio 11 Win64" -D CMAKE_INSTALL_PREFIX:STRING=./install --build ./build ./src
+script: cmake -G "Unix Makefiles" -D CMAKE_INSTALL_PREFIX:STRING=./install --build ./build ./src
