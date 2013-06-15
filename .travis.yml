@@ -1,9 +1,7 @@
 # Example at https://github.com/bwhite/picarus/blob/master/.travis.yml
 
 language: cpp
-compiler:
-  - gcc
-  - clang
+compiler: gcc
 branches:
   only:
     - master
@@ -13,3 +11,4 @@ notifications:
   email:
     on_success: change
     on_failure: always
+script: cmake -G "Visual Studio 11 Win64" -D CMAKE_INSTALL_PREFIX:STRING=./install --build ./build ./src
