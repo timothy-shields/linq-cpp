@@ -30,6 +30,8 @@ public:
 	typedef typename enumerable_type::value_type value_type;
 	
 private:
+	interactive<Enumerable> declthis();
+
 	enumerable_type source;
 
 	interactive(interactive const& other); // not defined
@@ -79,7 +81,7 @@ public:
 	}
 
 	template <typename T>
-	auto static_cast_() -> decltype(select(static_cast_selector<value_type, T>()))
+	auto static_cast_() -> decltype(declthis().select(static_cast_selector<value_type, T>()))
 	{
 		return select(static_cast_selector<value_type, T>());
 	}
@@ -90,7 +92,7 @@ public:
 	}
 
 	template <typename Selector>
-	auto select_many(Selector selector) -> decltype(select(selector).concat())
+	auto select_many(Selector selector) -> decltype(declthis().select(selector).concat())
 	{
 		return select(selector).concat();
 	}
@@ -108,12 +110,13 @@ public:
 	}
 
 	template <typename Predicate>
-	auto take_until(Predicate const& predicate) -> decltype(take_while(negated_predicate<value_type, Predicate>(predicate)))
+	auto take_until(Predicate const& predicate) -> decltype(declthis().take_while(negated_predicate<value_type, Predicate>(predicate)))
 	{
 		return take_while(negated_predicate<value_type, Predicate>(predicate));
 	}
 
-	auto take(std::size_t count) -> decltype(take_while(counter_predicate<value_type>(count)))
+	template <typename Count>
+	auto take(Count count) -> decltype(declthis().take_while(counter_predicate<value_type>(count)))
 	{
 		return take_while(counter_predicate<value_type>(count));
 	}
@@ -125,12 +128,13 @@ public:
 	}
 
 	template <typename Predicate>
-	auto skip_until(Predicate const& predicate) -> decltype(skip_while(negated_predicate<value_type, Predicate>(predicate)))
+	auto skip_until(Predicate const& predicate) -> decltype(declthis().skip_while(negated_predicate<value_type, Predicate>(predicate)))
 	{
 		return skip_while(negated_predicate<value_type, Predicate>(predicate));
 	}
 
-	auto skip(std::size_t count) -> decltype(skip_while(counter_predicate<value_type>(count)))
+	template <typename Count>
+	auto skip(Count count) -> decltype(declthis().skip_while(counter_predicate<value_type>(count)))
 	{
 		return skip_while(counter_predicate<value_type>(count));
 	}
@@ -184,7 +188,7 @@ public:
 	}
 
 	template <typename Selector>
-	auto min(Selector const& selector) -> decltype(select(selector).min())
+	auto min(Selector const& selector) -> decltype(declthis().select(selector).min())
 	{
 		return select(selector).min();
 	}
@@ -217,7 +221,7 @@ public:
 	}
 
 	template <typename Selector>
-	auto max(Selector const& selector) -> decltype(select(selector).max())
+	auto max(Selector const& selector) -> decltype(declthis().select(selector).max())
 	{
 		return select(selector).max();
 	}
@@ -254,7 +258,7 @@ public:
 	}
 
 	template <typename Selector>
-	auto minmax(Selector const& selector) -> decltype(select(selector).minmax())
+	auto minmax(Selector const& selector) -> decltype(declthis().select(selector).minmax())
 	{
 		return select(selector).minmax();
 	}
