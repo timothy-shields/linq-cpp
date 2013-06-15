@@ -14,3 +14,4 @@ notifications:
 script: 
   - cmake -G "Unix Makefiles" -D CMAKE_INSTALL_PREFIX:STRING=./install --build ./build ./src
   - make --help
+  - gcc --help
