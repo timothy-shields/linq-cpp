@@ -197,7 +197,7 @@ public:
 		auto e = source.get_enumerator();
 		move_first_or_throw(e);
 		value_type min_value = e.current();
-		key_type min_key = selector(best_value);
+		key_type min_key = selector(min_value);
 		while (e.move_next())
 		{
 			value_type current_value = e.current();
