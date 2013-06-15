@@ -108,9 +108,9 @@ public:
 	}
 
 	template <typename Predicate>
-	auto take_until(Predicate const& predicate) -> decltype(take_while(negate_predicate<value_type>(predicate)))
+	auto take_until(Predicate const& predicate) -> decltype(take_while(negated_predicate<value_type, Predicate>(predicate)))
 	{
-		return take_while(negate_predicate<value_type>(predicate));
+		return take_while(negated_predicate<value_type, Predicate>(predicate));
 	}
 
 	auto take(std::size_t count) -> decltype(take_while(counter_predicate<value_type>(count)))
@@ -125,9 +125,9 @@ public:
 	}
 
 	template <typename Predicate>
-	auto skip_until(Predicate const& predicate) -> decltype(skip_while(negate_predicate<value_type>(predicate)))
+	auto skip_until(Predicate const& predicate) -> decltype(skip_while(negated_predicate<value_type, Predicate>(predicate)))
 	{
-		return skip_while(negate_predicate<value_type>(predicate));
+		return skip_while(negated_predicate<value_type, Predicate>(predicate));
 	}
 
 	auto skip(std::size_t count) -> decltype(skip_while(counter_predicate<value_type>(count)))
@@ -208,7 +208,7 @@ public:
 				min_key = current_key;
 			}
 		}
-		return best_value;
+		return min_value;
 	}
 
 	value_type max()

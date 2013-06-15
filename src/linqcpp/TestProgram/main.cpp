@@ -92,7 +92,7 @@ void run(int argc, char* argv[])
 		})
 		.skip(3)
 		.take(15)
-		.skip_until([](std::size_t n){ return n > 10; })
+		.skip_until([](int n){ return n > 10; })
 		.minmax();
 
 	auto vvv2 = ix::from(seq.begin(), seq.end())

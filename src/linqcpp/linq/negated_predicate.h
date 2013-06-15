@@ -16,9 +16,3 @@ public:
 		return !predicate(value);
 	}
 };
-
-template <typename T, typename Predicate>
-negated_predicate<T, Predicate> negate_predicate(Predicate const& predicate)
-{
-	return negated_predicate<T, Predicate>(predicate);
-}
