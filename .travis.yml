@@ -11,4 +11,6 @@ notifications:
   email:
     on_success: change
     on_failure: always
-script: cmake -G "Unix Makefiles" -D CMAKE_INSTALL_PREFIX:STRING=./install --build ./build ./src
+script: 
+  - cmake -G "Unix Makefiles" -D CMAKE_INSTALL_PREFIX:STRING=./install --build ./build ./src
+  - ls ./build
