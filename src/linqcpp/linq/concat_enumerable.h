@@ -2,6 +2,7 @@
 
 #include <utility>
 
+#include "make_unique.h"
 #include "enumerable.h"
 #include "concat_traits.h"
 #include "concat_enumerator.h"

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "make_unique.h"
 #include "enumerable.h"
 #include "memoize_enumerator.h"
 #include "memoize_traits.h"

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "make_unique.h"
 #include "enumerable.h"
 #include "skip_while_enumerator.h"
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "make_unique.h"
 #include "enumerable.h"
 #include "select_enumerator.h"
 
