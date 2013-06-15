@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdexcept>
+
 // Concept Enumerator<T>
 // o Implies:
 //   o DefaultConstructible: http://en.cppreference.com/w/cpp/concept/DefaultConstructible
