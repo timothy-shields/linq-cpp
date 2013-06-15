@@ -5,7 +5,7 @@
 #include "select_enumerator.h"
 
 template <typename Source, typename Selector>
-class select_enumerable : public enumerable<typename select_enumerator<typename Source::enumerator_type, typename Selector>::value_type>
+class select_enumerable : public enumerable<typename select_enumerator<typename Source::enumerator_type, Selector>::value_type>
 {
 public:
 	typedef select_enumerator<typename Source::enumerator_type, Selector> enumerator_type;

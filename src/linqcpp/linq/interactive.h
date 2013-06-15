@@ -192,7 +192,7 @@ public:
 	template <typename Selector, typename Compare>
 	value_type min_by(Selector const& selector, Compare compare = std::less<typename std::result_of<Selector(value_type)>::type>())
 	{
-		typedef std::result_of<Selector(value_type)>::type key_type;
+		typedef typename std::result_of<Selector(value_type)>::type key_type;
 
 		auto e = source.get_enumerator();
 		move_first_or_throw(e);
@@ -225,10 +225,10 @@ public:
 	template <typename Selector, typename Compare>
 	value_type max_by(Selector const& selector, Compare compare = std::less<typename std::result_of<Selector(value_type)>::type>())
 	{
-		typedef std::result_of<Selector(value_type)>::type key_type;
+		typedef typename std::result_of<Selector(value_type)>::type key_type;
 		return min_by(selector, [=](key_type&& a, key_type&& b)
 		{
-			return compare(std::forward(b), std::forward(a));
+			return compare(std::forward<key_type>(b), std::forward<key_type>(a));
 		});
 	}
 
@@ -262,7 +262,7 @@ public:
 	template <typename Selector, typename Compare>
 	std::pair<value_type, value_type> minmax_by(Selector const& selector, Compare compare = std::less<typename std::result_of<Selector(value_type)>::type>())
 	{
-		typedef std::result_of<Selector(value_type)>::type key_type;
+		typedef typename std::result_of<Selector(value_type)>::type key_type;
 
 		auto e = source.get_enumerator();
 		move_first_or_throw(e);
