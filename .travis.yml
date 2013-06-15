@@ -1,0 +1,10 @@
+# Example at https://github.com/bwhite/picarus/blob/master/.travis.yml
+
+language: cpp
+compiler: gcc
+branches:
+  only:
+    - master
+script: 
+  - cmake -G "Unix Makefiles" -D CMAKE_INSTALL_PREFIX:STRING=./install --build ./build ./src
+  - make

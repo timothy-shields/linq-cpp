@@ -1,10 +1,12 @@
 # how to build
 
-**linq-cpp** is configured to build using [CMake][1].
-
 **linq-cpp** is written to be fully compliant with the C++11 standard and cross-platform. It **has no dependencies** outside of the C++11 standard library.
 
-Currently, [Visual Studio Express 2012 for Windows Desktop][2] is being used to build **linq-cpp**, but any compiler compliant with the C++11 standard should work.
+**linq-cpp** is configured to build using [CMake][].
+
+**linq-cpp** is built automatically by [Travis CI][].
+
+Currently, [Visual Studio Express 2012 for Windows Desktop][] is being used to build **linq-cpp**, but any compiler compliant with the C++11 standard should work.
 
 ## steps
 
@@ -23,5 +25,6 @@ Currently, [Visual Studio Express 2012 for Windows Desktop][2] is being used to 
 8. Set `CMAKE_INSTALL_PREFIX` to `~/install`
 9. Click "Generate"
 
-[1]: http://www.cmake.org/
-[2]: http://www.microsoft.com/visualstudio/eng/products/visual-studio-express-for-windows-desktop#product-express-desktop
+[CMake]: http://www.cmake.org/
+[Travis CI]: https://travis-ci.org/timothy-shields/linq-cpp
+[Visual Studio Express 2012 for Windows Desktop]: http://www.microsoft.com/visualstudio/eng/products/visual-studio-express-for-windows-desktop#product-express-desktop
