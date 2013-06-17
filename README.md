@@ -19,7 +19,7 @@ Contact me at timothy.shields@live.com.
 
 The `IEnumerable<T>` interface and associated LINQ extension methods provided by the .NET framework enable programmers to write concise, fluent, and composable query expressions using powerful abstractions.
 
-**linq-cpp** brings equivalent functionality to the C++11 environment.
+**linq-cpp** brings equivalent functionality to the C++11 environment - and it's **"done right"**.
 
 **linq-cpp** is written to be fully compliant with the C++11 standard and cross-platform. It **has no dependencies** outside of the C++11 standard library.
 
