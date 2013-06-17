@@ -31,14 +31,27 @@ The `IEnumerable<T>` interface and associated LINQ extension methods provided by
 
 ### CMake
 
-**linq-cpp** is configured to build using [CMake][].
-
-**linq-cpp** is built automatically by [Travis CI][].
-
-Readers familiar with .NET LINQ may want to skip directly to the [**methods**](README.md#methods) section. Nearly all of the familiar .NET LINQ methods are provided - and some of the more-obscure ones that aren't should be added soon!
-
 [CMake]: http://www.cmake.org/
+
+**linq-cpp** is configured to build using [CMake][]. For other projects already using CMake as a build system, this makes integrating **linq-cpp** a simple procedure.
+
+### Travis CI
+
 [Travis CI]: https://travis-ci.org/timothy-shields/linq-cpp
+
+**linq-cpp** is built automatically by [Travis CI][]. Each time this GitHub repository updates, Travis CI clones and build the repository using the Linux compilers it provides (see the [**portability**](README.md#portability) section for the list of compilers).
+
+### familiarity
+
+[.NET LINQ]: http://msdn.microsoft.com/en-us/library/bb308959.aspx
+[`IEnumerable<T>` interface]: http://msdn.microsoft.com/en-us/library/9eekhta0.aspx
+
+Users of [.NET LINQ][] and the [`IEnumerable<T>` interface][] should find **linq-cpp** immediately familiar. The precedent set by the `IEnumerable<T>` and `IEnumerator<T>` interfaces and the `IEnumerable<T>` extension methods have been mimicked directly. and some of the more-obscure ones that aren't should be added soon!
+ 
+ Readers familiar with .NET LINQ may want to skip directly to the [**methods**](README.md#methods) section. 
+
+
+
 
 ## teaser
 
