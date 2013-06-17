@@ -27,7 +27,7 @@ The `IEnumerable<T>` interface and associated LINQ extension methods provided by
 
 **linq-cpp** is built automatically by [Travis CI][].
 
-Readers familiar with .NET LINQ may want to skip directly to the [**methods**](README.md#methods) section.
+Readers familiar with .NET LINQ may want to skip directly to the [**methods**](README.md#methods) section. Nearly all of the familiar .NET LINQ methods are provided - and some of the more-obscure ones that aren't should be added soon!
 
 ## teaser
 
