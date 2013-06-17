@@ -1,3 +1,6 @@
+[License]: LICENSE.md
+[v1]: https://github.com/timothy-shields/linq-cpp/tree/v1
+
 # linq-cpp: LINQ for C++11 done right
 
 If you're interested in using or contributing to this library, **I'd really like to hear from you!**<br>
@@ -5,7 +8,7 @@ Contact me at timothy.shields@live.com.
 
 ## versions
 
-- **v1** [(go to tag)](https://github.com/timothy-shields/linq-cpp/tree/v1)
+- **v1** [(go to tag)][v1]
  - Unoptimized fully functional version
  - Only builds with Visual Studio 11
 - **v2** (currently under development)
@@ -18,6 +21,10 @@ Contact me at timothy.shields@live.com.
 The `IEnumerable<T>` interface and associated LINQ extension methods provided by the .NET framework enable programmers to write concise, fluent, and composable query expressions using powerful abstractions.
 
 **linq-cpp** brings equivalent functionality to the C++11 environment - and it's **"done right"**.
+
+### licensing
+
+**linq-cpp** is licensed under the Apache License, Version 2.0. You can view the license file [here][License].
 
 ### familiarity
 
