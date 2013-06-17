@@ -33,7 +33,7 @@ The [**methods**](README.md#methods) section has a list of all of the functions 
 
 ### portability
 
-**linq-cpp** is written to be fully compliant with the C++11 standard and cross-platform. It **has no dependencies** outside of the C++11 standard library. It can be compiled and built using any of the following:
+**linq-cpp** is written to be cross-platform and fully compliant with the C++11 standard. It **has no dependencies** outside of the C++11 standard library. It can be compiled and built using any of the following:
 
 - Visual Studio 2012
 - gcc 4.6
