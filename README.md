@@ -1,6 +1,6 @@
 [License]: LICENSE.md
 [v1]: https://github.com/timothy-shields/linq-cpp/tree/v1
-[Build Status]: https://api.travis-ci.org/timothy-shields/linq-cpp.png
+[Build Status]: https://api.travis-ci.org/timothy-shields/linq-cpp.png?branch=master
 
 # linq-cpp: LINQ for C++11 done right
 
