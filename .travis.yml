@@ -1,18 +1,22 @@
 # Example at https://github.com/bwhite/picarus/blob/master/.travis.yml
 
 language: cpp
-compiler:
-  - gcc
-  - clang
+
 branches:
   only:
     - master
+    
 notifications:
   recipients:
     - timothy.shields@live.com
   email:
     on_success: never
     on_failure: never
+    
+compiler:
+  - gcc
+  - clang
+  
 script: 
   - cmake -G "Unix Makefiles" -D CMAKE_INSTALL_PREFIX:STRING=./install --build ./build ./src
   - make
