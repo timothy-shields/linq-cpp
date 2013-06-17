@@ -31,7 +31,7 @@ The `IEnumerable<T>` interface and associated LINQ extension methods provided by
 
 [CMake]: http://www.cmake.org/
 
-**linq-cpp** is configured to build using [CMake][]. For other projects already using CMake as a build system, this makes integrating **linq-cpp** a simple procedure.
+**linq-cpp** is configured to build using the [CMake][] build system. For other projects already using CMake, integrating **linq-cpp** as a dependency is a simple procedure.
 
 ### Travis CI
 
@@ -46,7 +46,7 @@ The `IEnumerable<T>` interface and associated LINQ extension methods provided by
 [.NET LINQ]: http://msdn.microsoft.com/en-us/library/bb308959.aspx
 [`IEnumerable<T>` interface]: http://msdn.microsoft.com/en-us/library/9eekhta0.aspx
 
-Users of [.NET LINQ][] and the [`IEnumerable<T>` interface][] should find **linq-cpp** immediately familiar. The precedent set by the `IEnumerable<T>` and `IEnumerator<T>` interfaces and the `IEnumerable<T>` extension methods have been mimicked directly.
+Users of [.NET LINQ][] and the [`IEnumerable<T>` interface][] should find **linq-cpp** immediately familiar. The precedent set by the .NET `IEnumerable<T>` and `IEnumerator<T>` interfaces and `IEnumerable<T>` extension methods have been mimicked directly.
  
 The [**methods**](README.md#methods) section has a list of all of the functions available in **linq-cpp**. Any .NET LINQ methods that aren't yet available should be added soon!
 
