@@ -41,6 +41,8 @@ The `IEnumerable<T>` interface and associated LINQ extension methods provided by
 
 **linq-cpp** is built automatically by [Travis CI][]. Each time this GitHub repository updates, Travis CI clones and builds the repository using the Linux compilers it provides (see the [**portability**](README.md#portability) section for the list of compilers).
 
+*(coming soon)* Automated testing using Travis CI
+
 ### familiarity
 
 [.NET LINQ]: http://msdn.microsoft.com/en-us/library/bb308959.aspx
