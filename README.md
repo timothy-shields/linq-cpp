@@ -46,9 +46,9 @@ The `IEnumerable<T>` interface and associated LINQ extension methods provided by
 [.NET LINQ]: http://msdn.microsoft.com/en-us/library/bb308959.aspx
 [`IEnumerable<T>` interface]: http://msdn.microsoft.com/en-us/library/9eekhta0.aspx
 
-Users of [.NET LINQ][] and the [`IEnumerable<T>` interface][] should find **linq-cpp** immediately familiar. The precedent set by the `IEnumerable<T>` and `IEnumerator<T>` interfaces and the `IEnumerable<T>` extension methods have been mimicked directly. and some of the more-obscure ones that aren't should be added soon!
+Users of [.NET LINQ][] and the [`IEnumerable<T>` interface][] should find **linq-cpp** immediately familiar. The precedent set by the `IEnumerable<T>` and `IEnumerator<T>` interfaces and the `IEnumerable<T>` extension methods have been mimicked directly.
  
- Readers familiar with .NET LINQ may want to skip directly to the [**methods**](README.md#methods) section. 
+The [**methods**](README.md#methods) section has a list of all of the functions available in **linq-cpp**. Any .NET LINQ methods that aren't yet available should be added soon!
 
 
 
