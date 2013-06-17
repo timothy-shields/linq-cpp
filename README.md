@@ -52,8 +52,11 @@ Users of [.NET LINQ][] and the [`IEnumerable<T>` interface][] should find **linq
  
 The [**methods**](README.md#methods) section has a list of all of the functions available in **linq-cpp**. Any .NET LINQ methods that aren't yet available should be added soon!
 
+---
 
+***Below this point has not yet been updated from v1***
 
+---
 
 ## teaser
 
