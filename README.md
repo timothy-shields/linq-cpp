@@ -39,13 +39,13 @@ The [**methods**](README.md#methods) section has a list of all of the functions 
 - gcc 4.6
 - clang 3.1
 
-### build system (CMake)
+### build system: CMake
 
 [CMake]: http://www.cmake.org/
 
 **linq-cpp** is configured to build using the [CMake][] build system. For other projects already using CMake, integrating **linq-cpp** as a dependency is a simple procedure.
 
-### continuous integration and testing (Travis CI)
+### continuous integration: Travis CI
 
 [Travis CI]: https://travis-ci.org/timothy-shields/linq-cpp
 
