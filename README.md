@@ -29,6 +29,9 @@ The `IEnumerable<T>` interface and associated LINQ extension methods provided by
 
 Readers familiar with .NET LINQ may want to skip directly to the [**methods**](README.md#methods) section. Nearly all of the familiar .NET LINQ methods are provided - and some of the more-obscure ones that aren't should be added soon!
 
+[CMake]: http://www.cmake.org/
+[Travis CI]: https://travis-ci.org/timothy-shields/linq-cpp
+
 ## teaser
 
 Suppose you have the following types.
