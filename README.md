@@ -25,7 +25,7 @@ The `IEnumerable<T>` interface and associated LINQ extension methods provided by
 
 - Visual Studio 2012
 - gcc 4.6
-- *(coming soon)* clang 3.1
+- clang 3.1
 
 ### CMake
 
