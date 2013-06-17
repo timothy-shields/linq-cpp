@@ -1,7 +1,9 @@
 # Example at https://github.com/bwhite/picarus/blob/master/.travis.yml
 
 language: cpp
-compiler: gcc
+compiler:
+  - gcc
+  - clang
 branches:
   only:
     - master
