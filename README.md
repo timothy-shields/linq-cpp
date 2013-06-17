@@ -21,7 +21,15 @@ The `IEnumerable<T>` interface and associated LINQ extension methods provided by
 
 **linq-cpp** brings equivalent functionality to the C++11 environment - and it's **"done right"**.
 
-**linq-cpp** is written to be fully compliant with the C++11 standard and cross-platform. It **has no dependencies** outside of the C++11 standard library.
+### portability
+
+**linq-cpp** is written to be fully compliant with the C++11 standard and cross-platform. It **has no dependencies** outside of the C++11 standard library. It can be compiled and built using any of the following:
+
+- Visual Studio 2012
+- gcc 4.6
+- *(coming soon)* clang 3.1
+
+### CMake
 
 **linq-cpp** is configured to build using [CMake][].
 
