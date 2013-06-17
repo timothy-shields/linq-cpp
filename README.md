@@ -19,28 +19,6 @@ The `IEnumerable<T>` interface and associated LINQ extension methods provided by
 
 **linq-cpp** brings equivalent functionality to the C++11 environment - and it's **"done right"**.
 
-### portability
-
-**linq-cpp** is written to be fully compliant with the C++11 standard and cross-platform. It **has no dependencies** outside of the C++11 standard library. It can be compiled and built using any of the following:
-
-- Visual Studio 2012
-- gcc 4.6
-- clang 3.1
-
-### CMake
-
-[CMake]: http://www.cmake.org/
-
-**linq-cpp** is configured to build using the [CMake][] build system. For other projects already using CMake, integrating **linq-cpp** as a dependency is a simple procedure.
-
-### Travis CI
-
-[Travis CI]: https://travis-ci.org/timothy-shields/linq-cpp
-
-**linq-cpp** is built automatically by [Travis CI][]. Each time this GitHub repository updates, Travis CI clones and builds the repository using the Linux compilers it provides (see the [**portability**](README.md#portability) section for the list of compilers).
-
-*(coming soon)* Automated testing using Travis CI
-
 ### familiarity
 
 [.NET LINQ]: http://msdn.microsoft.com/en-us/library/bb308959.aspx
@@ -49,6 +27,28 @@ The `IEnumerable<T>` interface and associated LINQ extension methods provided by
 Users of [.NET LINQ][] and the [`IEnumerable<T>` interface][] should find **linq-cpp** immediately familiar. The precedent set by the .NET `IEnumerable<T>` and `IEnumerator<T>` interfaces and `IEnumerable<T>` extension methods have been mimicked directly.
  
 The [**methods**](README.md#methods) section has a list of all of the functions available in **linq-cpp**. Any .NET LINQ methods that aren't yet available should be added soon!
+
+### portability
+
+**linq-cpp** is written to be fully compliant with the C++11 standard and cross-platform. It **has no dependencies** outside of the C++11 standard library. It can be compiled and built using any of the following:
+
+- Visual Studio 2012
+- gcc 4.6
+- clang 3.1
+
+### build system (CMake)
+
+[CMake]: http://www.cmake.org/
+
+**linq-cpp** is configured to build using the [CMake][] build system. For other projects already using CMake, integrating **linq-cpp** as a dependency is a simple procedure.
+
+### continuous integration and testing (Travis CI)
+
+[Travis CI]: https://travis-ci.org/timothy-shields/linq-cpp
+
+**linq-cpp** is built automatically by [Travis CI][]. Each time this GitHub repository updates, Travis CI clones and builds the repository using the Linux compilers it provides (see the [**portability**](README.md#portability) section for the list of compilers).
+
+*(coming soon)* Automated testing using Travis CI
 
 ---
 
