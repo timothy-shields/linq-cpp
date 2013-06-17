@@ -2,8 +2,18 @@
 
 ## contact
 
-If you're interested in using or contributing to this library, I'd like to hear from you!<br>
+If you're interested in using or contributing to this library, **I'd really like to hear from you!**<br>
 Contact me at timothy.shields@live.com.
+
+## versions
+
+- **v1** [(go to tag)](https://github.com/timothy-shields/linq-cpp/tree/v1)
+ - Unoptimized fully functional version
+ - Only builds with Visual Studio 11
+- **v2** (currently under development)
+ - Optimized version
+ - Makes heavy use of templates to enable compile-time inlining of complex query expressions
+ - Builds with both Visual Studio 11 and GCC
 
 ## introduction
 
