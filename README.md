@@ -2,12 +2,10 @@
 [v1]: https://github.com/timothy-shields/linq-cpp/tree/v1
 [Build Status]: https://api.travis-ci.org/timothy-shields/linq-cpp.png?branch=master
 
-# linq-cpp: LINQ for C++11 done right
+# linq-cpp: LINQ for C++11 done right ![Build Status][]
 
 If you're interested in using or contributing to this library, **I'd really like to hear from you!**<br>
 Contact me at timothy.shields@live.com.
-
-![Build Status][]
 
 ## introduction
 
