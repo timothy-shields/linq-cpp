@@ -9,16 +9,6 @@ Contact me at timothy.shields@live.com.
 
 ![Build Status][]
 
-## versions
-
-- **v1** [(go to tag)][v1]
- - Unoptimized fully functional version
- - Only builds with Visual Studio 11
-- **v2** (currently under development)
- - Optimized version
- - Makes heavy use of templates to enable compile-time inlining of complex query expressions
- - Builds with both Visual Studio 11 and GCC
-
 ## introduction
 
 The `IEnumerable<T>` interface and associated LINQ extension methods provided by the .NET framework enable programmers to write concise, fluent, and composable query expressions using powerful abstractions.
