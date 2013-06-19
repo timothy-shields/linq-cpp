@@ -1,39 +1,39 @@
 #pragma once
 
 #include "make_unique.h"
+#include "range_traits.h"
 #include "enumerable.h"
 #include "from_enumerator.h"
 
-template <typename Iterator>
-class from_enumerable : public enumerable<typename from_enumerator<Iterator>::value_type>
+template <typename Range>
+class from_enumerable : public enumerable<typename from_enumerator<typename linq::range_traits<Range>::iterator_type>::value_type>
 {
 public:
-	typedef from_enumerator<Iterator> enumerator_type;
+	typedef from_enumerator<typename linq::range_traits<Range>::iterator_type> enumerator_type;
 	typedef typename enumerator_type::value_type value_type;
 
 private:
-	Iterator begin;
-	Iterator end;
+	Range range;
 
 	from_enumerable(from_enumerable const&); // not defined
 	from_enumerable& operator=(from_enumerable const&); // not defined
 	
 public:
 	from_enumerable(from_enumerable&& other)
-		: begin(std::move(other.begin))
-		, end(std::move(other.end))
+		: range(std::move(other.range))
 	{
 	}
 
-	from_enumerable(Iterator const& begin, Iterator const& end)
-		: begin(begin)
-		, end(end)
+	from_enumerable(Range&& range)
+		: range(std::forward<Range>(range))
 	{
 	}
 
 	enumerator_type get_enumerator()
 	{
-		return enumerator_type(begin, end);
+		using std::begin;
+		using std::end;
+		return enumerator_type(begin(range), end(range));
 	}
 
 	std::unique_ptr<enumerator<value_type>> get_enumerator_ptr()

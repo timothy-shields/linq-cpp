@@ -78,9 +78,18 @@ void run(int argc, char* argv[])
 	//	.select([](double n){ return std::sqrt(n); })
 	//	.into_vector(output);
 
-	auto rrr = ix::iota(0).take(100).to_vector();
+	auto rrr = ix::iota(0)
+		.take(100)
+		.where([](int n){ return (n % 6) == 0; })
+		.to_vector();
 
-	auto vvv = ix::from(seq.begin(), seq.end())
+
+	ix::from(rrr).for_each([](int i)
+	{
+		std::cout << i << std::endl;
+	});
+
+	auto vvv = ix::from(seq)
 		.select([](int n){ return 4 * n; })
 		.select([](int n){ return n - 2; })
 		.memoize()
@@ -95,7 +104,9 @@ void run(int argc, char* argv[])
 		.skip_until([](int n){ return n > 10; })
 		.minmax();
 
-	auto vvv2 = ix::from(seq.begin(), seq.end())
+	std::cout << vvv.first << ", " << vvv.second << std::endl;
+
+	auto vvv2 = ix::from(seq)
 		.select([](int n){ return 3 * n - 2; })
 		.to_vector();
 

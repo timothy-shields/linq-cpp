@@ -402,10 +402,10 @@ public:
 		return captured_enumerable<value_type>(enumerable_ptr);
 	}
 
-	template <typename Iterator>
-	static interactive<from_enumerable<Iterator>> from(Iterator const& begin, Iterator const& end)
+	template <typename Range>
+	static interactive<from_enumerable<Range>> from(Range&& range)
 	{
-		return from_enumerable<Iterator>(begin, end);
+		return from_enumerable<Range>(std::forward<Range>(range));
 	}
 
 	template <typename value_type>
