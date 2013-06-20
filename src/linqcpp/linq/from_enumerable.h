@@ -57,7 +57,7 @@ private:
 	
 public:
 	from_enumerable(from_enumerable&& other)
-		: range(std::move(other.range))
+		: range(other.range)
 	{
 	}
 
