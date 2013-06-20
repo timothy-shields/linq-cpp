@@ -24,9 +24,9 @@ public:
 	{
 	}
 
-	from_enumerator(Iterator const& begin, Iterator const& end)
-		: curr(begin)
-		, end(end)
+	from_enumerator(Iterator&& begin, Iterator&& end)
+		: curr(std::move(begin))
+		, end(std::move(end))
 	{
 	}
 

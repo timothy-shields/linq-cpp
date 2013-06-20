@@ -58,17 +58,17 @@ void TimeIt(string text, int repeatCount, std::function<void ()> f)
 
 void run(int argc, char* argv[])
 {
-	auto seq = ix::for_(0, [](int n){ return n < 10; }, [](int n){ return n + 1; })
-		.to_vector();
-	auto ffff = [](int n)
-	{
-		return ix::for_(0, [](int i){ return i < 3; }, [](int i){ return i + 1; })
-			.ref_count();
-			//.select([=](int i){ return n + i; });
-	};
+	//auto seq = ix::for_(0, [](int n){ return n < 10; }, [](int n){ return n + 1; })
+	//	.to_vector();
+	//auto ffff = [](int n)
+	//{
+	//	return ix::for_(0, [](int i){ return i < 3; }, [](int i){ return i + 1; })
+	//		.ref_count();
+	//		//.select([=](int i){ return n + i; });
+	//};
 
-	auto r = ix::for_(0, [](int n){ return n < 10000000; }, [](int n){ return n + 1; })
-		.to_vector();
+	//auto r = ix::for_(0, [](int n){ return n < 10000000; }, [](int n){ return n + 1; })
+	//	.to_vector();
 
 	//std::vector<double> output;
 	//output.reserve(10000000);
@@ -81,34 +81,37 @@ void run(int argc, char* argv[])
 	auto rrr = ix::iota(0)
 		.take(100)
 		.where([](int n){ return (n % 6) == 0; })
+		//.select([](int n){ return std::make_shared<int>(n); })
 		.to_vector();
 
-
-	ix::from(rrr).for_each([](int i)
+	ix::from(rrr).for_each([](int& i)
 	{
 		std::cout << i << std::endl;
 	});
 
-	auto vvv = ix::from(seq)
-		.select([](int n){ return 4 * n; })
-		.select([](int n){ return n - 2; })
-		.memoize()
-		.where([](int n){ return (n % 2) == 0; })
-		.select_many([](int n)
-	    {
-			return ix::for_(n, [=](int k){ return k < (n+3); }, [](int k){ return k + 1; })
-				.capture();
-		})
-		.skip(3)
-		.take(15)
-		.skip_until([](int n){ return n > 10; })
-		.minmax();
+	//for (auto it = rrr.begin(); it != rrr.end(); ++it)
+	//	std::cout << *it << std::endl;
 
-	std::cout << vvv.first << ", " << vvv.second << std::endl;
+	//auto vvv = ix::from_ref(seq)
+	//	.select([](int n){ return 4 * n; })
+	//	.select([](int n){ return n - 2; })
+	//	.memoize()
+	//	.where([](int n){ return (n % 2) == 0; })
+	//	.select_many([](int n)
+	//    {
+	//		return ix::for_(n, [=](int k){ return k < (n+3); }, [](int k){ return k + 1; })
+	//			.capture();
+	//	})
+	//	.skip(3)
+	//	.take(15)
+	//	.skip_until([](int n){ return n > 10; })
+	//	.minmax();
 
-	auto vvv2 = ix::from(seq)
-		.select([](int n){ return 3 * n - 2; })
-		.to_vector();
+	//std::cout << vvv.first << ", " << vvv.second << std::endl;
+
+	//auto vvv2 = ix::from_ref(seq)
+	//	.select([](int n){ return 3 * n - 2; })
+	//	.to_vector();
 
 	//auto www = ix::capture(vvv)
 		//._where([](int n){ return (n % 2) == 0; })

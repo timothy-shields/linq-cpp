@@ -403,9 +403,15 @@ public:
 	}
 
 	template <typename Range>
-	static interactive<from_enumerable<Range>> from(Range&& range)
+	static interactive<from_enumerable<Range&>> from(Range& range)
 	{
-		return from_enumerable<Range>(std::forward<Range>(range));
+		return from_enumerable<Range&>(range);
+	}
+
+	template <typename Range>
+	static interactive<from_enumerable<Range>> from_move(Range&& range)
+	{
+		return from_enumerable<Range>(std::move(range));
 	}
 
 	template <typename value_type>
