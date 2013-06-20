@@ -1,13 +1,10 @@
 [License]: LICENSE.md
 [v1]: https://github.com/timothy-shields/linq-cpp/tree/v1
-[Build Status]: https://api.travis-ci.org/timothy-shields/linq-cpp.png?branch=master
 
 # linq-cpp: LINQ for C++11 done right
 
 If you're interested in using or contributing to this library, **I'd really like to hear from you!**<br>
 Contact me at timothy.shields@live.com.
-
-![Build Status][]
 
 ## introduction
 
@@ -38,11 +35,12 @@ The [**methods**](README.md#methods) section has a list of all of the functions 
 
 **linq-cpp** is configured to build using the [CMake][] build system. For other projects already using CMake, integrating **linq-cpp** as a dependency is a simple procedure.
 
-### continuous integration: Travis CI
+### continuous integration: Travis CI ![Build Status][]
 
 [Travis CI]: https://travis-ci.org/timothy-shields/linq-cpp
+[Build Status]: https://api.travis-ci.org/timothy-shields/linq-cpp.png?branch=master
 
-**linq-cpp** is built automatically by [Travis CI][]. Each time this GitHub repository updates, Travis CI clones and builds the repository using the Linux compilers it provides (see the [**portability**](README.md#portability) section for the list of compilers).
+**linq-cpp** is built automatically by [Travis CI][]. Each time this GitHub repository updates, Travis CI clones and builds the repository using the Linux compilers it provides (see the [**portability**](README.md#portability) section for the list of compilers). The Windows compilers (namely Visual Studio 2012) have to be run manually outside of Travis.
 
 *(coming soon)* Automated testing using Travis CI
 
