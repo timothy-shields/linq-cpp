@@ -3,7 +3,7 @@
 
 # linq-cpp: LINQ for C++11 done right
 
-If you're interested in using or contributing to this library, **I'd really like to hear from you!**<br>
+If you're interested in using or contributing to this library, or if you just have questions, **I'd really like to hear from you!**<br>
 Contact me at timothy.shields@live.com.
 
 ## introduction
@@ -39,10 +39,13 @@ The [**methods**](README.md#methods) section has a list of all of the functions 
 
 [Travis CI]: https://travis-ci.org/timothy-shields/linq-cpp
 [Build Status]: https://api.travis-ci.org/timothy-shields/linq-cpp.png?branch=master
+[.travis.yml]: .travis.yml
 
 **linq-cpp** is built automatically by [Travis CI][]. Each time this GitHub repository updates, Travis CI clones and builds the repository using the Linux compilers it provides (see the [**portability**](README.md#portability) section for the list of compilers). The Windows compilers (namely Visual Studio 2012) have to be run manually outside of Travis.
 
 *(coming soon)* Automated testing using Travis CI
+
+The Travis configuration file is [.travis.yml][].
 
 ### licensing
 
