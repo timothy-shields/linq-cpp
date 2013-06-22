@@ -78,16 +78,28 @@ void run(int argc, char* argv[])
 	//	.select([](double n){ return std::sqrt(n); })
 	//	.into_vector(output);
 
-	auto rrr = ix::iota(0)
+	struct Person
+	{
+		int age;
+		Person(int age)
+			: age(age)
+		{
+		}
+		int get_age()const{return age;}
+	};
+
+	const auto rrr = ix::iota(0)
 		.take(100)
 		.where([](int n){ return (n % 6) == 0; })
-		//.select([](int n){ return std::make_shared<int>(n); })
+		.select([](int n){ return Person(n); })
 		.to_vector();
 
-	ix::from(rrr).for_each([](int& i)
-	{
-		std::cout << i << std::endl;
-	});
+	ix::from(rrr)
+		.select([](Person const& p){ return p.get_age(); })
+		.for_each([](int const& i)
+		{
+			std::cout << i << std::endl;
+		});
 
 	//for (auto it = rrr.begin(); it != rrr.end(); ++it)
 	//	std::cout << *it << std::endl;

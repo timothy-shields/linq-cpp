@@ -10,7 +10,6 @@ namespace adl_range
 {
 	using std::begin;
 	template <typename Range> auto adl_begin(Range& range) -> decltype(begin(range));
-	template <typename Range> auto adl_begin(Range const& range) -> decltype(begin(range));
 }
 
 template <typename Range>
