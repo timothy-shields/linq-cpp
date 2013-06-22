@@ -3,6 +3,8 @@
 #include "enumerable.h"
 #include "captured_enumerator.h"
 
+namespace linq {
+
 template <typename T>
 class captured_enumerable : public enumerable<T>
 {
@@ -48,3 +50,5 @@ public:
 		return source_ptr->get_enumerator_ptr();
 	}
 };
+
+}

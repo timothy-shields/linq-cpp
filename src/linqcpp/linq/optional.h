@@ -2,6 +2,8 @@
 
 #include <utility>
 
+namespace linq {
+
 template<typename T>
 class optional
 {
@@ -60,3 +62,5 @@ public:
 		return _value;
 	}
 };
+
+}

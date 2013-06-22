@@ -4,6 +4,8 @@
 
 #include "enumerator.h"
 
+namespace linq {
+
 template <typename T>
 class return_enumerator : public enumerator<T>
 {
@@ -34,3 +36,5 @@ public:
 		return value;
 	}
 };
+
+}

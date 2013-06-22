@@ -5,6 +5,8 @@
 #include "enumerator.h"
 #include "concat_traits.h"
 
+namespace linq {
+
 template <typename Source>
 class concat_enumerator : public enumerator<typename concat_traits<Source>::inner_value_type>
 {
@@ -98,3 +100,5 @@ public:
 		return inner_enumerator.current();
 	}
 };
+
+}

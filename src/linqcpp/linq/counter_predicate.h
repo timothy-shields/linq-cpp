@@ -2,6 +2,8 @@
 
 #include <cstddef>
 
+namespace linq {
+
 //returns true for the first "count" calls, then returns false
 template <typename T>
 class counter_predicate
@@ -20,3 +22,5 @@ public:
 		return remaining-- > 0;
 	}
 };
+
+}

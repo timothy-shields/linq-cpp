@@ -20,6 +20,8 @@
 #include "negated_predicate.h"
 #include "static_cast_selector.h"
 
+namespace linq {
+
 // Implements Enumerable<T>
 template <typename Enumerable>
 class interactive
@@ -393,42 +395,40 @@ public:
 	}
 };
 
-class ix
+template <typename value_type>
+static interactive<captured_enumerable<value_type>> capture(std::shared_ptr<enumerable<value_type>> enumerable_ptr)
 {
-public:
-	template <typename value_type>
-	static interactive<captured_enumerable<value_type>> capture(std::shared_ptr<enumerable<value_type>> enumerable_ptr)
-	{
-		return captured_enumerable<value_type>(enumerable_ptr);
-	}
+	return captured_enumerable<value_type>(enumerable_ptr);
+}
 
-	template <typename Range>
-	static interactive<from_enumerable<Range>> from(Range&& range)
-	{
-		return from_enumerable<Range>(std::forward<Range>(range));
-	}
+template <typename Range>
+static interactive<from_enumerable<Range>> from(Range&& range)
+{
+	return from_enumerable<Range>(std::forward<Range>(range));
+}
 
-	template <typename value_type>
-	static interactive<empty_enumerable<value_type>> empty()
-	{
-		return empty_enumerable<value_type>();
-	}
+template <typename value_type>
+static interactive<empty_enumerable<value_type>> empty()
+{
+	return empty_enumerable<value_type>();
+}
 
-	template <typename value_type>
-	static interactive<return_enumerable<value_type>> return_(value_type value)
-	{
-		return return_enumerable<value_type>(value);
-	}
+template <typename value_type>
+static interactive<return_enumerable<value_type>> return_(value_type value)
+{
+	return return_enumerable<value_type>(value);
+}
 
-	template <typename value_type>
-	static interactive<iota_enumerable<value_type>> iota(value_type start)
-	{
-		return iota_enumerable<value_type>(start);
-	}
+template <typename value_type>
+static interactive<iota_enumerable<value_type>> iota(value_type start)
+{
+	return iota_enumerable<value_type>(start);
+}
 
-	template <typename value_type, typename Condition, typename Next>
-	static interactive<for_enumerable<value_type, Condition, Next>> for_(value_type start, Condition condition, Next next)
-	{
-		return for_enumerable<value_type, Condition, Next>(start, condition, next);
-	}
-};
+template <typename value_type, typename Condition, typename Next>
+static interactive<for_enumerable<value_type, Condition, Next>> for_(value_type start, Condition condition, Next next)
+{
+	return for_enumerable<value_type, Condition, Next>(start, condition, next);
+}
+
+}

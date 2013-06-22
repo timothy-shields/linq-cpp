@@ -2,6 +2,8 @@
 
 #include "enumerator.h"
 
+namespace linq {
+
 template <typename Source, typename Predicate>
 class take_while_enumerator : public enumerator<typename Source::value_type>
 {
@@ -43,3 +45,5 @@ public:
 		return source.current();
 	}
 };
+
+}

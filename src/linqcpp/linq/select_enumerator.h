@@ -2,6 +2,8 @@
 
 #include "enumerator.h"
 
+namespace linq {
+
 template <typename Source, typename Selector>
 class select_enumerator : public enumerator<typename std::result_of<Selector(typename Source::value_type)>::type>
 {
@@ -43,3 +45,5 @@ public:
 		return selector(source.current());
 	}
 };
+
+}

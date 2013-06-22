@@ -5,6 +5,8 @@
 #include "memoize_enumerator.h"
 #include "memoize_traits.h"
 
+namespace linq {
+
 template <typename Source>
 class memoize_enumerable : public enumerable<typename memoize_traits<Source>::value_type>
 {
@@ -40,3 +42,5 @@ public:
 		return make_unique<enumerator_type>(std::move(get_enumerator()));
 	}
 };
+
+}

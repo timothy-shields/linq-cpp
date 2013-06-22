@@ -1,5 +1,7 @@
 #pragma once
 
+namespace linq {
+
 template <typename Source, typename Target>
 class static_cast_selector
 {
@@ -9,3 +11,5 @@ public:
 		return static_cast<Target>(value);
 	}
 };
+
+}

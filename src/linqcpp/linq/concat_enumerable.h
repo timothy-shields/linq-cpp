@@ -7,6 +7,8 @@
 #include "concat_traits.h"
 #include "concat_enumerator.h"
 
+namespace linq {
+
 template <typename Source>
 class concat_enumerable : public enumerable<typename concat_traits<Source>::inner_value_type>
 {
@@ -42,3 +44,5 @@ public:
 		return make_unique<enumerator_type>(std::move(get_enumerator()));
 	}
 };
+
+}

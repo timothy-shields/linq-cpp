@@ -15,6 +15,8 @@
 // o enumerator_type get_enumerator()
 //   o Lifetime of x.get_enumerator() should never exceed that of x
 
+namespace linq {
+
 // Does not (have to) implement concept Enumerable<T> - but inheriting types should
 template <typename T>
 class enumerable
@@ -23,3 +25,5 @@ public:
 	typedef T value_type;
 	virtual std::unique_ptr<enumerator<value_type>> get_enumerator_ptr() = 0;
 };
+
+}

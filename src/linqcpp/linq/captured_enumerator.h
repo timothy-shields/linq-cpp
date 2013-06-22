@@ -2,6 +2,8 @@
 
 #include "enumerator.h"
 
+namespace linq {
+
 template <typename T>
 class captured_enumerator : public enumerator<T>
 {
@@ -51,3 +53,5 @@ public:
 		return source_ptr->current();
 	}
 };
+
+}

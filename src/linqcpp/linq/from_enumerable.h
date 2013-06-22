@@ -5,11 +5,13 @@
 #include "enumerable.h"
 #include "from_enumerator.h"
 
+namespace linq {
+
 template <typename Range>
-class from_enumerable : public enumerable<typename from_enumerator<typename linq::range_traits<Range>::iterator_type>::value_type>
+class from_enumerable : public enumerable<typename from_enumerator<typename range_traits<Range>::iterator_type>::value_type>
 {
 public:
-	typedef from_enumerator<typename linq::range_traits<Range>::iterator_type> enumerator_type;
+	typedef from_enumerator<typename range_traits<Range>::iterator_type> enumerator_type;
 	typedef typename enumerator_type::value_type value_type;
 
 private:
@@ -43,10 +45,10 @@ public:
 };
 
 template <typename Range>
-class from_enumerable<Range&> : public enumerable<typename from_enumerator<typename linq::range_traits<Range>::iterator_type>::value_type>
+class from_enumerable<Range&> : public enumerable<typename from_enumerator<typename range_traits<Range>::iterator_type>::value_type>
 {
 public:
-	typedef from_enumerator<typename linq::range_traits<Range>::iterator_type> enumerator_type;
+	typedef from_enumerator<typename range_traits<Range>::iterator_type> enumerator_type;
 	typedef typename enumerator_type::value_type value_type;
 
 private:
@@ -78,3 +80,5 @@ public:
 		return make_unique<enumerator_type>(std::move(get_enumerator()));
 	}
 };
+
+}

@@ -4,6 +4,8 @@
 #include "enumerable.h"
 #include "return_enumerator.h"
 
+namespace linq {
+
 template <typename T>
 class return_enumerable : public enumerable<T>
 {
@@ -35,3 +37,5 @@ public:
 		return make_unique<enumerator_type>(std::move(get_enumerator()));
 	}
 };
+
+}

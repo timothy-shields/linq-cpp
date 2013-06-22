@@ -16,6 +16,8 @@
 // o value_type current()
 // o Starts "one before" first value
 
+namespace linq {
+
 // Does not (have to) implement concept Enumerator<T> - but inheriting types should
 template <typename T>
 class enumerator
@@ -32,4 +34,6 @@ void move_first_or_throw(Enumerator& e)
 {
 	if (!e.move_first())
 		throw new std::logic_error("move_first returned false");
+}
+
 }

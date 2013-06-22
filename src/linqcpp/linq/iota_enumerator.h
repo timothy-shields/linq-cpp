@@ -4,6 +4,8 @@
 
 #include "enumerator.h"
 
+namespace linq {
+
 template <typename T>
 class iota_enumerator : public enumerator<T>
 {
@@ -43,3 +45,5 @@ public:
 		return value;
 	}
 };
+
+}

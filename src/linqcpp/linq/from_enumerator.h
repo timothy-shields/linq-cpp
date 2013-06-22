@@ -4,6 +4,8 @@
 
 #include "enumerator.h"
 
+namespace linq {
+
 template <typename Iterator>
 class from_enumerator : public enumerator<typename std::iterator_traits<Iterator>::reference>
 {
@@ -46,3 +48,5 @@ public:
 		return *curr;
 	}
 };
+
+}

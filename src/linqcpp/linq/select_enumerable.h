@@ -4,6 +4,8 @@
 #include "enumerable.h"
 #include "select_enumerator.h"
 
+namespace linq {
+
 template <typename Source, typename Selector>
 class select_enumerable : public enumerable<typename select_enumerator<typename Source::enumerator_type, Selector>::value_type>
 {
@@ -41,3 +43,5 @@ public:
 		return make_unique<enumerator_type>(std::move(get_enumerator()));
 	}
 };
+
+}

@@ -5,6 +5,8 @@
 #include "enumerator.h"
 #include "memoize_traits.h"
 
+namespace linq {
+
 template <typename Source>
 class memoize_enumerator : public enumerator<typename memoize_traits<Source>::value_type>
 {
@@ -62,3 +64,5 @@ public:
 		return value;
 	}
 };
+
+}

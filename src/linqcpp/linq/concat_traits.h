@@ -1,5 +1,7 @@
 #pragma once
 
+namespace linq {
+
 template <typename Source>
 struct concat_traits
 {
@@ -7,3 +9,5 @@ struct concat_traits
 	typedef typename outer_value_type::enumerator_type inner_enumerator_type;
 	typedef typename outer_value_type::value_type inner_value_type;
 };
+
+}

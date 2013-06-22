@@ -4,6 +4,8 @@
 #include "enumerable.h"
 #include "where_enumerator.h"
 
+namespace linq {
+
 template <typename Source, typename Predicate>
 class where_enumerable : public enumerable<typename Source::value_type>
 {
@@ -41,3 +43,5 @@ public:
 		return make_unique<enumerator_type>(std::move(get_enumerator()));
 	}
 };
+
+}

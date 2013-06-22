@@ -1,5 +1,7 @@
 #pragma once
 
+namespace linq {
+
 template <typename T, typename Predicate>
 class negated_predicate
 {
@@ -16,3 +18,5 @@ public:
 		return !predicate(value);
 	}
 };
+
+}
