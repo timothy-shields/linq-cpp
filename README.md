@@ -39,10 +39,13 @@ The [**methods**](README.md#methods) section has a list of all of the functions 
 
 [Travis CI]: https://travis-ci.org/timothy-shields/linq-cpp
 [Build Status]: https://api.travis-ci.org/timothy-shields/linq-cpp.png?branch=master
+[.travis.yml]: .travis.yml
 
 **linq-cpp** is built automatically by [Travis CI][]. Each time this GitHub repository updates, Travis CI clones and builds the repository using the Linux compilers it provides (see the [**portability**](README.md#portability) section for the list of compilers). The Windows compilers (namely Visual Studio 2012) have to be run manually outside of Travis.
 
 *(coming soon)* Automated testing using Travis CI
+
+The Travis configuration is in the [.travis.yml][] file.
 
 ### licensing
 
