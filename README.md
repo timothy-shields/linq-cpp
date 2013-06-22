@@ -78,9 +78,9 @@ A type `Type` meets the requirements of `Enumerator<T>` if it meets all of the f
 - `Type` meets the [MoveConstructible][] requirements
 - `Type` meets the [MoveAssignable][] requirements
 - `Type::value_type` is a member type, where `value_type` is `T`
-- `bool Type::move_first()`
-- `bool Type::move_next()`
-- `value_type Type::current()`
+- `bool Type::move_first()` is a member function
+- `bool Type::move_next()` is a member function
+- `value_type Type::current()` is a member function
 
 ---
 
