@@ -19,13 +19,11 @@ public:
 	
 	bool move_next()
 	{
-		static_assert(false, "Should never call move_next on empty_enumerator");
 		throw std::logic_error("Should never call move_next on empty_enumerator");
 	}
 
 	value_type current()
 	{
-		static_assert(false, "Should never call current on empty_enumerator");
 		throw std::logic_error("Should never call current on empty_enumerator");
 	}
 };
