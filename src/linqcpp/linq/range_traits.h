@@ -15,7 +15,7 @@ namespace adl_range
 template <typename Range>
 struct range_traits
 {
-	typedef decltype(linq::adl_range::adl_begin(std::declval<Range>())) iterator_type;
+	typedef decltype(::linq::adl_range::adl_begin(std::declval<Range>())) iterator_type;
 };
 
 }
