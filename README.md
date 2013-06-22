@@ -45,7 +45,7 @@ The [**methods**](README.md#methods) section has a list of all of the functions 
 
 *(coming soon)* Automated testing using Travis CI
 
-The Travis configuration is in the [.travis.yml][] file.
+The Travis configuration file is [.travis.yml][].
 
 ### licensing
 
