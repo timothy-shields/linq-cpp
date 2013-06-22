@@ -62,21 +62,23 @@ The Travis configuration file is [.travis.yml][].
 [MoveConstructible]: http://en.cppreference.com/w/cpp/concept/MoveConstructible
 [MoveAssignable]: http://en.cppreference.com/w/cpp/concept/MoveAssignable
 
-The **linq-cpp** library is built on top of two foundation [concepts][], `Enumerable<T>` and `Enumerator<T>`, mimicking the [`IEnumerable<T>`][] and [`IEnumerator<T>`][] interfaces from .NET, respectively. The definitions of these two concepts follow.
+The **linq-cpp** library is built on top of two foundation [concepts][], [`Enumerable<T>`][] and [`Enumerator<T>`][], mimicking the [`IEnumerable<T>`][] and [`IEnumerator<T>`][] interfaces from .NET, respectively. The definitions of these two concepts follow.
 
 ### `Enumerable<T>`
+[`Enumerable<T>`]: README.md#enumerablet
 
-A type `Type` meets the requirements of `Enumerable<T>` if it meets all of the following requirements:
+A type `Type` meets the requirements of [`Enumerable<T>`][] if it meets all of the following requirements:
 
 - `Type` meets the [MoveConstructible][] requirements
 - `Type` meets the [MoveAssignable][] requirements
-- `Type::enumerator_type` is a member type that meets the `Enumerator<T>` requirements
+- `Type::enumerator_type` is a member type that meets the [`Enumerator<T>`][] requirements
 - `Type::value_type` is a member type, where `value_type` is `T`
 - `enumerator_type Type::get_enumerator()` is a member function
 
 ### `Enumerator<T>`
+[`Enumerator<T>`]: README.md#enumeratort
 
-A type `Type` meets the requirements of `Enumerator<T>` if it meets all of the following requirements:
+A type `Type` meets the requirements of [`Enumerator<T>`][] if it meets all of the following requirements:
 
 - `Type` meets the [DefaultConstructible][] requirements
 - `Type` meets the [MoveConstructible][] requirements
