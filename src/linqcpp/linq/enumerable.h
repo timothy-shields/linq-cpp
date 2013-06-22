@@ -4,7 +4,7 @@
 
 #include "enumerator.h"
 
-// Concept Enumerable<enumerator_type>
+// Concept Enumerable<T>
 // o Implies:
 //   o MoveConstructible: http://en.cppreference.com/w/cpp/concept/MoveConstructible
 //   o MoveAssignable: http://en.cppreference.com/w/cpp/concept/MoveAssignable
