@@ -70,7 +70,7 @@ public:
 	{
 		using std::begin;
 		using std::end;
-		return enumerator_type(std::move(begin(range)), std::move(end(range)));
+		return enumerator_type(begin(range), end(range));
 	}
 
 	std::unique_ptr<enumerator<value_type>> get_enumerator_ptr()
