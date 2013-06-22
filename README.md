@@ -51,6 +51,37 @@ The Travis configuration file is [.travis.yml][].
 
 **linq-cpp** is licensed under the Apache License, Version 2.0. You can view the license file [here][License].
 
+## concepts
+
+[Concepts]: http://en.cppreference.com/w/cpp/concept
+[DefaultConstructible]: http://en.cppreference.com/w/cpp/concept/DefaultConstructible
+[MoveConstructible]: http://en.cppreference.com/w/cpp/concept/MoveConstructible
+[MoveAssignable]: http://en.cppreference.com/w/cpp/concept/MoveAssignable
+
+The **linq-cpp** library is built on top of two foundation [concepts][], `Enumerable<T>` and `Enumerator<T>`, mimicking the `IEnumerable<T>` and `IEnumerator<T>` interfaces from .NET, respectively. The definitions of these two concepts follow.
+
+### `Enumerable<T>`
+
+A type `Type` meets the requirements of `Enumerable<T>` if it meets all of the following requirements:
+
+- `Type` meets the [MoveConstructible][] requirements
+- `Type` meets the [MoveAssignable][] requirements
+- `Type::enumerator_type` is a member type that meets the `Enumerator<T>` requirements
+- `Type::value_type` is a member type, where `value_type` is `T`
+- `enumerator_type Type::get_enumerator()` is a member function
+
+### `Enumerator<T>`
+
+A type `Type` meets the requirements of `Enumerator<T>` if it meets all of the following requirements:
+
+- `Type` meets the [DefaultConstructible][] requirements
+- `Type` meets the [MoveConstructible][] requirements
+- `Type` meets the [MoveAssignable][] requirements
+- `Type::value_type` is a member type, where `value_type` is `T`
+- `bool Type::move_first()`
+- `bool Type::move_next()`
+- `value_type Type::current()`
+
 ---
 
 ***Below this point has not yet been updated from v1***
