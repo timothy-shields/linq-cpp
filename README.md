@@ -4,11 +4,14 @@
 [.NET LINQ]: http://msdn.microsoft.com/en-us/library/bb308959.aspx
 [`IEnumerable<T>`]: http://msdn.microsoft.com/en-us/library/9eekhta0.aspx
 [`IEnumerator<T>`]: http://msdn.microsoft.com/en-us/library/78dfe2yb.aspx
+
+[CMake]: http://www.cmake.org/
+
 [Travis CI]: https://travis-ci.org/timothy-shields/linq-cpp
 [Build Status]: https://api.travis-ci.org/timothy-shields/linq-cpp.png?branch=master
 [.travis.yml]: .travis.yml
 
-[CMake]: http://www.cmake.org/
+[Visual Studio 2012]: http://www.microsoft.com/visualstudio/eng/downloads#d-express-windows-desktop
 
 # linq-cpp: LINQ for C++11 done right
 
@@ -32,7 +35,7 @@ The **[methods][]** section has a list of all of the functions available in **li
 
 **linq-cpp** is written to be cross-platform and fully compliant with the C++11 standard. It **has no dependencies** outside of the C++11 standard library. It can be compiled and built using any of the following:
 
-- Visual Studio 2012
+- [Visual Studio 2012][]
 - gcc 4.6
 - clang 3.1
 
@@ -42,7 +45,7 @@ The **[methods][]** section has a list of all of the functions available in **li
 
 ### continuous integration: [Travis CI][] ![Build Status][]
 
-**linq-cpp** is built automatically by [Travis CI][]. Each time this GitHub repository updates, [Travis CI][] clones and builds the repository using the Linux compilers it provides (see the **[portability][]** section for the list of compilers). The Windows compilers (namely Visual Studio 2012) have to be run manually outside of Travis.
+**linq-cpp** is built automatically by [Travis CI][]. Each time this GitHub repository updates, [Travis CI][] clones and builds the repository using the Linux compilers it provides (see the **[portability][]** section for the list of compilers). The Windows compilers (namely [Visual Studio 2012][]) have to be run manually outside of Travis.
 
 *(coming soon)* Automated testing using Travis CI
 
