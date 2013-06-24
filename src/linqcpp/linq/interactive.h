@@ -59,6 +59,14 @@ public:
 		return source.get_enumerator();
 	}
 
+	//Interact with the underlying Enumerable<T> as another interactive type
+	//Enables the analogue of .NET IEnumerable<T> extension methods
+	template <typename TInteractive>
+	TInteractive as()
+	{
+		return TInteractive(std::move(source));
+	}
+
 	std::shared_ptr<enumerable<value_type>> ref_count()
 	{
 		return std::make_shared<enumerable_type>(std::move(source));
