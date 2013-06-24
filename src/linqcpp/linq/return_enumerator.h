@@ -7,10 +7,10 @@
 namespace linq {
 
 template <typename T>
-class return_enumerator : public enumerator<T>
+class return_enumerator : public enumerator<T&>
 {
 public:
-	typedef T value_type;
+	typedef T& value_type;
 
 private:
 	value_type value;

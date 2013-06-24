@@ -414,9 +414,9 @@ static interactive<empty_enumerable<value_type>> empty()
 }
 
 template <typename value_type>
-static interactive<return_enumerable<value_type>> return_(value_type value)
+static interactive<return_enumerable<value_type>> return_(value_type&& value)
 {
-	return return_enumerable<value_type>(value);
+	return return_enumerable<value_type>(std::forward<value_type>(value));
 }
 
 template <typename value_type>

@@ -93,6 +93,11 @@ void run(int argc, char* argv[])
 		.select([](int n){ return Person(n); })
 		.to_vector();
 
+
+	const int z = 7;
+	linq::return_(z).for_each([](int zz){ zz = zz + 3; });
+	std::cout << "z = " << z << std::endl;
+
 	linq::from(rrr)
 		.select([](Person& p)->int&{ return p.age; })
 		.for_each([](int& i)
