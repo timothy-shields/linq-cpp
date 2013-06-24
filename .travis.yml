@@ -1,5 +1,3 @@
-# Example at https://github.com/bwhite/picarus/blob/master/.travis.yml
-
 language: cpp
 
 branches:

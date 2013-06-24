@@ -1,6 +1,18 @@
 [License]: LICENSE.md
 [v1]: https://github.com/timothy-shields/linq-cpp/tree/v1
 
+[.NET LINQ]: http://msdn.microsoft.com/en-us/library/bb308959.aspx
+[`IEnumerable<T>`]: http://msdn.microsoft.com/en-us/library/9eekhta0.aspx
+[`IEnumerator<T>`]: http://msdn.microsoft.com/en-us/library/78dfe2yb.aspx
+
+[CMake]: http://www.cmake.org/
+
+[Travis CI]: https://travis-ci.org/timothy-shields/linq-cpp
+[Build Status]: https://api.travis-ci.org/timothy-shields/linq-cpp.png?branch=master
+[.travis.yml]: .travis.yml
+
+[Visual Studio 2012]: http://www.microsoft.com/visualstudio/eng/downloads#d-express-windows-desktop
+
 # linq-cpp: LINQ for C++11 done right
 
 If you're interested in using or contributing to this library, or if you just have questions, **I'd really like to hear from you!**<br>
@@ -8,40 +20,32 @@ Contact me at timothy.shields@live.com.
 
 ## introduction
 
-The `IEnumerable<T>` interface and associated LINQ extension methods provided by the .NET framework enable programmers to write concise, fluent, and composable query expressions using powerful abstractions.
+The [`IEnumerable<T>`][] interface and associated LINQ extension methods provided by the .NET framework enable programmers to write concise, fluent, and composable query expressions using powerful abstractions.
 
 **linq-cpp** brings equivalent functionality to the C++11 environment - and in a way that's **"done right."**
 
 ### familiarity
 
-[.NET LINQ]: http://msdn.microsoft.com/en-us/library/bb308959.aspx
-[`IEnumerable<T>` interface]: http://msdn.microsoft.com/en-us/library/9eekhta0.aspx
-
-Users of [.NET LINQ][] and the [`IEnumerable<T>` interface][] should find **linq-cpp** immediately familiar. The precedent set by the .NET `IEnumerable<T>` and `IEnumerator<T>` interfaces and `IEnumerable<T>` extension methods have been mimicked directly.
+Users of [.NET LINQ][] and the [`IEnumerable<T>`][] interface should find **linq-cpp** immediately familiar. The precedent set by the .NET [`IEnumerable<T>`][] and [`IEnumerator<T>`][] interfaces and [`IEnumerable<T>`][] extension methods have been mimicked directly.
  
-The [**methods**](README.md#methods) section has a list of all of the functions available in **linq-cpp**. Any .NET LINQ methods that aren't yet available should be added soon!
+The **[methods][]** section has a list of all of the functions available in **linq-cpp**. Any .NET LINQ methods that aren't yet available should be added soon!
 
 ### portability
+[portability]: README.md#portability
 
 **linq-cpp** is written to be cross-platform and fully compliant with the C++11 standard. It **has no dependencies** outside of the C++11 standard library. It can be compiled and built using any of the following:
 
-- Visual Studio 2012
+- [Visual Studio 2012][]
 - gcc 4.6
 - clang 3.1
 
-### build system: CMake
+### build system: [CMake][]
 
-[CMake]: http://www.cmake.org/
+**linq-cpp** is configured to build using the [CMake][] build system. For other projects already using [CMake][], integrating **linq-cpp** as a dependency is a simple procedure.
 
-**linq-cpp** is configured to build using the [CMake][] build system. For other projects already using CMake, integrating **linq-cpp** as a dependency is a simple procedure.
+### continuous integration: [Travis CI][] ![Build Status][]
 
-### continuous integration: Travis CI ![Build Status][]
-
-[Travis CI]: https://travis-ci.org/timothy-shields/linq-cpp
-[Build Status]: https://api.travis-ci.org/timothy-shields/linq-cpp.png?branch=master
-[.travis.yml]: .travis.yml
-
-**linq-cpp** is built automatically by [Travis CI][]. Each time this GitHub repository updates, Travis CI clones and builds the repository using the Linux compilers it provides (see the [**portability**](README.md#portability) section for the list of compilers). The Windows compilers (namely Visual Studio 2012) have to be run manually outside of Travis.
+**linq-cpp** is built automatically by [Travis CI][]. Each time this GitHub repository updates, [Travis CI][] clones and builds the repository using the Linux compilers it provides (see the **[portability][]** section for the list of compilers). The Windows compilers (namely [Visual Studio 2012][]) have to be run manually outside of Travis.
 
 *(coming soon)* Automated testing using Travis CI
 
@@ -50,6 +54,39 @@ The Travis configuration file is [.travis.yml][].
 ### licensing
 
 **linq-cpp** is licensed under the Apache License, Version 2.0. You can view the license file [here][License].
+
+## [concepts][]
+
+[Concepts]: http://en.cppreference.com/w/cpp/concept
+[DefaultConstructible]: http://en.cppreference.com/w/cpp/concept/DefaultConstructible
+[MoveConstructible]: http://en.cppreference.com/w/cpp/concept/MoveConstructible
+[MoveAssignable]: http://en.cppreference.com/w/cpp/concept/MoveAssignable
+
+The **linq-cpp** library is built on top of two foundation [concepts][], [`Enumerable<T>`][] and [`Enumerator<T>`][], mimicking the [`IEnumerable<T>`][] and [`IEnumerator<T>`][] interfaces from .NET, respectively. The definitions of these two concepts follow.
+
+### `Enumerable<T>`
+[`Enumerable<T>`]: README.md#enumerablet
+
+A type `Type` meets the requirements of [`Enumerable<T>`][] if it meets all of the following requirements:
+
+- `Type` meets the [MoveConstructible][] requirements
+- `Type` meets the [MoveAssignable][] requirements
+- `Type::enumerator_type` is a member type that meets the [`Enumerator<T>`][] requirements
+- `Type::value_type` is a member type, where `value_type` is `T`
+- `enumerator_type Type::get_enumerator()` is a member function
+
+### `Enumerator<T>`
+[`Enumerator<T>`]: README.md#enumeratort
+
+A type `Type` meets the requirements of [`Enumerator<T>`][] if it meets all of the following requirements:
+
+- `Type` meets the [DefaultConstructible][] requirements
+- `Type` meets the [MoveConstructible][] requirements
+- `Type` meets the [MoveAssignable][] requirements
+- `Type::value_type` is a member type, where `value_type` is `T`
+- `bool Type::move_first()` is a member function
+- `bool Type::move_next()` is a member function
+- `value_type Type::current()` is a member function
 
 ---
 
@@ -185,6 +222,7 @@ To make these concepts more concrete, consider the following example. Suppose `L
     E->MoveNext(); // returns false
 
 ## methods
+[methods]: README.md#methods
 
 ### `Enumerable` static methods
 
