@@ -15,8 +15,7 @@
 
 # linq-cpp: LINQ for C++11 done right
 
-If you're interested in using or contributing to this library, or if you just have questions, **I'd really like to hear from you!**<br>
-Contact me at timothy.shields@live.com.
+If you're interested in using or contributing to this library, or if you just have questions, **I'd really like to hear from you!** Contact me at timothy.shields@live.com.
 
 ## introduction
 
