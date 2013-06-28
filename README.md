@@ -74,6 +74,18 @@ A type `Type` meets the requirements of [`Enumerable<T>`][] if it meets all of t
 - `Type::value_type` is a member type, where `value_type` is `T`
 - `enumerator_type Type::get_enumerator()` is a member function
 
+#### `Enumerable<T>` usage pattern
+
+The `Enumerable<T>` concept prescribes the following usage pattern:
+
+1. Construct instance `E` of a type meeting the requirements of [`Enumerable<T>`][]
+2. Construct, use, and destruct zero or more instances of a type meeting the requirements of [`Enumerator<T>`][]
+ - Construct using `E.get_enumerator()`
+ - Use according to the [`Enumerator<T>` usage pattern][]
+3. Destruct `E`
+
+Important to note here is that the an [`Enumerator<T>`][] must always be destructed before the [`Enumerable<T>`][] that created it is destructed.
+
 ### `Enumerator<T>`
 [`Enumerator<T>`]: README.md#enumeratort
 
@@ -86,6 +98,23 @@ A type `Type` meets the requirements of [`Enumerator<T>`][] if it meets all of t
 - `bool Type::move_first()` is a member function
 - `bool Type::move_next()` is a member function
 - `value_type Type::current()` is a member function
+
+#### `Enumerator<T>` usage pattern
+[`Enumerator<T>` usage pattern]: README.md#enumeratortusagepattern
+
+The `Enumerator<T>` concept prescribes the following usage pattern:
+
+1. Construct instance `E` of a type meeting the requirements of [`Enumerator<T>`][]
+2. Optionally call `E.move_first()`
+ - `E.move_first()` is not called: proceed to (5)
+ - `E.move_first()` is called and it returns `false`: proceed to (5)
+ - `E.move_first()` is called and it returns `true`: proceed to (3)
+3. Call `E.current()` zero or more times
+4. Optionally call `E.move_next()`
+ - `E.move_next()` is not called: proceed to (5)
+ - `E.move_next()` is called and it returns `false`: proceed to (5)
+ - `E.move_next()` is called and it returns `true`: proceed to (3)
+5. Destruct `E`
 
 ---
 
