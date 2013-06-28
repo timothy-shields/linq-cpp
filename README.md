@@ -76,7 +76,7 @@ A type `Type` meets the requirements of [`Enumerable<T>`][] if it meets all of t
 
 #### `Enumerable<T>` usage pattern
 
-The `Enumerable<T>` concept prescribes the following usage pattern:
+The `Enumerable<T>` concept prescribes the following usage pattern. Usage not following this pattern yields undefined behavior.
 
 1. Construct instance `E` of a type meeting the requirements of [`Enumerable<T>`][]
 2. Construct, use, and destruct zero or more instances of a type meeting the requirements of [`Enumerator<T>`][]
@@ -102,7 +102,7 @@ A type `Type` meets the requirements of [`Enumerator<T>`][] if it meets all of t
 #### `Enumerator<T>` usage pattern
 [`Enumerator<T>` usage pattern]: README.md#enumeratort-usage-pattern
 
-The `Enumerator<T>` concept prescribes the following usage pattern:
+The `Enumerator<T>` concept prescribes the following usage pattern. Usage not following this pattern yields undefined behavior.
 
 1. Construct instance `E` of a type meeting the requirements of [`Enumerator<T>`][]
 2. Optionally call `E.move_first()`
