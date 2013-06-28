@@ -105,11 +105,13 @@ void run(int argc, char* argv[])
 			std::cout << i << std::endl;
 		});
 
-	auto AB =
-		linq::merge(
-			linq::iota(0).select([](int n){ return 10 * n; }).take(10),
-			linq::iota(1).select([](int n){ return 3 * n; }).take(33))
-		.to_vector();
+	linq::merge(
+		linq::iota(0).select([](int n){ return std::make_pair(10 * n, 'A'); }).take(11),
+		linq::iota(1).select([](int n){ return std::make_pair(3 * n, 'B'); }).take(33))
+	.for_each([](std::pair<int, char> p)
+	{
+		std::cout << "merge: " << p.first << " " << p.second << std::endl;
+	});
 
 	//for (auto it = rrr.begin(); it != rrr.end(); ++it)
 	//	std::cout << *it << std::endl;

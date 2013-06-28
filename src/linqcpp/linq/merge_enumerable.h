@@ -11,7 +11,7 @@ class merge_enumerable : public enumerable<typename merge_enumerator<typename So
 {
 public:
 	typedef merge_enumerator<typename SourceA::enumerator_type, typename SourceB::enumerator_type> enumerator_type;
-	typedef typename merge_enumerator::value_type value_type;
+	typedef typename enumerator_type::value_type value_type;
 
 private:
 	SourceA sourceA;
