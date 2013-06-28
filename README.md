@@ -100,7 +100,7 @@ A type `Type` meets the requirements of [`Enumerator<T>`][] if it meets all of t
 - `value_type Type::current()` is a member function
 
 #### `Enumerator<T>` usage pattern
-[`Enumerator<T>` usage pattern]: README.md#enumeratortusagepattern
+[`Enumerator<T>` usage pattern]: README.md#enumeratort-usage-pattern
 
 The `Enumerator<T>` concept prescribes the following usage pattern:
 
