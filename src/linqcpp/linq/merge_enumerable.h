@@ -7,7 +7,7 @@
 namespace linq {
 
 template <typename SourceA, typename SourceB>
-class merge_enumerable : public enumerable<typename SourceA::value_type>
+class merge_enumerable : public enumerable<typename merge_enumerator<typename SourceA::enumerator_type, typename SourceB::enumerator_type>::value_type>
 {
 public:
 	typedef merge_enumerator<typename SourceA::enumerator_type, typename SourceB::enumerator_type> enumerator_type;

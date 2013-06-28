@@ -13,6 +13,8 @@ public:
 private:
 	SourceA sourceA;
 	SourceB sourceB;
+	bool haveA;
+	bool haveB;
 	bool currentA;
 	
 	merge_enumerator(merge_enumerator const&); // not defined
@@ -22,6 +24,8 @@ public:
 	merge_enumerator(merge_enumerator&& other)
 		: sourceA(std::move(other.sourceA))
 		, sourceB(std::move(other.sourceB))
+		, haveA(other.haveA)
+		, haveB(other.haveB)
 		, currentA(other.currentA)
 	{
 	}
@@ -29,14 +33,16 @@ public:
 	merge_enumerator(SourceA&& sourceA, SourceB&& sourceB)
 		: sourceA(std::move(sourceA))
 		, sourceB(std::move(sourceB))
+		, haveA(true)
+		, haveB(true)
 		, currentA(true)
 	{
 	}
 	
 	bool move_first()
 	{
-		bool haveA = sourceA.move_first();
-		bool haveB = sourceB.move_first();
+		haveA = sourceA.move_first();
+		haveB = sourceB.move_first();
 		if (haveA && haveB)
 		{
 			currentA = !(sourceB.current() < sourceA.current());
@@ -60,12 +66,34 @@ public:
 
 	bool move_next()
 	{
-		if (currentA)
+		if (haveA && haveB)
 		{
-			bool haveA = sourceA.move_next();
+			if (currentA)
+			{
+				haveA = sourceA.move_next();
+			}
+			else
+			{
+				haveB = sourceB.move_next();
+			}
+			currentA = !(sourceB.current() < sourceA.current());
+			return true;
+		}
+		else if (haveA)
+		{
+			haveA = sourceA.move_next();
+			currentA = true;
+			return haveA;
+		}
+		else if (haveB)
+		{
+			haveB = sourceB.move_next();
+			currentA = false;
+			return haveB;
 		}
 		else
 		{
+			return false;
 		}
 	}
 	

@@ -105,6 +105,12 @@ void run(int argc, char* argv[])
 			std::cout << i << std::endl;
 		});
 
+	auto AB =
+		linq::merge(
+			linq::iota(0).select([](int n){ return 10 * n; }).take(10),
+			linq::iota(1).select([](int n){ return 3 * n; }).take(33))
+		.to_vector();
+
 	//for (auto it = rrr.begin(); it != rrr.end(); ++it)
 	//	std::cout << *it << std::endl;
 

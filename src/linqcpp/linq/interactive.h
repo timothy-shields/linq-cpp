@@ -16,6 +16,7 @@
 #include "where_enumerable.h"
 #include "take_while_enumerable.h"
 #include "skip_while_enumerable.h"
+#include "merge_enumerable.h"
 #include "counter_predicate.h"
 #include "negated_predicate.h"
 #include "static_cast_selector.h"
@@ -437,6 +438,12 @@ template <typename value_type, typename Condition, typename Next>
 static interactive<for_enumerable<value_type, Condition, Next>> for_(value_type start, Condition condition, Next next)
 {
 	return for_enumerable<value_type, Condition, Next>(start, condition, next);
+}
+
+template <typename SourceA, typename SourceB>
+static interactive<merge_enumerable<SourceA, SourceB>> merge(SourceA&& sourceA, SourceB&& sourceB)
+{
+	return merge_enumerable<SourceA, SourceB>(std::move(sourceA), std::move(sourceB));
 }
 
 }
