@@ -32,7 +32,7 @@ The **[methods][]** section has a list of all of the functions available in **li
 ### portability
 [portability]: README.md#portability
 
-**linq-cpp** is written to be cross-platform and fully compliant with the C++11 standard. It **has no dependencies** outside of the C++11 standard library. It can be compiled and built using any of the following:
+**linq-cpp** is written to be cross-platform and fully compliant with the C++11 standard. It **has no dependencies** outside of the C++11 standard library. It can be compiled and built using any of the following.
 
 - [Visual Studio 2012][]
 - gcc 4.6
@@ -66,7 +66,7 @@ The **linq-cpp** library is built on top of two foundation [concepts][], [`Enume
 ### `Enumerable<T>`
 [`Enumerable<T>`]: README.md#enumerablet
 
-A type `Type` meets the requirements of [`Enumerable<T>`][] if it meets all of the following requirements:
+A type `Type` meets the requirements of [`Enumerable<T>`][] if it meets all of the following requirements.
 
 - `Type` meets the [MoveConstructible][] requirements
 - `Type` meets the [MoveAssignable][] requirements
@@ -89,7 +89,7 @@ Important to note here is that the an [`Enumerator<T>`][] must always be destruc
 ### `Enumerator<T>`
 [`Enumerator<T>`]: README.md#enumeratort
 
-A type `Type` meets the requirements of [`Enumerator<T>`][] if it meets all of the following requirements:
+A type `Type` meets the requirements of [`Enumerator<T>`][] if it meets all of the following requirements.
 
 - `Type` meets the [DefaultConstructible][] requirements
 - `Type` meets the [MoveConstructible][] requirements
