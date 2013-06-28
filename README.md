@@ -84,7 +84,7 @@ The `Enumerable<T>` concept prescribes the following usage pattern:
  - Use according to the [`Enumerator<T>` usage pattern][]
 3. Destruct `E`
 
-Important to note here is that the an [`Enumerator<T>`][] must always be destructed before the [`Enumerable<T>`][] that created it is destructed.
+Important to note here is that the an [`Enumerator<T>`][] must always be destructed before its parent [`Enumerable<T>`][] is destructed.
 
 ### `Enumerator<T>`
 [`Enumerator<T>`]: README.md#enumeratort
