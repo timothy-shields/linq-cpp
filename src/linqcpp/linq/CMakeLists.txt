@@ -41,6 +41,9 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
 	concat_enumerable.h
 	concat_enumerator.h
 
+	merge_enumerable.h
+	merge_enumerator.h
+
 	where_enumerable.h
 	where_enumerator.h
 
