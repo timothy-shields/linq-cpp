@@ -70,8 +70,8 @@ A type `Type` meets the requirements of [`Enumerable<T>`][] if it meets all of t
 
 - `Type` meets the [MoveConstructible][] requirements
 - `Type` meets the [MoveAssignable][] requirements
-- `Type::enumerator_type` is a member type that meets the [`Enumerator<T>`][] requirements
-- `Type::value_type` is a member type, where `value_type` is `T`
+- `Type::enumerator_type` is a type that meets the [`Enumerator<T>`][] requirements
+- `Type::value_type` is the type `T`
 - `enumerator_type Type::get_enumerator()` is a member function
 
 #### `Enumerable<T>` usage pattern
@@ -94,7 +94,7 @@ A type `Type` meets the requirements of [`Enumerator<T>`][] if it meets all of t
 - `Type` meets the [DefaultConstructible][] requirements
 - `Type` meets the [MoveConstructible][] requirements
 - `Type` meets the [MoveAssignable][] requirements
-- `Type::value_type` is a member type, where `value_type` is `T`
+- `Type::value_type` is the type `T`
 - `bool Type::move_first()` is a member function
 - `bool Type::move_next()` is a member function
 - `value_type Type::current()` is a member function
