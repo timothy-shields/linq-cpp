@@ -2,7 +2,7 @@ language: cpp
 
 branches:
   only:
-    - master-linux
+    - master-gcc
     
 notifications:
   recipients:
@@ -13,7 +13,6 @@ notifications:
     
 compiler:
   - gcc
-  - clang
   
 script: 
   - cmake -G "Unix Makefiles" -D CMAKE_INSTALL_PREFIX:STRING=./install --build ./build ./src
