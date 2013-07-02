@@ -1,7 +1,5 @@
 #pragma once
 
-#include <type_traits>
-
 #include "make_unique.h"
 #include "enumerable.h"
 #include "merge_enumerator.h"
@@ -14,18 +12,6 @@ class merge_enumerable : public enumerable<typename merge_enumerator<typename So
 public:
 	typedef merge_enumerator<typename SourceA::enumerator_type, typename SourceB::enumerator_type> enumerator_type;
 	typedef typename enumerator_type::value_type value_type;
-
-	static_assert(
-		is_enumerable<SourceA>::value,
-		"Failed assert: SourceA meets the Enumerable<T> requirements");
-
-	static_assert(
-		is_enumerable<SourceB>::value,
-		"Failed assert: SourceB meets the Enumerable<T> requirements");
-
-	static_assert(
-		std::is_same<typename SourceA::value_type, typename SourceB::value_type>::value,
-		"Failed assert: SourceA::value_type is the same as SourceB::value_type");
 
 private:
 	SourceA sourceA;

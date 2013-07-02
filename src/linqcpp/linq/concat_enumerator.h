@@ -1,7 +1,6 @@
 #pragma once
 
 #include <utility>
-#include <type_traits>
 
 #include "enumerator.h"
 #include "concat_traits.h"
@@ -13,14 +12,6 @@ class concat_enumerator : public enumerator<typename concat_traits<Source>::inne
 {
 public:
 	typedef typename concat_traits<Source>::inner_value_type value_type;
-
-	static_assert(
-		is_enumerator<Source>::value,
-		"Failed assert: Source meets the Enumerator<T> requirements");
-
-	static_assert(
-		is_enumerator<value_type>::value,
-		"Failed assert: Source::value_type meets the Enumerator<T> requirements");
 
 private:
 	typedef typename concat_traits<Source>::inner_enumerator_type inner_enumerator_type;

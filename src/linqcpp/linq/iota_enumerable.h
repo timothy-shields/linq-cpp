@@ -22,12 +22,6 @@ public:
 	{
 	}
 
-	iota_enumerable& operator=(iota_enumerable&& other)
-	{
-		start = std::move(other.start);
-		return *this;
-	}
-
 	iota_enumerable(value_type start)
 		: start(start)
 	{

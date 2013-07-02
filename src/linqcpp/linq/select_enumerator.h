@@ -1,7 +1,5 @@
 #pragma once
 
-#include <type_traits>
-
 #include "enumerator.h"
 
 namespace linq {
@@ -11,10 +9,6 @@ class select_enumerator : public enumerator<typename std::result_of<Selector(typ
 {
 public:
 	typedef typename std::result_of<Selector(typename Source::value_type)>::type value_type;
-	
-	static_assert(
-		is_enumerator<Source>::value,
-		"Failed assert: Source meets the Enumerator<T> requirements");
 
 private:
 	Source source;
@@ -24,10 +18,6 @@ private:
 	select_enumerator& operator=(select_enumerator const&); // not defined
 
 public:
-	select_enumerator()
-	{
-	}
-
 	select_enumerator(select_enumerator&& other)
 		: source(std::move(other.source))
 		, selector(std::move(other.selector))

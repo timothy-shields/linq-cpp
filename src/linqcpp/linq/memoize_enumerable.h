@@ -1,7 +1,5 @@
 #pragma once
 
-#include <type_traits>
-
 #include "make_unique.h"
 #include "enumerable.h"
 #include "memoize_enumerator.h"
@@ -15,10 +13,6 @@ class memoize_enumerable : public enumerable<typename memoize_traits<Source>::va
 public:
 	typedef memoize_enumerator<typename Source::enumerator_type> enumerator_type;
 	typedef typename enumerator_type::value_type value_type;
-
-	static_assert(
-		is_enumerable<Source>::value,
-		"Failed assert: Source meets the Enumerable<T> requirements");
 
 private:
 	Source source;
