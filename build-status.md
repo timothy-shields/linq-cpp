@@ -14,7 +14,7 @@
 ![master-clang][]
 
 **master-vs2012** (windows, Visual Studio 2012)<br>
-*windows builds not supported by Travis CI*
+*windows builds not supported by Travis CI - expect this branch to successfully build*
 
-**dev** (used for development - don't expect this branch to be building)<br>
+**dev** (used for development - don't expect this branch to successfully build)<br>
 ![dev][]
