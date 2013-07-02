@@ -16,5 +16,6 @@
 **master-vs2012** (windows, Visual Studio 2012)<br>
 *windows builds not supported by Travis CI - expect this branch to successfully build*
 
-**dev** (used for development - don't expect this branch to successfully build)<br>
+**dev**<br>
+*used for development - don't expect this branch to successfully build*<br>
 ![dev][]
