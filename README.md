@@ -32,7 +32,7 @@ The **[methods][]** section has a list of all of the functions available in **li
 ### portability
 [portability]: README.md#portability
 
-**linq-cpp** is written to be cross-platform and fully compliant with the C++11 standard. It **has no dependencies** outside of the C++11 standard library. It can be compiled and built using any of the following:
+**linq-cpp** is written to be cross-platform and fully compliant with the C++11 standard. It **has no dependencies** outside of the C++11 standard library. It can be compiled and built using any of the following.
 
 - [Visual Studio 2012][]
 - gcc 4.6
@@ -66,26 +66,55 @@ The **linq-cpp** library is built on top of two foundation [concepts][], [`Enume
 ### `Enumerable<T>`
 [`Enumerable<T>`]: README.md#enumerablet
 
-A type `Type` meets the requirements of [`Enumerable<T>`][] if it meets all of the following requirements:
+A type `Type` meets the requirements of [`Enumerable<T>`][] if it meets all of the following requirements.
 
 - `Type` meets the [MoveConstructible][] requirements
 - `Type` meets the [MoveAssignable][] requirements
-- `Type::enumerator_type` is a member type that meets the [`Enumerator<T>`][] requirements
-- `Type::value_type` is a member type, where `value_type` is `T`
+- `Type::enumerator_type` is a type that meets the [`Enumerator<T>`][] requirements
+- `Type::value_type` is the type `T`
 - `enumerator_type Type::get_enumerator()` is a member function
+
+#### `Enumerable<T>` usage pattern
+
+The `Enumerable<T>` concept prescribes the following usage pattern. Usage not following this pattern yields undefined behavior.
+
+1. Construct instance `E` of a type meeting the requirements of [`Enumerable<T>`][]
+2. Construct, use, and destruct zero or more instances of a type meeting the requirements of [`Enumerator<T>`][]
+ - Construct using `E.get_enumerator()`
+ - Use according to the [`Enumerator<T>` usage pattern][]
+3. Destruct `E`
+
+Important to note here is that the an [`Enumerator<T>`][] must always be destructed before its parent [`Enumerable<T>`][] is destructed.
 
 ### `Enumerator<T>`
 [`Enumerator<T>`]: README.md#enumeratort
 
-A type `Type` meets the requirements of [`Enumerator<T>`][] if it meets all of the following requirements:
+A type `Type` meets the requirements of [`Enumerator<T>`][] if it meets all of the following requirements.
 
 - `Type` meets the [DefaultConstructible][] requirements
 - `Type` meets the [MoveConstructible][] requirements
 - `Type` meets the [MoveAssignable][] requirements
-- `Type::value_type` is a member type, where `value_type` is `T`
+- `Type::value_type` is the type `T`
 - `bool Type::move_first()` is a member function
 - `bool Type::move_next()` is a member function
 - `value_type Type::current()` is a member function
+
+#### `Enumerator<T>` usage pattern
+[`Enumerator<T>` usage pattern]: README.md#enumeratort-usage-pattern
+
+The `Enumerator<T>` concept prescribes the following usage pattern. Usage not following this pattern yields undefined behavior.
+
+1. Construct instance `E` of a type meeting the requirements of [`Enumerator<T>`][]
+2. Optionally call `E.move_first()`
+ - `E.move_first()` is not called: proceed to (5)
+ - `E.move_first()` is called and it returns `false`: proceed to (5)
+ - `E.move_first()` is called and it returns `true`: proceed to (3)
+3. Call `E.current()` zero or more times
+4. Optionally call `E.move_next()`
+ - `E.move_next()` is not called: proceed to (5)
+ - `E.move_next()` is called and it returns `false`: proceed to (5)
+ - `E.move_next()` is called and it returns `true`: proceed to (3)
+5. Destruct `E`
 
 ---
 
@@ -148,77 +177,6 @@ You're given `vector<Department*> departments`, `int customerID`, and the follow
                     .ToVector());
         })
         .ToVector();
-
-## definitions
-
-### classes
-
-    class TEnumerable<T>
-        std::shared_ptr<TEnumerator<T>> GetEnumerator()
-        
-    class TEnumerator<T>
-        bool MoveNext()
-        T Current()
-
-### `TEnumerable<T>`
-
-- A sequence of zero or more values of type `T`
-
-### `TEnumerator<T>`
-
-- The state of a traversal through a `TEnumerable<T>`
-
-### `TEnumerable<T>::GetEnumerator`
-
-- Returns a new `TEnumerator<T>` traversal of the `TEnumerable<T>`
-- Starts "one before" the beginning of the sequence
-
-### `TEnumerator<T>::MoveNext`
-
-- Moves the `TEnumerator<T>` to the next value in the sequence
-- Returns `true` if the move to the next value was successful and `false` otherwise
-
-### `TEnumerator<T>::Current`
-
-- Returns the value `T` that the `TEnumerator<T>` is currently pointing to
-
-### analogues in STL
-
-It may help initially to associate these new concepts with familiar analogues in the standard template library.
-
-<table>
-  <tr>
-    <th>new concept</th>
-    <th>familiar analogue</th>
-  </tr>
-  <tr>
-    <td><code>TEnumerable&lt;T&gt; L;</code></td>
-    <td><code>std::vector&lt;T&gt; V;</code></td>
-  </tr>
-  <tr>
-    <td><code>std::shared_ptr&lt;TEnumerator&lt;T&gt;&gt; E = L.GetEnumerator();</code></td>
-    <td><code>std::vector&lt;T&gt;::iterator I = V.begin();</code></td>
-  </tr>
-  <tr>
-    <td><code>bool success = E->MoveNext();</code></td>
-    <td><code>bool success = (++I != V.end());</code></td>
-  </tr>
-  <tr>
-    <td><code>T value = E->Current();</code></td>
-    <td><code>T value = *I;</code></td>
-  </tr>
-</table>
-
-### example
-
-To make these concepts more concrete, consider the following example. Suppose `L` is a `TEnumerable<char>` representing the two-value sequence `['A', 'B']`. Then the following operations return as commented.
-
-    std::shared_ptr<TEnumerator<char>> E = L.GetEnumerator();
-    E->MoveNext(); // returns true
-    E->Current();  // returns 'A'
-    E->MoveNext(); // returns true
-    E->Current();  // returns 'B'
-    E->MoveNext(); // returns false
 
 ## methods
 [methods]: README.md#methods
