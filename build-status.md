@@ -9,7 +9,7 @@ cross-platform; stable branch<br>
 ![master][]
 
 **master-vs2012**<br>
-vs2012; development branch<br>
+windows vs2012; development branch<br>
 ![master-vs2012][]
 
 **master-linux**<br>
