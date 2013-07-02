@@ -6,12 +6,14 @@
 **master** (cross-platform)<br>
 ![master][]
 
-**master-gcc** (linux)<br>
+**master-gcc** (linux, gcc 4.6)<br>
 ![master-gcc][]
 
-**master-clang** (linux)<br>
+**master-clang** (linux, clang 3.1)<br>
 ![master-clang][]
 
-**master-vs2012** (windows)<br>
-development branch<br>
-usually building *(windows builds not supported by Travis CI)*
+**master-vs2012** (windows, Visual Studio 2012)<br>
+*windows builds not supported by Travis CI*
+
+**dev**
+*used
