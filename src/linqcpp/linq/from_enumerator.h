@@ -20,6 +20,10 @@ private:
 	from_enumerator& operator=(from_enumerator const&); // not defined
 
 public:
+	from_enumerator()
+	{
+	}
+
 	from_enumerator(from_enumerator&& other)
 		: curr(std::move(other.curr))
 		, end(std::move(other.end))

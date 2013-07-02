@@ -13,6 +13,14 @@ class memoize_enumerator : public enumerator<typename memoize_traits<Source>::va
 public:
 	typedef typename memoize_traits<Source>::value_type value_type;
 
+	static_assert(
+		is_enumerator<Source>::value,
+		"Failed assert: Source meets the Enumerator<T> requirements");
+
+	static_assert(
+		std::is_default_constructible<value_type>::value,
+		"Failed assert: Source::value_type meets the DefaultConstructible requirements");
+
 private:
 	Source source;
 	typename Source::value_type value;

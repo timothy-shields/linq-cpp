@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <type_traits>
 
 #include "enumerator.h"
 
@@ -24,6 +25,32 @@ class enumerable
 public:
 	typedef T value_type;
 	virtual std::unique_ptr<enumerator<value_type>> get_enumerator_ptr() = 0;
+};
+
+template <typename Enumerable>
+struct is_enumerable
+{
+	typedef Enumerable enumerable_type;
+	typedef typename enumerable_type::enumerator_type enumerator_type;
+
+	static const bool value = true;
+
+	static_assert(
+		std::is_move_constructible<enumerable_type>::value,
+		"Failed assert: Enumerable<T> meets the MoveConstructible requirements");
+
+	static_assert(
+		std::is_move_assignable<enumerable_type>::value,
+		"Failed assert: Enumerable<T> meets the MoveAssignable requirements");
+
+	static_assert(
+		is_enumerator<enumerator_type>::value,
+		"Failed assert: Enumerable<T>::enumerator_type meets the Enumerator<T> requirements");
+
+	static_assert(
+		std::is_same<typename enumerable_type::value_type, typename enumerator_type::value_type>::value,
+		"Failed assert: Enumerable<T>::value_type is the same type as Enumerable<T>::enumerator_type::value_type");
+
 };
 
 }

@@ -16,6 +16,20 @@ private:
 	value_type value;
 	
 public:
+	return_enumerator()
+	{
+	}
+
+	return_enumerator(return_enumerator&& other)
+		: value(std::move(other.value))
+	{
+	}
+
+	return_enumerator& operator=(return_enumerator&& other)
+	{
+		value = std::move(other.value);
+	}
+
 	return_enumerator(value_type value)
 		: value(value)
 	{

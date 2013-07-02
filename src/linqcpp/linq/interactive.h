@@ -31,6 +31,10 @@ public:
 	typedef Enumerable enumerable_type;
 	typedef typename enumerable_type::enumerator_type enumerator_type;
 	typedef typename enumerable_type::value_type value_type;
+
+	static_assert(
+		is_enumerable<Enumerable>::value,
+		"Failed assert: Enumerable meets the Enumerable<T> requirements");
 	
 private:
 	enumerable_type source;

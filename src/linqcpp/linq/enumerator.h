@@ -36,4 +36,24 @@ void move_first_or_throw(Enumerator& e)
 		throw new std::logic_error("move_first returned false");
 }
 
+template <typename Enumerator>
+struct is_enumerator
+{
+	typedef Enumerator enumerator_type;
+
+	static const bool value = true;
+
+	static_assert(
+		std::is_default_constructible<enumerator_type>::value,
+		"Failed assert: Enumerator<T> meets the DefaultConstructible requirements");
+
+	static_assert(
+		std::is_move_constructible<enumerator_type>::value,
+		"Failed assert: Enumerator<T> meets the MoveConstructible requirements");
+
+	static_assert(
+		std::is_move_assignable<enumerator_type>::value,
+		"Failed assert: Enumerator<T> meets the MoveAssignable requirements");
+};
+
 }

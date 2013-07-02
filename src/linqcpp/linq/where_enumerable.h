@@ -13,6 +13,10 @@ public:
 	typedef where_enumerator<typename Source::enumerator_type, Predicate> enumerator_type;
 	typedef typename enumerator_type::value_type value_type;
 
+	static_assert(
+		is_enumerable<Source>::value,
+		"Failed assert: Source meets the Enumerable<T> requirements");
+
 private:
 	Source source;
 	Predicate predicate;

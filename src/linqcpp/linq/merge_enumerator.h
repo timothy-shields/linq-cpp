@@ -10,6 +10,18 @@ class merge_enumerator : public enumerator<typename SourceA::value_type>
 public:
 	typedef typename SourceA::value_type value_type;
 
+	static_assert(
+		is_enumerator<SourceA>::value,
+		"Failed assert: SourceA meets the Enumerator<T> requirements");
+
+	static_assert(
+		is_enumerator<SourceB>::value,
+		"Failed assert: SourceB meets the Enumerator<T> requirements");
+
+	static_assert(
+		std::is_same<typename SourceA::value_type, typename SourceB::value_type>::value,
+		"Failed assert: SourceA::value_type is the same as SourceB::value_type");
+
 private:
 	SourceA sourceA;
 	SourceB sourceB;
@@ -21,6 +33,10 @@ private:
 	merge_enumerator& operator=(merge_enumerator const&); // not defined
 
 public:
+	merge_enumerator()
+	{
+	}
+
 	merge_enumerator(merge_enumerator&& other)
 		: sourceA(std::move(other.sourceA))
 		, sourceB(std::move(other.sourceB))
