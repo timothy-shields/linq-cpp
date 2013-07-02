@@ -4,17 +4,22 @@
 [master-linux]: https://api.travis-ci.org/timothy-shields/linq-cpp.png?branch=master-linux
 [master-vs2012]: https://api.travis-ci.org/timothy-shields/linq-cpp.png?branch=master-vs2012
 
-### master ![master][]<br>
-cross-platform; stable branch
+**master**<br>
+cross-platform; stable branch<br>
+![master][]
 
-### master-vs2012 ![master-vs2012][]<br>
-vs2012; development branch
+**master-vs2012**<br>
+vs2012; development branch<br>
+![master-vs2012][]
 
-### master-linux ![master-linux][]<br>
-linux; stable branch
+**master-linux**<br>
+linux; stable branch<br>
+![master-linux][]
 
-### master-gcc ![master-gcc][]<br>
-linux gcc; stable branch
+**master-gcc**<br>
+linux gcc; stable branch<br>
+![master-gcc][]
 
-### master-clang ![master-clang][]<br>
-linux clang; stable branch
+**master-clang**<br>
+linux clang; stable branch<br>
+![master-clang][]
