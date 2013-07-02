@@ -2,7 +2,7 @@ language: cpp
 
 branches:
   only:
-    - master
+    - master-clang
     
 notifications:
   recipients:
@@ -12,7 +12,6 @@ notifications:
     on_failure: never
     
 compiler:
-  - gcc
   - clang
   
 script: 
