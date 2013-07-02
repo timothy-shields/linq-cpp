@@ -12,7 +12,6 @@ notifications:
     on_failure: never
     
 compiler:
-  - gcc
   - clang
   
 script: 
