@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 #include "make_unique.h"
 #include "enumerable.h"
 #include "select_enumerator.h"

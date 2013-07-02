@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <type_traits>
 
 #include "enumerator.h"
 #include "concat_traits.h"

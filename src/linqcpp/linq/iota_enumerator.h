@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <type_traits>
 
 #include "enumerator.h"
 
@@ -14,15 +15,23 @@ public:
 
 	static_assert(
 		std::is_default_constructible<value_type>::value,
-		"Failed assert: iota_enumerator<T>::value_type meets the DefaultConstructible requirements");
+		"Failed assert: value_type meets the DefaultConstructible requirements");
+
+	static_assert(
+		std::is_copy_constructible<value_type>::value,
+		"Failed assert: value_type meets the CopyConstructible requirements");
+
+	static_assert(
+		std::is_copy_assignable<value_type>::value,
+		"Failed assert: value_type meets the CopyAssignable requirements");
 
 	static_assert(
 		std::is_move_constructible<value_type>::value,
-		"Failed assert: iota_enumerator<T>::value_type meets the MoveConstructible requirements");
+		"Failed assert: value_type meets the MoveConstructible requirements");
 
 	static_assert(
 		std::is_move_assignable<value_type>::value,
-		"Failed assert: iota_enumerator<T>::value_type meets the MoveAssignable requirements");
+		"Failed assert: value_type meets the MoveAssignable requirements");
 
 private:
 	bool first;
