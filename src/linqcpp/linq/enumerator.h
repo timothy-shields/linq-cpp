@@ -46,15 +46,15 @@ struct is_enumerator
 
 	static_assert(
 		std::is_default_constructible<enumerator_type>::value,
-		"Failed assert: Enumerator<T> meets the DefaultConstructible requirements");
+		"Failed assert: enumerator_type meets the DefaultConstructible requirements");
 
 	static_assert(
 		std::is_move_constructible<enumerator_type>::value,
-		"Failed assert: Enumerator<T> meets the MoveConstructible requirements");
+		"Failed assert: enumerator_type meets the MoveConstructible requirements");
 
 	static_assert(
 		std::is_move_assignable<enumerator_type>::value,
-		"Failed assert: Enumerator<T> meets the MoveAssignable requirements");
+		"Failed assert: enumerator_type meets the MoveAssignable requirements");
 };
 
 }

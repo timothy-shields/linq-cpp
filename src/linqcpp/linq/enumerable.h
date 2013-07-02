@@ -37,19 +37,19 @@ struct is_enumerable
 
 	static_assert(
 		std::is_move_constructible<enumerable_type>::value,
-		"Failed assert: Enumerable<T> meets the MoveConstructible requirements");
+		"Failed assert: enumerable_type meets the MoveConstructible requirements");
 
 	static_assert(
 		std::is_move_assignable<enumerable_type>::value,
-		"Failed assert: Enumerable<T> meets the MoveAssignable requirements");
+		"Failed assert: enumerable_type meets the MoveAssignable requirements");
 
 	static_assert(
 		is_enumerator<enumerator_type>::value,
-		"Failed assert: Enumerable<T>::enumerator_type meets the Enumerator<T> requirements");
+		"Failed assert: enumerator_type meets the Enumerator<T> requirements");
 
 	static_assert(
 		std::is_same<typename enumerable_type::value_type, typename enumerator_type::value_type>::value,
-		"Failed assert: Enumerable<T>::value_type is the same type as Enumerable<T>::enumerator_type::value_type");
+		"Failed assert: enumerable_type::value_type is the same as enumerator_type::value_type");
 
 };
 
