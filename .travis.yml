@@ -2,7 +2,7 @@ language: cpp
 
 branches:
   only:
-    - master-vs2012
+    - dev
     
 notifications:
   recipients:
