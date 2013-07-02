@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdexcept>
+#include <type_traits>
 
 // Concept Enumerator<T>
 // o Implies:
