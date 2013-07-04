@@ -32,3 +32,4 @@ macro(install_target TARGET_NAME)
 endmacro()
 
 add_subdirectory(linqcpp)
+add_subdirectory(Optional)
