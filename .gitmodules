@@ -1,0 +1,6 @@
+[submodule "Optional"]
+	path = Optional
+	url = git@github.com:timothy-shields/Optional.git
+[submodule "src/Optional"]
+	path = src/Optional
+	url = git@github.com:timothy-shields/Optional.git
