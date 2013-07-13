@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdexcept>
+#include <type_traits>
 
 // Concept Enumerator<T>
 // o Implies:
@@ -35,5 +36,25 @@ void move_first_or_throw(Enumerator& e)
 	if (!e.move_first())
 		throw new std::logic_error("move_first returned false");
 }
+
+template <typename Enumerator>
+struct is_enumerator
+{
+	typedef Enumerator enumerator_type;
+
+	static const bool value = true;
+
+	static_assert(
+		std::is_default_constructible<enumerator_type>::value,
+		"Failed assert: enumerator_type meets the DefaultConstructible requirements");
+
+	static_assert(
+		std::is_move_constructible<enumerator_type>::value,
+		"Failed assert: enumerator_type meets the MoveConstructible requirements");
+
+	static_assert(
+		std::is_move_assignable<enumerator_type>::value,
+		"Failed assert: enumerator_type meets the MoveAssignable requirements");
+};
 
 }
