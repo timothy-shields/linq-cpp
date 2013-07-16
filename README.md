@@ -94,7 +94,6 @@ Important to note here is that the an [`Enumerator<T>`][] must always be destruc
 
 A type `Type` meets the requirements of [`Enumerator<T>`][] if it meets all of the following requirements.
 
-- `Type` meets the [DefaultConstructible][] requirements
 - `Type` meets the [MoveConstructible][] requirements
 - `Type` meets the [MoveAssignable][] requirements
 - `Type::value_type` is the type `T`
