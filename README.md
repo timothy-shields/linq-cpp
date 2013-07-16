@@ -12,6 +12,9 @@
 [.travis.yml]: .travis.yml
 
 [Visual Studio 2012]: http://www.microsoft.com/visualstudio/eng/downloads#d-express-windows-desktop
+[gcc 4.6]: http://gcc.gnu.org/gcc-4.6/
+[clang 3.1]: http://llvm.org/releases/3.1/docs/ClangReleaseNotes.html
+
 
 # linq-cpp: LINQ for C++11 done right
 
@@ -35,8 +38,8 @@ The **[methods][]** section has a list of all of the functions available in **li
 **linq-cpp** is written to be cross-platform and fully compliant with the C++11 standard. It **has no dependencies** outside of the C++11 standard library. It can be compiled and built using any of the following.
 
 - [Visual Studio 2012][]
-- gcc 4.6
-- clang 3.1
+- [gcc 4.6][]
+- [clang 3.1][]
 
 ### build system: [CMake][]
 
