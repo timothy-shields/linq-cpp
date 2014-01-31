@@ -111,12 +111,8 @@ The `Enumerator<T>` concept prescribes the following usage pattern. Usage not fo
  - `E.move_first()` is not called: proceed to (5)
  - `E.move_first()` is called and it returns `false`: proceed to (5)
  - `E.move_first()` is called and it returns `true`: proceed to (3)
-3. Call `E.current()` zero or more times
-4. Optionally call `E.move_next()`
- - `E.move_next()` is not called: proceed to (5)
- - `E.move_next()` is called and it returns `false`: proceed to (5)
- - `E.move_next()` is called and it returns `true`: proceed to (3)
-5. Destruct `E`
+3. Call `E.current()` zero or more times; proceed to (2)
+4. Destruct `E`
 
 ---
 
