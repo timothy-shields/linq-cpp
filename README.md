@@ -108,8 +108,8 @@ The `Enumerator<T>` concept prescribes the following usage pattern. Usage not fo
 
 1. Construct instance `E` of a type meeting the requirements of [`Enumerator<T>`][]
 2. Optionally call `E.move_first()`
- - `E.move_first()` is not called: proceed to (5)
- - `E.move_first()` is called and it returns `false`: proceed to (5)
+ - `E.move_first()` is not called: proceed to (4)
+ - `E.move_first()` is called and it returns `false`: proceed to (4)
  - `E.move_first()` is called and it returns `true`: proceed to (3)
 3. Call `E.current()` zero or more times; proceed to (2)
 4. Destruct `E`
