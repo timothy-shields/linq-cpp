@@ -37,7 +37,7 @@ The **[methods][]** section has a list of all of the functions available in **li
 
 **linq-cpp** is written to be cross-platform and fully compliant with the C++11 standard. It **has no dependencies** outside of the C++11 standard library. It can be compiled and built using any of the following.
 
-- [Visual Studio 2012][]
+- [Visual Studio 2012][] (Plan to upgrade to Visual Studio 2013 because of [new C++11 compiler feature support](http://msdn.microsoft.com/en-us/library/hh409293.aspx).)
 - [gcc 4.6][]
 - [clang 3.1][]
 
