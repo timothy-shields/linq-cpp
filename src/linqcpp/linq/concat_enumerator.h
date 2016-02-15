@@ -17,7 +17,7 @@ private:
 	typedef typename concat_traits<Source>::inner_enumerator_type inner_enumerator_type;
 
 	Source source;
-	inner_enumerator_type inner_enumerator;
+	std::unique_ptr<inner_enumerator_type> inner_enumerator;
 
 	concat_enumerator(concat_enumerator const&); // not defined
 	concat_enumerator& operator=(concat_enumerator const&); // not defined
@@ -39,7 +39,7 @@ public:
 	{
 		if (source.move_first())
 		{
-			inner_enumerator = source.current().get_enumerator();
+			*inner_enumerator = source.current().get_enumerator();
 		}
 		else
 		{
@@ -48,13 +48,13 @@ public:
 
 		while (true)
 		{
-			if (inner_enumerator.move_first())
+			if (inner_enumerator->move_first())
 			{
 				return true;
 			}
 			else if (source.move_next())
 			{
-				inner_enumerator = source.current().get_enumerator();
+				*inner_enumerator = source.current().get_enumerator();
 			}
 			else
 			{
@@ -65,13 +65,13 @@ public:
 	
 	bool move_next()
 	{
-		if (inner_enumerator.move_next())
+		if (inner_enumerator->move_next())
 		{
 			return true;
 		}
 		else if (source.move_next())
 		{
-			inner_enumerator = source.current().get_enumerator();
+			*inner_enumerator = source.current().get_enumerator();
 		}
 		else
 		{
@@ -80,13 +80,13 @@ public:
 		
 		while (true)
 		{
-			if (inner_enumerator.move_first())
+			if (inner_enumerator->move_first())
 			{
 				return true;
 			}
 			else if (source.move_next())
 			{
-				inner_enumerator = source.current().get_enumerator();
+				*inner_enumerator = source.current().get_enumerator();
 			}
 			else
 			{
@@ -97,7 +97,7 @@ public:
 	
 	value_type current()
 	{
-		return inner_enumerator.current();
+		return inner_enumerator->current();
 	}
 };
 

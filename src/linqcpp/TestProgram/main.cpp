@@ -105,9 +105,30 @@ void run(int argc, char* argv[])
 			std::cout << i << std::endl;
 		});
 
+	auto test = linq::iota(0)
+		.select([](int n){ return std::make_pair(10 * n, 'A'); })
+		.take(11)
+		.to_vector();
+
+	auto Xs = linq::iota(0).take(10).to_vector();
+	auto Ys = linq::iota(0).take(4).to_vector();
+	auto grid = linq::from(Xs).select_many([&](int x)
+	{
+		return linq::from(Ys).select([=](int y)
+		{
+			return std::make_pair(x, y);
+		}).capture();
+	}).to_vector();
+
 	linq::merge(
-		linq::iota(0).select([](int n){ return std::make_pair(10 * n, 'A'); }).take(11),
-		linq::iota(1).select([](int n){ return std::make_pair(3 * n, 'B'); }).take(33))
+		linq::from(test)
+			.select([](std::pair<int, char> p)
+			{
+				return std::make_pair(p.first - 100, p.second);
+			}),
+		linq::iota(1)
+			.select([](int n){ return std::make_pair(3 * n, 'B'); })
+			.take(33))
 	.for_each([](std::pair<int, char> p)
 	{
 		std::cout << "merge: " << p.first << " " << p.second << std::endl;

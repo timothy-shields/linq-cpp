@@ -13,8 +13,8 @@ public:
 private:
 	SourceA sourceA;
 	SourceB sourceB;
-	bool haveA;
-	bool haveB;
+	bool depletedA;
+	bool depletedB;
 	bool currentA;
 	
 	merge_enumerator(merge_enumerator const&); // not defined
@@ -24,8 +24,8 @@ public:
 	merge_enumerator(merge_enumerator&& other)
 		: sourceA(std::move(other.sourceA))
 		, sourceB(std::move(other.sourceB))
-		, haveA(other.haveA)
-		, haveB(other.haveB)
+		, depletedA(other.depletedA)
+		, depletedB(other.depletedB)
 		, currentA(other.currentA)
 	{
 	}
@@ -33,67 +33,77 @@ public:
 	merge_enumerator(SourceA&& sourceA, SourceB&& sourceB)
 		: sourceA(std::move(sourceA))
 		, sourceB(std::move(sourceB))
-		, haveA(true)
-		, haveB(true)
+		, depletedA(false)
+		, depletedB(false)
 		, currentA(true)
 	{
 	}
 	
 	bool move_first()
 	{
-		haveA = sourceA.move_first();
-		haveB = sourceB.move_first();
-		if (haveA && haveB)
+		depletedA = !sourceA.move_first();
+		depletedB = !sourceB.move_first();
+		if (depletedA && depletedB)
 		{
-			currentA = !(sourceB.current() < sourceA.current());
-			return true;
+			return false;
 		}
-		else if (haveA)
-		{
-			currentA = true;
-			return true;
-		}
-		else if (haveB)
+		else if (depletedA)
 		{
 			currentA = false;
 			return true;
 		}
+		else if (depletedB)
+		{
+			currentA = true;
+			return true;
+		}
 		else
 		{
-			return false;
+			currentA = !(sourceB.current() < sourceA.current());
+			return true;
 		}
 	}
 
 	bool move_next()
 	{
-		if (haveA && haveB)
+		if (depletedA && depletedB)
 		{
-			if (currentA)
-			{
-				haveA = sourceA.move_next();
-			}
-			else
-			{
-				haveB = sourceB.move_next();
-			}
-			currentA = !(sourceB.current() < sourceA.current());
-			return true;
+			return false;
 		}
-		else if (haveA)
+		else if (depletedA)
 		{
-			haveA = sourceA.move_next();
-			currentA = true;
-			return haveA;
-		}
-		else if (haveB)
-		{
-			haveB = sourceB.move_next();
 			currentA = false;
-			return haveB;
+			depletedB = !sourceB.move_next();
+			return !depletedB;
+		}
+		else if (depletedB)
+		{
+			currentA = true;
+			depletedA = !sourceA.move_next();
+			return !depletedA;
 		}
 		else
 		{
-			return false;
+			if (currentA)
+			{
+				depletedA = !sourceA.move_next();
+				if (depletedA)
+				{
+					currentA = false;
+					return true;
+				}
+			}
+			else
+			{
+				depletedB = !sourceB.move_next();
+				if (depletedB)
+				{
+					currentA = true;
+					return true;
+				}
+			}
+			currentA = !(sourceB.current() < sourceA.current());
+			return true;
 		}
 	}
 	

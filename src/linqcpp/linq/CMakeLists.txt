@@ -4,7 +4,6 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
 	main.cpp
 	
 	make_unique.h
-	optional.h
 	range_traits.h
 	
 	interactive.h

@@ -5,7 +5,6 @@
 
 // Concept Enumerator<T>
 // o Implies:
-//   o DefaultConstructible: http://en.cppreference.com/w/cpp/concept/DefaultConstructible
 //   o MoveConstructible: http://en.cppreference.com/w/cpp/concept/MoveConstructible
 //   o MoveAssignable: http://en.cppreference.com/w/cpp/concept/MoveAssignable
 // o typename value_type
@@ -43,10 +42,6 @@ struct is_enumerator
 	typedef Enumerator enumerator_type;
 
 	static const bool value = true;
-
-	static_assert(
-		std::is_default_constructible<enumerator_type>::value,
-		"Failed assert: enumerator_type meets the DefaultConstructible requirements");
 
 	static_assert(
 		std::is_move_constructible<enumerator_type>::value,
