@@ -31,6 +31,7 @@ public:
 		if (!source.move_first())
 		{
 			curr = ordered_values.end();
+			return;
 		}
 		while (true)
 		{
